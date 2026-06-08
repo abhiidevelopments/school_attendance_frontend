@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Springfield - Digital Diary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans sm:py-8 sm:px-4 flex justify-center items-center min-h-screen">
+    
+    <div class="max-w-xl w-full bg-white sm:rounded-2xl shadow-xl border-slate-200 sm:border overflow-hidden min-h-screen sm:min-h-[80vh]">
+        
+        <!-- Header -->
+        <div class="bg-slate-900 text-center py-6 px-4 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-8 opacity-5"><i data-lucide="book-open" class="w-32 h-32"></i></div>
+            <h1 class="text-2xl font-black text-white relative z-10 tracking-tight">Springfield High</h1>
+            <p class="text-slate-400 text-sm font-medium relative z-10 mt-1 uppercase tracking-widest">Digital Student Diary</p>
+        </div>
+
+        <!-- Profile Ribbon -->
+        <div class="bg-blue-600 px-6 py-4 flex items-center justify-between shadow-inner">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/20 p-2 rounded-full backdrop-blur-sm"><i data-lucide="user" class="w-5 h-5 text-white"></i></div>
+                <div>
+                    <p class="text-blue-100 text-[10px] font-bold uppercase tracking-wider">Student Profile</p>
+                    <p class="text-white font-bold text-lg leading-tight" id="studentName">Alex Carter</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-blue-200 text-[10px] font-bold uppercase tracking-wider">Class</p>
+                <p class="text-white font-bold">10A</p>
+            </div>
+        </div>
+
+        <div class="p-4 sm:p-6 space-y-6">
+            <div class="flex items-center justify-center gap-2 pb-6 border-b border-dashed border-slate-300">
+                <i data-lucide="calendar" class="w-5 h-5 text-slate-400"></i>
+                <h2 class="text-lg font-bold text-slate-800" id="currentDate"></h2>
+            </div>
+
+            <!-- Announcements -->
+            <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="megaphone" class="w-4 h-4 text-amber-600"></i>
+                    <h3 class="font-bold text-amber-900 text-sm">School Announcements</h3>
+                </div>
+                <ul class="text-sm text-amber-800 font-medium space-y-1 pl-6 list-disc marker:text-amber-400">
+                    <li class="pl-1">Tomorrow is a half-day due to training.</li>
+                    <li class="pl-1">Submit permission slips by Friday.</li>
+                </ul>
+            </div>
+
+            <!-- Homework -->
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <i data-lucide="book-open" class="w-5 h-5 text-blue-600"></i>
+                    <h3 class="font-bold text-slate-900 text-lg">Today's Homework</h3>
+                </div>
+                <div class="space-y-4">
+                    <div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
+                        <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center">
+                            <h4 class="font-bold text-slate-800 text-sm">Mathematics</h4><span class="text-xs font-semibold text-slate-500">Mr. Smith</span>
+                        </div>
+                        <div class="p-4 bg-white">
+                            <ul class="text-sm text-slate-700 space-y-2 pl-4 list-decimal marker:text-blue-500 marker:font-bold">
+                                <li class="pl-2 leading-relaxed">Complete Exercise 4.2</li>
+                                <li class="pl-2 leading-relaxed">Revise Chapter 3 theorems</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
+                        <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center">
+                            <h4 class="font-bold text-slate-800 text-sm">Science</h4><span class="text-xs font-semibold text-slate-500">Mrs. Davis</span>
+                        </div>
+                        <div class="p-4 bg-white">
+                            <ul class="text-sm text-slate-700 space-y-2 pl-4 list-decimal marker:text-blue-500 marker:font-bold">
+                                <li class="pl-2 leading-relaxed">Read Chapter 5: Biology</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Login link for parents to switch back easily -->
+             <div class="text-center pt-2">
+                <a href="login.html" class="text-sm font-semibold text-blue-600 hover:underline">SaaS Login Portal</a>
+             </div>
+        </div>
+        
+        <div class="bg-slate-50 p-6 text-center border-t border-slate-200 mt-auto">
+            <p class="text-xs text-slate-500 leading-relaxed font-medium">This is a read-only digital diary generated dynamically.</p>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none w-[90vw] md:w-auto max-w-sm"></div>
+
+    <script>
+        lucide.createIcons();
+        const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
+
+        function showToast(message, type = 'error') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-50' : 'bg-red-50';
+            const borderColor = type === 'success' ? 'border-emerald-200' : 'border-red-200';
+            const textColor = type === 'success' ? 'text-emerald-800' : 'text-red-800';
+            const icon = type === 'success' ? 'check-circle' : 'alert-circle';
+            
+            toast.className = `flex items-center gap-2 p-4 rounded-xl border ${borderColor} ${bgColor} ${textColor} shadow-lg transform transition-all duration-300 translate-x-full pointer-events-auto`;
+            toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5 inline-block align-middle shrink-0"></i><span class="font-medium text-sm leading-tight">${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        async function fetchStudentDiary() {
+            const params = new URLSearchParams(window.location.search);
+            const studentId = params.get('student_id');
+            const hwId = params.get('hw_id');
+
+            if(studentId) {
+                document.title = `Digital Diary - ${studentId}`;
+                document.getElementById('studentName').innerText = studentId; // Temporary until fetch completes
+            }
+
+            try {
+                // Simulate fetch
+                // const res = await fetch(`${API_BASE}/student/diary?id=${studentId || ''}&hw_id=${hwId || ''}`);
+                // const data = await res.json();
+                
+                setTimeout(() => {
+                    if(studentId) {
+                        document.getElementById('studentName').innerText = 'Alex Carter (Fetched)';
+                        document.querySelector('.text-white.font-bold:not(#studentName)').innerText = '10A';
+                    } else if(hwId) {
+                        document.getElementById('studentName').innerText = 'General Announcement';
+                        document.querySelector('.text-white.font-bold:not(#studentName)').innerText = 'All Classes';
+                    }
+                    showToast('Diary synked', 'success');
+                }, 600);
+            } catch(e) {
+                showToast('Failed to load student data');
+            }
+        }
+
+        fetchStudentDiary();
+    </script>
+</body>
+</html>
