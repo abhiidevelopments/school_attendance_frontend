@@ -114,80 +114,93 @@
                     <!-- Dynamic classes for attendance will be rendered here -->
                 </div>
 
-                <div id="attendanceDetail" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm animate-fade-in mt-6 overflow-hidden">
-                    <div class="border-b border-slate-100 bg-slate-50 p-4">
-                        <h3 class="font-bold text-lg" id="actClassTitle">Detailed List</h3>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-slate-500 bg-slate-50/50">
-                                <tr><th class="px-6 py-3 font-semibold whitespace-nowrap">Roll No</th><th class="px-6 py-3 font-semibold whitespace-nowrap">Student Name</th><th class="px-6 py-3 font-semibold whitespace-nowrap">Status</th></tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100" id="attTbody">
-                            </tbody>
-                        </table>
+                <div id="attendanceDetail" class="hidden space-y-4">
+                    <button onclick="goBackToAttendanceHub()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Classes
+                    </button>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm animate-fade-in overflow-hidden">
+                        <div class="border-b border-slate-100 bg-slate-50 p-4">
+                            <h3 class="font-bold text-lg" id="actClassTitle">Detailed List</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-slate-500 bg-slate-50/50">
+                                    <tr><th class="px-6 py-3 font-semibold whitespace-nowrap">Roll No</th><th class="px-6 py-3 font-semibold whitespace-nowrap">Student Name</th><th class="px-6 py-3 font-semibold whitespace-nowrap">Status</th></tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100" id="attTbody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- STUDENTS MODULE -->
             <div id="students" class="module max-w-5xl space-y-8">
-                <!-- Bulk Import -->
-                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-5">
-                    <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
-                        <div class="p-2 bg-blue-50 rounded-lg">
-                            <i data-lucide="file-up" class="w-5 h-5 text-blue-600"></i>
+                <!-- Wrapper for class grid and bulk import inside Student Home View -->
+                <div id="studentHomeView" class="space-y-8">
+                    <!-- Bulk Import -->
+                    <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-5">
+                        <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+                            <div class="p-2 bg-blue-50 rounded-lg">
+                                <i data-lucide="file-up" class="w-5 h-5 text-blue-600"></i>
+                            </div>
+                            <h3 class="font-bold text-lg text-slate-800">Bulk CSV Import</h3>
                         </div>
-                        <h3 class="font-bold text-lg text-slate-800">Bulk CSV Import</h3>
-                    </div>
-                    <div class="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl shadow-lg shadow-slate-200/30 p-8 flex flex-col items-center justify-center text-center hover:border-blue-300 transition-all cursor-pointer group" onclick="document.getElementById('csvUpload').click()">
-                        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-100 transition-transform">
-                            <i data-lucide="upload-cloud" class="w-8 h-8 text-blue-600"></i>
+                        <div class="bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl shadow-lg shadow-slate-200/30 p-8 flex flex-col items-center justify-center text-center hover:border-blue-300 transition-all cursor-pointer group" onclick="document.getElementById('csvUpload').click()">
+                            <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-100 transition-transform">
+                                <i data-lucide="upload-cloud" class="w-8 h-8 text-blue-600"></i>
+                            </div>
+                            <p class="text-base font-bold text-slate-800">Click to upload or drag & drop</p>
+                            <p class="text-sm text-slate-500 mt-1 max-w-sm">CSV files only. Must contain headers: Name, RollNo, Class, WhatsAppNo.</p>
+                            <input type="file" accept=".csv" class="hidden" id="csvUpload">
+                            <button class="mt-6 px-6 py-2.5 bg-white text-blue-700 font-bold text-sm rounded-xl border-2 border-blue-100 hover:border-blue-200 hover:bg-blue-50 transition-colors shadow-sm">Browse CSV File</button>
                         </div>
-                        <p class="text-base font-bold text-slate-800">Click to upload or drag & drop</p>
-                        <p class="text-sm text-slate-500 mt-1 max-w-sm">CSV files only. Must contain headers: Name, RollNo, Class, WhatsAppNo.</p>
-                        <input type="file" accept=".csv" class="hidden" id="csvUpload">
-                        <button class="mt-6 px-6 py-2.5 bg-white text-blue-700 font-bold text-sm rounded-xl border-2 border-blue-100 hover:border-blue-200 hover:bg-blue-50 transition-colors shadow-sm">Browse CSV File</button>
                     </div>
-                </div>
 
-                <!-- Individual Management (Class-wise) -->
-                <div>
-                    <div class="flex justify-between items-center mb-5">
-                        <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-slate-400"></i> Class-Wise Overview</h3>
-                    </div>
-                    <div id="classesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-5">
-                        <!-- Dynamic classes will be rendered here -->
+                    <!-- Individual Management (Class-wise) -->
+                    <div>
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-slate-400"></i> Class-Wise Overview</h3>
+                        </div>
+                        <div id="classesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-5">
+                            <!-- Dynamic classes will be rendered here -->
+                        </div>
                     </div>
                 </div>
 
                 <!-- Students Listing -->
-                <div id="studentClassDetail" class="hidden bg-white border border-slate-200 rounded-xl shadow-sm animate-fade-in mt-6 overflow-hidden">
-                    <div class="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center gap-4">
-                        <h3 class="font-bold text-lg text-slate-800" id="studentActClassTitle">Students Listing</h3>
-                        <button class="bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-blue-700 transition shrink-0">
-                            <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Add Student</span><span class="sm:hidden">Add</span>
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto relative min-h-[150px]">
-                        <div id="studentsLoader" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center hidden">
-                            <i data-lucide="loader-2" class="w-6 h-6 text-blue-600 animate-spin mb-2"></i>
-                            <span class="text-sm font-medium text-slate-600">Loading...</span>
+                <div id="studentClassDetail" class="hidden space-y-4">
+                    <button onclick="goBackToStudentHome()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Classes
+                    </button>
+                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm animate-fade-in overflow-hidden">
+                        <div class="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center gap-4">
+                            <h3 class="font-bold text-lg text-slate-800" id="studentActClassTitle">Students Listing</h3>
+                            <button onclick="openStudentModal()" class="bg-blue-600 text-white px-3 md:px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-blue-700 transition shrink-0">
+                                <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Add Student</span><span class="sm:hidden">Add</span>
+                            </button>
                         </div>
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
-                                <tr>
-                                    <th class="px-6 py-4 font-semibold whitespace-nowrap">Roll No</th>
-                                    <th class="px-6 py-4 font-semibold whitespace-nowrap">Student Name</th>
-                                    <th class="px-6 py-4 font-semibold whitespace-nowrap">WhatsApp No</th>
-                                    <th class="px-6 py-4 font-semibold text-center whitespace-nowrap">QR Code</th>
-                                    <th class="px-6 py-4 font-semibold text-right whitespace-nowrap">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100" id="studentMgmtTbody">
-                                <!-- Populated by JS -->
-                            </tbody>
-                        </table>
+                        <div class="overflow-x-auto relative min-h-[150px]">
+                            <div id="studentsLoader" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center hidden">
+                                <i data-lucide="loader-2" class="w-6 h-6 text-blue-600 animate-spin mb-2"></i>
+                                <span class="text-sm font-medium text-slate-600">Loading...</span>
+                            </div>
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100">
+                                    <tr>
+                                        <th class="px-6 py-4 font-semibold whitespace-nowrap">Roll No</th>
+                                        <th class="px-6 py-4 font-semibold whitespace-nowrap">Student Name</th>
+                                        <th class="px-6 py-4 font-semibold whitespace-nowrap">WhatsApp No</th>
+                                        <th class="px-6 py-4 font-semibold text-center whitespace-nowrap">QR Code</th>
+                                        <th class="px-6 py-4 font-semibold text-right whitespace-nowrap">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100" id="studentMgmtTbody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -411,6 +424,35 @@
         </div>
     </div>
 
+    <!-- Add/Edit Student Modal -->
+    <div id="studentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border border-slate-200">
+            <h3 class="font-bold text-lg mb-4">Add New Student</h3>
+            <div class="space-y-4">
+                <div class="space-y-1.5 align-left">
+                    <label class="text-sm font-semibold text-slate-700">Roll No</label>
+                    <input type="text" id="studRollInput" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 101">
+                </div>
+                <div class="space-y-1.5 align-left">
+                    <label class="text-sm font-semibold text-slate-700">Full Name</label>
+                    <input type="text" id="studNameInput" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Rahul Sharma">
+                </div>
+                <div class="space-y-1.5 align-left">
+                    <label class="text-sm font-semibold text-slate-700">WhatsApp No</label>
+                    <input type="text" id="studPhoneInput" class="w-full border border-slate-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 919876543210">
+                </div>
+                <div class="space-y-1.5 align-left">
+                    <label class="text-sm font-semibold text-slate-700">Target Class</label>
+                    <input type="text" id="studClassInput" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm focus:outline-none cursor-not-allowed" readonly>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-2">
+                <button onclick="closeStudentModal()" class="px-4 py-2 hover:bg-slate-100 rounded-lg text-sm font-medium">Cancel</button>
+                <button onclick="saveStudent()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">Save Student</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Add/Edit Teacher Modal -->
     <div id="teacherModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border border-slate-200">
@@ -514,9 +556,14 @@
             document.getElementById('headerTitle').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1) + " Module";
 
             if (tabId === 'attendance') {
+                goBackToAttendanceHub();
                 startLivePolling();
             } else {
                 clearInterval(pollInterval);
+            }
+
+            if (tabId === 'students') {
+                goBackToStudentHome();
             }
             
             if (tabId === 'students' || tabId === 'attendance' || tabId === 'timetable' || tabId === 'settings') {
@@ -542,10 +589,17 @@
         let viewedClass = null;
         function toggleClassView(cls) {
             viewedClass = cls;
+            document.getElementById('attendanceGrid').classList.add('hidden');
             document.getElementById('attendanceDetail').classList.remove('hidden');
             document.getElementById('actClassTitle').innerText = `Detailed Live List: Class ${cls}`;
             document.getElementById('attTbody').innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-slate-500 animate-pulse">Waiting for logs...</td></tr>`;
             startLivePolling();
+        }
+
+        function goBackToAttendanceHub() {
+            viewedClass = null;
+            document.getElementById('attendanceGrid').classList.remove('hidden');
+            document.getElementById('attendanceDetail').classList.add('hidden');
         }
 
         async function fetchLogs() {
@@ -817,7 +871,65 @@
         fetchClasses();
 
         // Specific Student Class View
+        let activeClsName = "";
+
+        function goBackToStudentHome() {
+            activeClsName = "";
+            document.getElementById('studentHomeView').classList.remove('hidden');
+            document.getElementById('studentClassDetail').classList.add('hidden');
+        }
+
+        function openStudentModal() {
+            document.getElementById('studRollInput').value = '';
+            document.getElementById('studNameInput').value = '';
+            document.getElementById('studPhoneInput').value = '';
+            document.getElementById('studClassInput').value = activeClsName;
+            document.getElementById('studentModal').classList.remove('hidden');
+        }
+
+        function closeStudentModal() {
+            document.getElementById('studentModal').classList.add('hidden');
+        }
+
+        async function saveStudent() {
+            const name = document.getElementById('studNameInput').value.trim();
+            const roll = document.getElementById('studRollInput').value.trim();
+            const phone = document.getElementById('studPhoneInput').value.trim();
+            const className = document.getElementById('studClassInput').value.trim();
+
+            if (!name) {
+                showToast("Student Name is required");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({
+                        name: name,
+                        roll_no: roll,
+                        whatsapp_no: phone,
+                        class_name: className
+                    })
+                });
+
+                if (res.ok) {
+                    showToast("Student added successfully!", "success");
+                    closeStudentModal();
+                    toggleStudentClassView(className);
+                } else {
+                    const err = await res.json();
+                    showToast(err.message || "Failed to save student");
+                }
+            } catch (err) {
+                showToast("Network error while adding student");
+            }
+        }
+
         async function toggleStudentClassView(cls) {
+            activeClsName = cls;
+            document.getElementById('studentHomeView').classList.add('hidden');
             document.getElementById('studentClassDetail').classList.remove('hidden');
             document.getElementById('studentActClassTitle').innerText = `Students in Class ${cls}`;
             document.getElementById('studentsLoader').classList.remove('hidden');
@@ -834,7 +946,7 @@
                 
                 const tableBody = document.getElementById('studentMgmtTbody');
                 if (!students || students.length === 0) {
-                    tableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500 bg-slate-50 border-dashed border-b border-slate-200">No students found in this class. Upload a CSV to import them.</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500 bg-slate-50 border-dashed border-b border-slate-200">No students found in this class. Add individually or upload CSV to import.</td></tr>`;
                 } else {
                     let html = '';
                     students.forEach(student => {
