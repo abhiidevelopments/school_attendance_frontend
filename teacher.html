@@ -132,7 +132,7 @@
 
     <script>
         lucide.createIcons();
-        const API_BASE = window.location.origin + '/api';
+        const API_BASE = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file://')) ? window.location.origin + '/api' : 'https://school-attendance-vdbg.onrender.com/api';
         
         // Welcome and Initials setup
         const userRole = localStorage.getItem('user_role');
@@ -379,24 +379,25 @@
             const attSelect = document.getElementById('attendanceClassSelect');
             const quickBox = document.getElementById('quickClassSelectorBox');
             
-            if (classTeacherOf && classTeacherOf !== 'undefined' && classTeacherOf !== 'null' && classTeacherOf !== '') {
-                curManagingClass = classTeacherOf;
-                curManagingSubj = 'Class Teacher';
-                if(quickBox) {
-                    quickBox.classList.add('hidden');
+            if (quickBox) {
+                quickBox.classList.remove('hidden');
+            }
+            if (attSelect) {
+                let html = '<option value="">Select Class</option>';
+                if (classTeacherOf && classTeacherOf !== 'undefined' && classTeacherOf !== 'null' && classTeacherOf !== '') {
+                    html += `<option value="${classTeacherOf}" class="font-bold text-blue-600">★ My Class: ${classTeacherOf}</option>`;
                 }
-            } else {
-                if(quickBox) {
-                    quickBox.classList.remove('hidden');
-                }
-                if(attSelect) {
-                    let html = '<option value="">Select Class</option>';
-                    schoolClasses.forEach(cls => {
+                schoolClasses.forEach(cls => {
+                    if (cls.name !== classTeacherOf) {
                         html += `<option value="${cls.name}">Class ${cls.name}</option>`;
-                    });
-                    attSelect.innerHTML = html;
-                    if(curManagingClass) attSelect.value = curManagingClass;
+                    }
+                });
+                attSelect.innerHTML = html;
+                if (!curManagingClass && classTeacherOf && classTeacherOf !== 'undefined' && classTeacherOf !== 'null' && classTeacherOf !== '') {
+                    curManagingClass = classTeacherOf;
+                    curManagingSubj = 'Class Teacher';
                 }
+                if (curManagingClass) attSelect.value = curManagingClass;
             }
 
             const hwSelect = document.getElementById('hwClassSelect');
@@ -492,14 +493,18 @@
                 return;
             }
 
-            // Order by: Present first, then Absent. Secondary sort by Roll number (asc)
+            // Sort: Standard stable list sorted by Roll Number numerically first, and Name second
             students.sort((a, b) => {
-                if (a.p && !b.p) return -1;
-                if (!a.p && b.p) return 1;
-                const rollA = a.roll_no || '';
-                const rollB = b.roll_no || '';
-                if(rollA && rollB) return rollA.localeCompare(rollB, undefined, {numeric: true});
-                return a.name.localeCompare(b.name);
+                const rollA = String(a.roll_no || '').trim();
+                const rollB = String(b.roll_no || '').trim();
+                if (rollA && rollB) {
+                    return rollA.localeCompare(rollB, undefined, {numeric: true});
+                }
+                if (rollA) return -1;
+                if (rollB) return 1;
+                const nameA = String(a.name || '').trim();
+                const nameB = String(b.name || '').trim();
+                return nameA.localeCompare(nameB);
             });
 
             students.forEach(s => {
