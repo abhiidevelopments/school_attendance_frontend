@@ -223,7 +223,7 @@
             </div>
 
             <!-- FEE MODULE -->
-            <div id="fees" class="module max-w-6xl space-y-6 pb-24">
+            <div id="fees" class="module max-w-6xl space-y-6 pb-48">
                 <!-- Student Fee Collection -->
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mt-6">
                     <div class="border-b border-slate-100 bg-slate-50 p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -505,7 +505,7 @@
 
     <script>
         lucide.createIcons();
-        const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
+        const API_BASE = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file://')) ? window.location.origin + '/api' : 'https://school-attendance-vdbg.onrender.com/api';
         let pollInterval;
 
         function logout() {
@@ -626,14 +626,18 @@
                         });
                     }
 
-                    // Sort: present (p === true) at the top, absent (p === false) at the bottom
+                    // Sort: Standard stable list sorted by Roll Number numerically first, and Name second
                     studentsStatus.sort((a, b) => {
-                        if (a.p && !b.p) return -1;
-                        if (!a.p && b.p) return 1;
-                        const rollA = rollMap[a.id] || '';
-                        const rollB = rollMap[b.id] || '';
-                        if (rollA && rollB) return rollA.localeCompare(rollB, undefined, {numeric: true});
-                        return a.name.localeCompare(b.name);
+                        const rollA = String(rollMap[a.id] || '').trim();
+                        const rollB = String(rollMap[b.id] || '').trim();
+                        if (rollA && rollB) {
+                            return rollA.localeCompare(rollB, undefined, {numeric: true});
+                        }
+                        if (rollA) return -1;
+                        if (rollB) return 1;
+                        const nameA = String(a.name || '').trim();
+                        const nameB = String(b.name || '').trim();
+                        return nameA.localeCompare(nameB);
                     });
 
                     let html = '';
