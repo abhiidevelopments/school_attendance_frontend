@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduCore SaaS - Master Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans">
+
+    <!-- Top Navbar -->
+    <header class="bg-slate-900 border-b border-slate-800 text-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="building-2" class="w-6 h-6 text-blue-400"></i>
+                <h1 class="text-xl font-bold tracking-tight">EduCore SaaS Central</h1>
+            </div>
+            <div class="flex items-center gap-4 text-sm font-medium shrink-0">
+                <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700/50">
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-blue-400"></i>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Super Admin</span>
+                </div>
+                
+                <!-- Prominent Logout Button -->
+                <button onclick="logout()" class="p-2 text-slate-400 hover:bg-slate-800 hover:text-red-400 rounded-full transition focus:outline-none flex items-center gap-1.5" title="Log out">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <span class="font-bold text-xs uppercase tracking-wider">Logout</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="text-3xl font-bold tracking-tight text-slate-900">Registered Schools</h2>
+                <p class="text-slate-500 mt-1 text-sm">Manage tenant schools, billing limits, and credentials.</p>
+            </div>
+            <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold inline-flex items-center gap-2 shadow-sm transition-all">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+                Add New School
+            </button>
+        </div>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-xs text-slate-500 uppercase bg-slate-50/80 border-b border-slate-200">
+                        <tr>
+                            <th class="px-6 py-4 font-semibold">School Details</th>
+                            <th class="px-6 py-4 font-semibold">Admin Credentials</th>
+                            <th class="px-6 py-4 font-semibold">Student Limit vs Actual</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
+                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schoolTableBody" class="divide-y divide-slate-200">
+                        <!-- Populated via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="addModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl w-full max-w-lg shadow-2xl border border-slate-200 transform transition-all">
+            <div class="p-6 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-900" id="modalTitle">Add New Client School</h3>
+                <p class="text-sm text-slate-500">Configure limits and credentials.</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-semibold text-slate-700">School Name</label>
+                    <input type="text" id="schoolName" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="e.g. Springfield High">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700">Admin Login ID</label>
+                        <input type="text" id="schoolUsername" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="admin_xyz">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-semibold text-slate-700">Password</label>
+                        <input type="password" id="schoolPassword" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="New password">
+                    </div>
+                </div>
+                <div class="space-y-2 pt-2 border-t border-slate-100">
+                    <label class="text-sm font-bold text-slate-900 flex items-center justify-between">
+                        Maximum Student Limit <span class="text-xs font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Crucial: Billing Control</span>
+                    </label>
+                    <p class="text-xs text-slate-500 mb-2">They cannot add more students than this limit.</p>
+                    <input type="number" id="schoolLimit" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm" value="250">
+                </div>
+            </div>
+            <div class="flex items-center justify-end p-6 pt-0 gap-3">
+                <button onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg">Cancel</button>
+                <button onclick="saveSchool()" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+
+    <script>
+        lucide.createIcons();
+        const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
+        
+        function showToast(message, type = 'error') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-50' : 'bg-red-50';
+            const borderColor = type === 'success' ? 'border-emerald-200' : 'border-red-200';
+            const textColor = type === 'success' ? 'text-emerald-800' : 'text-red-800';
+            const icon = type === 'success' ? 'check-circle' : 'alert-circle';
+            
+            toast.className = `flex items-center gap-2 p-4 rounded-xl border ${borderColor} ${bgColor} ${textColor} shadow-lg transform transition-all duration-300 translate-x-full`;
+            toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i><span class="font-medium text-sm">${message}</span>`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        let schools = [];
+
+        function renderSkeleton() {
+            const tbody = document.getElementById('schoolTableBody');
+            let skeletonHtml = '';
+            for(let i=0; i<3; i++) {
+                skeletonHtml += `
+                    <tr class="animate-pulse bg-white">
+                        <td class="px-6 py-4"><div class="h-4 bg-slate-200 rounded w-3/4 mb-2"></div><div class="h-3 bg-slate-100 rounded w-1/2"></div></td>
+                        <td class="px-6 py-4"><div class="h-4 bg-slate-200 rounded w-1/2 mb-2"></div><div class="h-3 bg-slate-100 rounded w-1/4"></div></td>
+                        <td class="px-6 py-4"><div class="h-2 bg-slate-200 rounded-full w-full mb-1 mt-1"></div></td>
+                        <td class="px-6 py-4"><div class="h-5 bg-slate-200 rounded-full w-16"></div></td>
+                        <td class="px-6 py-4 text-right"><div class="h-8 bg-slate-200 rounded w-8 inline-block"></div></td>
+                    </tr>
+                `;
+            }
+            tbody.innerHTML = skeletonHtml;
+        }
+
+        async function fetchSchools() {
+            renderSkeleton();
+            const token = localStorage.getItem('auth_token');
+            if(!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/schools`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    if(response.status === 401) window.location.href = 'login.html';
+                    throw new Error('Failed to fetch schools');
+                }
+                
+                const data = await response.json();
+                schools = data.schools || data;
+                renderTable();
+            } catch (error) {
+                console.error(error);
+                showToast('Failed to load schools', 'error');
+                document.getElementById('schoolTableBody').innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Error loading data. Could not connect to server.</td></tr>`;
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('schoolTableBody');
+            tbody.innerHTML = '';
+            if(!schools || schools.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">No schools found. Create one.</td></tr>`;
+                return;
+            }
+            schools.forEach(s => {
+                const limit = s.max_student_limit || s.limit || 0;
+                const count = s.count || s.student_count || 0;
+                const adminId = s.admin_username || s.adminId || 'N/A';
+                const perc = limit > 0 ? Math.min((count / limit) * 100, 100) : 0;
+                const isMax = count >= limit && limit > 0;
+                
+                tbody.innerHTML += `
+                    <tr class="bg-white hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-semibold text-slate-900">${s.name}</div>
+                            <div class="text-slate-500 text-xs mt-0.5">ID: SCH-${s.id}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-slate-900 font-mono text-xs bg-slate-100 px-2 py-1 rounded inline-block">${adminId}</div>
+                            <div class="text-slate-400 text-xs mt-1">Pwd: ••••••••</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-full bg-slate-100 rounded-full h-1.5 max-w-[100px]">
+                                    <div class="h-1.5 rounded-full ${isMax ? 'bg-red-500' : 'bg-blue-500'}" style="width: ${perc}%"></div>
+                                </div>
+                                <div class="font-medium text-xs whitespace-nowrap ${isMax ? 'text-red-600' : 'text-slate-600'}">
+                                    ${count.toLocaleString()} / ${limit.toLocaleString()}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full flex items-center gap-1.5 w-fit ${isMax ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}">
+                                <span class="w-1.5 h-1.5 rounded-full ${isMax ? 'bg-amber-500' : 'bg-emerald-500'}"></span>
+                                ${isMax ? 'Limit Reached' : 'Active'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="openModal(${s.id})" class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center" title="Edit">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteSchool(${s.id})" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors inline-flex items-center" title="Delete">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        let editingId = null;
+
+        function openModal(id = null) {
+            const m = document.getElementById('addModal');
+            m.classList.remove('hidden');
+            editingId = id;
+            if(id) {
+                const s = schools.find(x => x.id === id);
+                document.getElementById('modalTitle').innerText = 'Edit School Limits';
+                document.getElementById('schoolName').value = s.name;
+                document.getElementById('schoolUsername').value = s.admin_username || s.adminId || '';
+                document.getElementById('schoolPassword').value = '';
+                document.getElementById('schoolPassword').placeholder = 'Leave blank to keep current';
+                document.getElementById('schoolLimit').value = s.max_student_limit || s.limit || 0;
+            } else {
+                document.getElementById('modalTitle').innerText = 'Add New Client School';
+                document.getElementById('schoolName').value = '';
+                document.getElementById('schoolUsername').value = '';
+                document.getElementById('schoolPassword').value = '';
+                document.getElementById('schoolPassword').placeholder = 'New password';
+                document.getElementById('schoolLimit').value = 250;
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+
+        async function saveSchool() {
+            const name = document.getElementById('schoolName').value.trim();
+            const uname = document.getElementById('schoolUsername').value.trim();
+            const pwd = document.getElementById('schoolPassword').value;
+            const lim = parseInt(document.getElementById('schoolLimit').value) || 0;
+            
+            if(!name || !uname) {
+                showToast('Name and Admin Login ID are required');
+                return;
+            }
+            if(!editingId && !pwd) {
+                showToast('Password is required for new schools');
+                return;
+            }
+
+            const token = localStorage.getItem('auth_token');
+            const payload = { 
+                name: name, 
+                admin_username: uname, 
+                max_student_limit: lim 
+            };
+            if(pwd) payload.admin_password = pwd;
+
+            try {
+                let url = `${API_BASE}/admin/schools`;
+                let method = 'POST';
+                if(editingId) {
+                    url = `${API_BASE}/admin/schools/${editingId}`;
+                    method = 'PUT'; // or PATCH
+                }
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    showToast(editingId ? 'School updated successfully' : 'School created successfully', 'success');
+                    closeModal();
+                    fetchSchools();
+                } else {
+                    const error = await response.json();
+                    showToast(error.message || 'Failed to save school');
+                }
+            } catch(e) {
+                showToast('Network error while saving');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchSchools);
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        async function deleteSchool(id) {
+            if(!confirm("Are you sure you want to delete this school? This action is irreversible.")) return;
+
+            const token = localStorage.getItem('auth_token');
+            try {
+                const response = await fetch(`${API_BASE}/admin/schools/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (response.ok) {
+                    showToast('School deleted successfully', 'success');
+                    fetchSchools();
+                } else {
+                    const error = await response.json();
+                    showToast(error.message || 'Failed to delete school');
+                }
+            } catch(e) {
+                showToast('Network error while deleting');
+            }
+        }
+    </script>
+</body>
+</html>
