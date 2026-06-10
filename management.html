@@ -301,7 +301,7 @@
                         <div class="p-6 space-y-5 relative z-10">
                             <div class="space-y-2">
                                 <label class="text-sm font-bold text-slate-700">Write Announcement</label>
-                                <textarea rows="4" class="w-full border border-slate-200 hover:border-blue-300 rounded-xl p-3 text-sm focus:ring-4 focus:ring-blue-50 focus:border-blue-500 resize-none font-medium text-slate-800 transition-all outline-none" placeholder="Type announcement for teachers here. They will receive a push notification and it will be visible in their app for 24 hours."></textarea>
+                                <textarea rows="4" class="w-full border border-slate-200 hover:border-blue-300 rounded-xl p-3 text-sm focus:ring-4 focus:ring-blue-50 focus:border-blue-500 resize-none font-medium text-slate-800 transition-all outline-none" placeholder="Type announcement for teachers here. They will receive a push notification and it will be visible in their app for 12 hours."></textarea>
                             </div>
                             <button class="bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white w-full py-3 rounded-xl font-bold text-sm transition-all shadow-md shadow-blue-600/20 flex items-center justify-center gap-2" onclick="alert('Notification Pushed to Teachers!')">
                                 <i data-lucide="radio" class="w-4 h-4"></i> Push Notification
@@ -382,7 +382,7 @@
               </div>
 
          </div>
-     </main>
+    </main>
 
     <!-- Add/Edit Class Modal -->
     <div id="classModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4 hidden">
@@ -501,11 +501,11 @@
         </div>
     </div>
 
-    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none text-left"></div>
 
     <script>
         lucide.createIcons();
-        const API_BASE = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file://')) ? window.location.origin + '/api' : 'https://school-attendance-vdbg.onrender.com/api';
+        const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
         let pollInterval;
 
         function logout() {
@@ -913,7 +913,7 @@
                         <td class="px-4 py-3 font-semibold text-slate-800">${cls.name || ''}</td>
                         <td class="px-4 py-3 text-slate-600">${numStudents} Students</td>
                         <td class="px-4 py-3 text-right space-x-2">
-                            <button onclick="editClass('${cls.id}', '${escapeName}')" class="p-1 px-2.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 hover:text-blue-700 text-xs font-bold transition inline-flex items-center gap-1">
+                             <button onclick="editClass('${cls.id}', '${escapeName}')" class="p-1 px-2.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 hover:text-blue-700 text-xs font-bold transition inline-flex items-center gap-1">
                                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit
                             </button>
                             <button onclick="deleteClass('${cls.id}')" class="p-1 px-2.5 bg-red-50 text-red-600 rounded hover:bg-red-100 hover:text-red-700 text-xs font-bold transition inline-flex items-center gap-1">
@@ -1353,7 +1353,6 @@
 
             // Update modal selects
             const ttTeacherSelect = document.getElementById('ttTeacher');
-            const ttClassTeacherSelectContainer = document.getElementById('ttModalDesc');
             
             if (ttTeacherSelect) {
                 ttTeacherSelect.innerHTML = schoolTeachers.length ? schoolTeachers.map(t => `<option value="${t.name}">${t.name}</option>`).join('') : '<option value="">No teachers available</option>';
@@ -1550,6 +1549,11 @@
             loadFeeStudents();
         }
 
+        async function fetchFees() {
+            await fetchClasses();
+            renderFeeStructure();
+        }
+
         async function loadFeeStudents() {
             const classSelect = document.getElementById('feeClassSelect');
             if (!classSelect) return;
@@ -1573,7 +1577,7 @@
                 }
                 const students = await res.json();
                 if (!students || students.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan='7' class='text-center py-8 text-slate-400 font-medium'>No student records found in Class ${className}.</td></tr>`;
+                    tbody.innerHTML = "<tr><td colspan='7' class='text-center py-8 text-slate-400'>No fee records found.</td></tr>";
                     return;
                 }
                 
@@ -1613,7 +1617,7 @@
                 });
                 tbody.innerHTML = html;
             } catch (err) {
-                tbody.innerHTML = `<tr><td colspan='7' class='text-center py-8 text-rose-500 font-bold'>Error loading students fee information.</td></tr>`;
+                tbody.innerHTML = "<tr><td colspan='7' class='text-center py-8 text-rose-500 font-bold'>Error loading students fee information.</td></tr>";
             }
         }
 
@@ -1637,4 +1641,3 @@
     </script>
 </body>
 </html>
-
