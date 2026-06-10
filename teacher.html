@@ -14,10 +14,8 @@
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex font-sans overflow-hidden">
-    <!-- Mobile Sidebar Backdrop -->
     <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 z-30 hidden md:hidden" onclick="toggleSidebar()"></div>
 
-    <!-- Sidebar -->
     <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 h-screen absolute md:relative z-40 transition-transform -translate-x-full md:translate-x-0">
         <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
             <h1 class="text-white font-bold text-lg tracking-tight truncate">Teacher Portal</h1>
@@ -56,7 +54,6 @@
             <div class="flex items-center gap-4 text-sm shrink-0">
                 <span class="hidden sm:inline-block text-slate-500 bg-slate-100 px-3 py-1 rounded-full font-medium border border-slate-200">Session: 2026-2027</span>
                 
-                <!-- Prominent Logout Button -->
                 <button onclick="logout()" class="p-2 text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-full transition focus:outline-none flex items-center gap-1.5" title="Log out">
                     <i data-lucide="log-out" class="w-5 h-5"></i>
                     <span class="hidden md:inline font-semibold text-xs uppercase tracking-wider text-slate-600 hover:text-red-600">Logout</span>
@@ -66,15 +63,12 @@
 
         <div class="flex-1 overflow-auto p-4 md:p-8 pb-32">
             
-            <!-- TIMETABLE -->
             <div id="tab-timetable" class="tab-content active space-y-4 max-w-4xl">
                 <div class="flex justify-between items-end mb-2 px-1">
                     <h2 class="text-lg font-bold text-slate-800">Today's Schedule</h2>
                 </div>
-                <!-- Dynamic timetable data renders here -->
-            </div>
+                </div>
 
-            <!-- ATTENDANCE -->
             <div id="tab-attendance" class="tab-content space-y-4 max-w-4xl">
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 flex gap-3 text-sm text-amber-800">
                     <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5 text-amber-600"></i>
@@ -106,7 +100,6 @@
                 </div>
             </div>
 
-            <!-- HOMEWORK -->
             <div id="tab-homework" class="tab-content space-y-4 max-w-4xl">
                 <h2 class="text-lg font-bold text-slate-800 ml-1">Assign Homework</h2>
                 <div class="bg-white rounded-xl shadow-sm p-4 space-y-4 border border-slate-200">
@@ -132,7 +125,9 @@
 
     <script>
         lucide.createIcons();
-        const API_BASE = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file://')) ? window.location.origin + '/api' : 'https://school-attendance-vdbg.onrender.com/api';
+        
+        // ABSOLUTE PRODUCTION ENDPOINT
+        const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
         
         // Welcome and Initials setup
         const userRole = localStorage.getItem('user_role');
@@ -486,14 +481,14 @@
             if (students.length === 0) {
                 document.getElementById('studentList').innerHTML = `
                     <div class="p-8 text-center text-slate-500 font-medium text-sm">
-                        No students added in Class ${curManagingClass} yet.
+                        No students registered in this class yet.
                     </div>
                 `;
                 document.getElementById('attCount').innerText = `0 Present`;
                 return;
             }
 
-            // Sort: Standard stable list sorted by Roll Number numerically first, and Name second
+            // Sort by roll_no or name
             students.sort((a, b) => {
                 const rollA = String(a.roll_no || '').trim();
                 const rollB = String(b.roll_no || '').trim();
@@ -592,7 +587,10 @@
                 
                 if (res.ok) {
                     const data = await res.json();
-                    const hwId = data.id || 'hw_mock_987';
+                    const hwId = data.id;
+                    if (!hwId) {
+                        throw new Error('No homework ID returned from server');
+                    }
                     
                     showToast('Homework Published Successfully', 'success');
                     const viewerUrl = window.location.origin + `/student_view.html?hw_id=${hwId}`;
@@ -608,7 +606,7 @@
                     btn.disabled = false;
                 }
             } catch(e) {
-                showToast('Failed to publish homework');
+                showToast(e.message || 'Failed to publish homework', 'error');
                 btn.innerHTML = 'Publish to Student Portal';
                 btn.disabled = false;
             }
@@ -620,4 +618,3 @@
     </script>
 </body>
 </html>
-
