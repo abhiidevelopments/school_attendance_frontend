@@ -331,9 +331,6 @@
                         ${isActive ? '<span class="absolute top-3 right-3 bg-red-100 text-red-600 font-bold text-[10px] px-2 py-0.5 rounded flex items-center gap-1"><i data-lucide="sparkles" class="w-3 h-3"></i> ACTIVE</span>' : ''}
                         <h3 class="font-bold text-base text-slate-900">Class ${item.class_name}</h3>
                         <p class="text-xs text-slate-500">${item.subject}</p>
-                        <div class="mt-2.5">
-                            <button onclick="event.stopPropagation(); startClassAttendance('${item.class_name}', '${item.subject}')" class="text-[10px] bg-blue-50 text-blue-700 font-bold px-3 py-1.5 rounded border border-blue-100 uppercase tracking-wider hover:bg-blue-100 transition">Mark Attendance</button>
-                        </div>
                     </div>
                 </div>`;
             });
@@ -371,42 +368,42 @@
 
         function populateClassSelects() {
             const classTeacherOf = localStorage.getItem('class_teacher_of');
+            const isClassTeacher = classTeacherOf && classTeacherOf !== 'undefined' && classTeacherOf !== 'null' && classTeacherOf !== '';
+
             const attSelect = document.getElementById('attendanceClassSelect');
             const quickBox = document.getElementById('quickClassSelectorBox');
-            
-            if (quickBox) {
-                quickBox.classList.remove('hidden');
-            }
+
+            if (quickBox) quickBox.classList.remove('hidden');
+
+            // ATTENDANCE: only show the single class this teacher is class-teacher of
             if (attSelect) {
-                let html = '<option value="">Select Class</option>';
-                if (classTeacherOf && classTeacherOf !== 'undefined' && classTeacherOf !== 'null' && classTeacherOf !== '') {
-                    html += `<option value="${classTeacherOf}" class="font-bold text-blue-600">★ My Class: ${classTeacherOf}</option>`;
-                }
-                schoolClasses.forEach(cls => {
-                    if (cls.name !== classTeacherOf) {
-                        html += `<option value="${cls.name}">Class ${cls.name}</option>`;
-                    }
-                });
-                attSelect.innerHTML = html;
-                if (!curManagingClass && classTeacherOf && classTeacherOf !== 'undefined' && classTeacherOf !== 'null' && classTeacherOf !== '') {
+                if (isClassTeacher) {
+                    attSelect.innerHTML = `<option value="${classTeacherOf}">★ My Class: ${classTeacherOf}</option>`;
+                    attSelect.disabled = false;
                     curManagingClass = classTeacherOf;
                     curManagingSubj = 'Class Teacher';
+                    attSelect.value = classTeacherOf;
+                } else {
+                    attSelect.innerHTML = `<option value="">Not a Class Teacher</option>`;
+                    attSelect.disabled = true;
                 }
-                if (curManagingClass) attSelect.value = curManagingClass;
             }
 
+            // HOMEWORK: only show unique classes from today's teacherSchedule
             const hwSelect = document.getElementById('hwClassSelect');
-            if(hwSelect) {
-                let html = '<option value="">Select Target Class</option>';
-                if(classTeacherOf && classTeacherOf !== 'undefined' && classTeacherOf !== 'null' && classTeacherOf !== '') {
-                    html += `<option value="${classTeacherOf}">★ My Class: ${classTeacherOf}</option>`;
-                }
-                schoolClasses.forEach(cls => {
-                    if (cls.name !== classTeacherOf) {
-                        html += `<option value="${cls.name}">Class ${cls.name}</option>`;
+            if (hwSelect) {
+                const seen = new Set();
+                let hwHtml = '<option value="">Select Target Class</option>';
+                teacherSchedule.forEach(item => {
+                    if (item.class_name && !seen.has(item.class_name)) {
+                        seen.add(item.class_name);
+                        hwHtml += `<option value="${item.class_name}">Class ${item.class_name} — ${item.subject}</option>`;
                     }
                 });
-                hwSelect.innerHTML = html;
+                if (seen.size === 0) {
+                    hwHtml = '<option value="">No classes in today\'s schedule</option>';
+                }
+                hwSelect.innerHTML = hwHtml;
             }
         }
 
