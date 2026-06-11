@@ -13,7 +13,6 @@
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col font-sans">
 
-    <!-- Top Navbar -->
     <header class="bg-slate-900 border-b border-slate-800 text-white shadow-sm sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -26,7 +25,6 @@
                     <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Super Admin</span>
                 </div>
                 
-                <!-- Prominent Logout Button -->
                 <button onclick="logout()" class="p-2 text-slate-400 hover:bg-slate-800 hover:text-red-400 rounded-full transition focus:outline-none flex items-center gap-1.5" title="Log out">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
                     <span class="font-bold text-xs uppercase tracking-wider">Logout</span>
@@ -35,7 +33,6 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div class="flex justify-between items-end mb-8">
             <div>
@@ -61,14 +58,12 @@
                         </tr>
                     </thead>
                     <tbody id="schoolTableBody" class="divide-y divide-slate-200">
-                        <!-- Populated via JS -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <!-- Modal -->
     <div id="addModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-xl w-full max-w-lg shadow-2xl border border-slate-200 transform transition-all">
             <div class="p-6 border-b border-slate-100">
@@ -109,7 +104,9 @@
 
     <script>
         lucide.createIcons();
-        const API_BASE = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file://')) ? window.location.origin + '/api' : 'https://school-attendance-vdbg.onrender.com/api';
+        
+        // YEH RAHI HAMARI FIX KI HUI LINE!
+        const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
         
         function showToast(message, type = 'error') {
             const container = document.getElementById('toastContainer');
