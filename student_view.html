@@ -81,7 +81,7 @@
 
     <script>
         lucide.createIcons();
-        const API_BASE = (window.location.origin && window.location.origin !== 'null' && !window.location.origin.startsWith('file://')) ? window.location.origin + '/api' : 'https://school-attendance-vdbg.onrender.com/api';
+        const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
 
         function showToast(message, type = 'error') {
             const container = document.getElementById('toastContainer');
@@ -115,33 +115,52 @@
                 const res = await fetch(`${API_BASE}/student/diary?id=${encodeURIComponent(studentId || '')}&hw_id=${encodeURIComponent(hwId || '')}`);
                 if (res.ok) {
                     const data = await res.json();
-                    
+
                     document.getElementById('studentName').innerText = data.student_name || "Guest Access";
                     document.getElementById('classLabel').innerText = data.class_name || "All Classes";
                     document.title = `Digital Diary - ${data.student_name || 'Diary'}`;
 
-                    const details = data.homework_details || 'No live homework is assigned for your class today!';
-                    const lines = details.split('\n').filter(l => l.trim() !== '');
-                    let linesHtml = '';
-                    if (lines.length > 0) {
-                        linesHtml = lines.map(line => `<li class="pl-2 leading-relaxed">${line}</li>`).join('');
-                    } else {
-                        linesHtml = `<li class="pl-2 leading-relaxed">No homework details provided.</li>`;
+                    const homeworkList = data.homework_list || [];
+                    const container = document.getElementById('homeworkListContainer');
+
+                    if (homeworkList.length === 0) {
+                        container.innerHTML = `
+                            <div class="border border-slate-200 rounded-xl p-6 text-center text-slate-500 font-medium text-sm bg-slate-50">
+                                No live homework is assigned for your class today!
+                            </div>
+                        `;
+                        lucide.createIcons();
+                        return;
                     }
-                    
-                    document.getElementById('homeworkListContainer').innerHTML = `
-                        <div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
-                            <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center font-semibold text-sm">
-                                <h4 class="font-bold text-slate-800 text-sm">Class Work & Tasks</h4>
-                                <span class="text-xs font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100 uppercase tracking-wider font-extrabold">Active</span>
+
+                    let cardsHtml = '';
+                    homeworkList.forEach((hw, index) => {
+                        const lines = (hw.details || '').split('\n').filter(l => l.trim() !== '');
+                        const linesHtml = lines.length > 0
+                            ? lines.map(line => `<li class="pl-2 leading-relaxed">${line}</li>`).join('')
+                            : `<li class="pl-2 leading-relaxed">No details provided.</li>`;
+
+                        cardsHtml += `
+                            <div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
+                                <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center">
+                                    <h4 class="font-bold text-slate-800 text-sm">
+                                        ${homeworkList.length > 1 ? `Assignment ${homeworkList.length - index}` : 'Class Work & Tasks'}
+                                    </h4>
+                                    <div class="flex items-center gap-2">
+                                        ${hw.created_at ? `<span class="text-[10px] text-slate-400 font-medium">${hw.created_at}</span>` : ''}
+                                        <span class="text-xs font-extrabold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100 uppercase tracking-wider">Active</span>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white">
+                                    <ul class="text-sm text-slate-700 space-y-2 pl-4 list-decimal marker:text-blue-500 marker:font-bold">
+                                        ${linesHtml}
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="p-4 bg-white">
-                                <ul class="text-sm text-slate-700 space-y-2 pl-4 list-decimal marker:text-blue-500 marker:font-bold">
-                                    ${linesHtml}
-                                </ul>
-                            </div>
-                        </div>
-                    `;
+                        `;
+                    });
+
+                    container.innerHTML = cardsHtml;
                     lucide.createIcons();
                 } else {
                     document.getElementById('homeworkListContainer').innerHTML = `
