@@ -77,13 +77,11 @@
                 
                 <div id="quickClassSelectorBox" class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="space-y-1">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Quick Class Selector</label>
-                        <p class="text-xs text-slate-400 font-medium">Select your Class Teacher class or any school class to load student roster</p>
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Class Teacher Attendance</label>
+                        <p class="text-xs text-slate-400 font-medium">Attendance is locked to your assigned class only</p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <select id="attendanceClassSelect" onchange="changeAttendanceClass(this.value)" class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm font-semibold focus:ring-2 focus:ring-blue-500 min-w-[180px]">
-                            <option value="">Select Class</option>
-                        </select>
+                        <div id="myClassDisplay" class="px-4 py-2 bg-blue-50 text-blue-700 font-bold rounded-lg border border-blue-200">Loading...</div>
                     </div>
                 </div>
 
@@ -316,19 +314,15 @@
                 return;
             }
 
-            teacherSchedule.forEach((item, index) => {
+            teacherSchedule.forEach((item) => {
                 const mappedPeriodStr = item.period_idx >= 4 ? `P${item.period_idx}` : `P${item.period_idx + 1}`;
-                const isActive = index === 0; 
-                const bgRing = isActive ? 'ring-2 ring-blue-500' : '';
-                const pColor = isActive ? 'bg-blue-600' : 'bg-slate-700';
-                
+
                 html += `
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden flex border-0 ${bgRing} transition hover:shadow-md cursor-pointer mb-3" onclick="toggleDashboardClass('${item.class_name}', '${item.subject}')">
-                    <div class="flex flex-col items-center justify-center w-16 text-white font-bold p-3 ${pColor}">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden flex border-0 transition hover:shadow-md cursor-pointer mb-3" onclick="toggleDashboardClass('${item.class_name}', '${item.subject}')">
+                    <div class="flex flex-col items-center justify-center w-16 text-white font-bold p-3 bg-slate-700">
                         <span class="text-[10px] font-medium opacity-80 mb-0.5">Period</span><span class="text-lg">${mappedPeriodStr}</span>
                     </div>
-                    <div class="flex-1 p-4 relative pr-12">
-                        ${isActive ? '<span class="absolute top-3 right-3 bg-red-100 text-red-600 font-bold text-[10px] px-2 py-0.5 rounded flex items-center gap-1"><i data-lucide="sparkles" class="w-3 h-3"></i> ACTIVE</span>' : ''}
+                    <div class="flex-1 p-4">
                         <h3 class="font-bold text-base text-slate-900">Class ${item.class_name}</h3>
                         <p class="text-xs text-slate-500">${item.subject}</p>
                     </div>
@@ -370,22 +364,26 @@
             const classTeacherOf = localStorage.getItem('class_teacher_of');
             const isClassTeacher = classTeacherOf && classTeacherOf !== 'undefined' && classTeacherOf !== 'null' && classTeacherOf !== '';
 
-            const attSelect = document.getElementById('attendanceClassSelect');
             const quickBox = document.getElementById('quickClassSelectorBox');
-
             if (quickBox) quickBox.classList.remove('hidden');
 
-            // ATTENDANCE: only show the single class this teacher is class-teacher of
-            if (attSelect) {
+            // ATTENDANCE: static display locked to class_teacher_of
+            const myClassDisplay = document.getElementById('myClassDisplay');
+            if (myClassDisplay) {
                 if (isClassTeacher) {
-                    attSelect.innerHTML = `<option value="${classTeacherOf}">★ My Class: ${classTeacherOf}</option>`;
-                    attSelect.disabled = false;
+                    myClassDisplay.innerHTML = `★ My Class: ${classTeacherOf}`;
+                    myClassDisplay.className = 'px-4 py-2 bg-blue-50 text-blue-700 font-bold rounded-lg border border-blue-200';
                     curManagingClass = classTeacherOf;
                     curManagingSubj = 'Class Teacher';
-                    attSelect.value = classTeacherOf;
+                    fetchRoster();
                 } else {
-                    attSelect.innerHTML = `<option value="">Not a Class Teacher</option>`;
-                    attSelect.disabled = true;
+                    myClassDisplay.innerHTML = 'Not a Class Teacher';
+                    myClassDisplay.className = 'px-4 py-2 bg-slate-100 text-slate-500 font-semibold rounded-lg border border-slate-200';
+                    document.getElementById('studentList').innerHTML = `
+                        <div class="p-8 text-center text-slate-500 font-semibold text-sm">
+                            You are not assigned as a Class Teacher. Contact your school admin.
+                        </div>
+                    `;
                 }
             }
 
@@ -439,8 +437,6 @@
             }
 
             document.getElementById('activeClassHeader').innerText = `Class ${curManagingClass} • ${curManagingSubj}`;
-            const attSelect = document.getElementById('attendanceClassSelect');
-            if(attSelect) attSelect.value = curManagingClass;
 
             document.getElementById('studentList').innerHTML = `
                 <div class="p-8 flex justify-center">
@@ -464,7 +460,7 @@
                     students = await res.json();
                     renderStudents();
                 } else {
-                    document.getElementById('studentList').innerHTML = `<div class="p-8 text-center text-red-500 font-medium">Failed to load student roster.</div>`;
+                    document.getElementById('studentList').innerHTML = `<div class="p-8 text-center text-red-500 font-medium">Failed to load student roster (HTTP ${res.status}). Ensure students are added to this class in the admin panel.</div>`;
                 }
             } catch(e) {
                 document.getElementById('studentList').innerHTML = `<div class="p-8 text-center text-red-500 font-medium">Network error fetching roster.</div>`;
@@ -615,3 +611,4 @@
     </script>
 </body>
 </html>
+
