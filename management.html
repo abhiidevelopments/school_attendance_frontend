@@ -3,24 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduCore - School Management</title>
+    <title>EduCore - School Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .module { display: none; }
-        .module.active { display: block; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        .module { 
+            display: none; 
+        }
+        .module.active { 
+            display: block; 
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { 
+            width: 6px; 
+            height: 6px; 
+        }
+        ::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb { 
+            background: #cbd5e1; 
+            border-radius: 10px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { 
+            background: #94a3b8; 
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex font-sans overflow-hidden">
+    
     <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 z-30 hidden md:hidden" onclick="toggleSidebar()"></div>
 
     <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 h-screen absolute md:relative z-40 transition-transform -translate-x-full md:translate-x-0">
@@ -29,39 +49,49 @@
                 <i data-lucide="layout-dashboard" class="w-5 h-5 text-blue-500"></i> Control Panel
             </h1>
         </div>
-        <div class="p-4 flex-1 overflow-y-auto space-y-1">
+        
+        <div class="p-4 flex-1 overflow-y-auto space-y-2">
             <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 px-2 mt-2">Modules</p>
             
-            <button onclick="switchTab('attendance')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm" data-target="attendance">
-                <i data-lucide="user-check" class="w-4 h-4"></i> Attendance
+            <button onclick="switchTab('attendance')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm" data-target="attendance">
+                <i data-lucide="user-check" class="w-4 h-4"></i> Live Attendance
             </button>
-            <button onclick="switchTab('students')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="students">
-                <i data-lucide="graduation-cap" class="w-4 h-4"></i> Students
+            
+            <button onclick="switchTab('students')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="students">
+                <i data-lucide="graduation-cap" class="w-4 h-4"></i> Student Directory
             </button>
-            <button onclick="switchTab('fees')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="fees">
+            
+            <button onclick="switchTab('fees')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="fees">
                 <i data-lucide="indian-rupee" class="w-4 h-4"></i> Fee Management
             </button>
-            <button onclick="switchTab('timetable')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="timetable">
+            
+            <button onclick="switchTab('timetable')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="timetable">
                 <i data-lucide="grid-3x3" class="w-4 h-4"></i> Timetable Master
             </button>
-            <button onclick="switchTab('comms')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="comms">
+            
+            <button onclick="switchTab('comms')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="comms">
                 <i data-lucide="message-square" class="w-4 h-4"></i> Communication
             </button>
-            <button onclick="switchTab('staff')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="staff">
-                <i data-lucide="users" class="w-4 h-4"></i> Staff Directory
+            
+            <button onclick="switchTab('staff')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="staff">
+                <i data-lucide="users" class="w-4 h-4"></i> Staff Details
             </button>
-            <button onclick="switchTab('reports')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="reports">
-                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Attendance Report
+            
+            <button onclick="switchTab('reports')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="reports">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> PDF Registers
             </button>
-            <button onclick="switchTab('billing')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="billing">
-                <i data-lucide="credit-card" class="w-4 h-4"></i> Billing & Recharge
+
+            <button onclick="switchTab('billing')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="billing">
+                <i data-lucide="credit-card" class="w-4 h-4"></i> Account Recharge
             </button>
-            <button onclick="switchTab('holidays')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="holidays">
-                <i data-lucide="calendar" class="w-4 h-4"></i> Holidays
+            
+            <button onclick="switchTab('holidays')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="holidays">
+                <i data-lucide="calendar" class="w-4 h-4"></i> Holiday Calendar
             </button>
         </div>
+        
         <div class="p-4 border-t border-slate-800">
-            <button onclick="switchTab('settings')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 border-b border-slate-800 pb-4 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400 mb-4" data-target="settings">
+            <button onclick="switchTab('settings')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 border-b border-slate-800 pb-4 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400 mb-4" data-target="settings">
                 <i data-lucide="settings" class="w-4 h-4"></i> School Settings
             </button>
             <div class="flex items-center gap-3 px-2">
@@ -78,12 +108,15 @@
         
         <header class="bg-white border-b border-slate-200 shadow-sm px-4 md:px-8 py-4 shrink-0 relative z-20">
             <div class="flex items-start md:items-center justify-between w-full">
+                
                 <div class="flex items-start md:items-center gap-3 w-full pr-4">
                     <button id="mobileMenuBtn" class="md:hidden text-slate-500 hover:text-slate-900 transition focus:outline-none shrink-0 mt-1 md:mt-0" onclick="toggleSidebar()">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
+                    
                     <div class="flex flex-col gap-2.5">
                         <h2 id="headerSchoolName" class="text-xl md:text-3xl font-black text-slate-900 leading-none tracking-tight">Loading School...</h2>
+                        
                         <div class="flex flex-wrap items-center gap-2 mt-0.5">
                             <span id="headerTitle" class="text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:inline-block mr-2 border-r border-slate-200 pr-2">Attendance</span>
                             
@@ -113,17 +146,21 @@
                             </div>
                         </div>
                     </div>
+                    
                     <button onclick="logout()" class="p-2 text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-full transition focus:outline-none flex items-center gap-1.5" title="Log out">
                         <i data-lucide="log-out" class="w-5 h-5"></i>
                     </button>
                 </div>
+                
             </div>
         </header>
 
         <div class="flex-1 overflow-auto p-4 md:p-8 pb-32">
 
             <div id="attendance" class="module active max-w-6xl space-y-6">
+                
                 <div id="attendanceGrid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    
                     <div class="bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-200 p-6 shadow-sm cursor-pointer hover:shadow-md hover:-translate-y-1 transition-all group" onclick="toggleStaffAttView()">
                         <div class="p-3 bg-purple-100 text-purple-600 rounded-lg inline-block mb-4 group-hover:scale-110 transition-transform">
                             <i data-lucide="users-round" class="w-6 h-6"></i>
@@ -135,6 +172,7 @@
                             <span class="text-slate-400 font-medium">Live sync</span>
                         </div>
                     </div>
+                    
                     <div id="studentClassCardsContainer" class="contents"></div>
                 </div>
 
@@ -147,6 +185,7 @@
                             <h3 class="font-black text-lg text-slate-800" id="actClassTitle">Detailed Live List</h3>
                             <span id="attDetailCount" class="text-xs px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full font-bold shrink-0">-- / --</span>
                         </div>
+                        
                         <div id="attTbody" class="p-5 space-y-3 min-h-[200px]">
                             <div class="text-center text-slate-400 py-12 animate-pulse text-sm font-medium">Loading class roster and live logs...</div>
                         </div>
@@ -162,6 +201,7 @@
                             <h3 class="font-black text-lg text-purple-900 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5"></i> Today's Staff Attendance</h3>
                             <span id="staffAttDetailCount" class="text-xs px-3 py-1.5 bg-purple-100 text-purple-700 rounded-full font-bold shrink-0">--</span>
                         </div>
+                        
                         <div id="staffAttTbody" class="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-h-[200px]">
                             <div class="col-span-full text-center text-slate-400 py-12 text-sm font-medium">Loading staff roster...</div>
                         </div>
@@ -170,6 +210,7 @@
             </div>
 
             <div id="students" class="module max-w-6xl space-y-8">
+                
                 <div id="studentHomeView" class="space-y-8">
                     <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-8 space-y-6">
                         <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
@@ -179,6 +220,7 @@
                                 <p class="text-sm text-slate-500 font-medium">Add multiple students at once.</p>
                             </div>
                         </div>
+                        
                         <div class="bg-gradient-to-br from-slate-50 to-white border-2 border-dashed border-slate-300 rounded-3xl p-10 flex flex-col items-center justify-center text-center hover:border-blue-400 transition-all cursor-pointer group" onclick="document.getElementById('csvUpload').click()">
                             <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-blue-100 transition-all shadow-sm">
                                 <i data-lucide="upload-cloud" class="w-10 h-10 text-blue-600"></i>
@@ -186,6 +228,7 @@
                             <p class="text-lg font-black text-slate-800">Click to upload CSV File</p>
                             <p class="text-sm text-slate-500 mt-2 max-w-md">File must contain headers exactly as: <span class="font-mono text-slate-700 font-bold bg-slate-100 px-1 py-0.5 rounded">Name</span>, <span class="font-mono text-slate-700 font-bold bg-slate-100 px-1 py-0.5 rounded">RollNo</span>, <span class="font-mono text-slate-700 font-bold bg-slate-100 px-1 py-0.5 rounded">Class</span>, <span class="font-mono text-slate-700 font-bold bg-slate-100 px-1 py-0.5 rounded">WhatsAppNo</span>.</p>
                             <input type="file" accept=".csv" class="hidden" id="csvUpload">
+                            
                             <button class="mt-8 px-8 py-3 bg-white text-blue-700 font-bold text-sm rounded-xl border-2 border-blue-100 hover:border-blue-200 hover:bg-blue-50 transition-colors shadow-sm">Browse Files</button>
                         </div>
                     </div>
@@ -194,7 +237,8 @@
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-black text-xl text-slate-800 flex items-center gap-2"><i data-lucide="folder-search" class="w-6 h-6 text-slate-400"></i> Class-Wise Management</h3>
                         </div>
-                        <div id="classesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-6"></div>
+                        <div id="classesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            </div>
                     </div>
                 </div>
 
@@ -202,6 +246,7 @@
                     <button onclick="goBackToStudentHome()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-sm font-bold flex items-center gap-1.5 transition active:scale-95">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Classes
                     </button>
+                    
                     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
                         <div class="border-b border-slate-100 bg-slate-50 p-5 flex justify-between items-center gap-4">
                             <h3 class="font-black text-lg text-slate-800" id="studentActClassTitle">Students Listing</h3>
@@ -209,12 +254,14 @@
                                 <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Add Student</span><span class="sm:hidden">Add</span>
                             </button>
                         </div>
+                        
                         <div class="relative min-h-[300px] p-5">
                             <div id="studentsLoader" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center hidden">
                                 <i data-lucide="loader-2" class="w-8 h-8 text-blue-600 animate-spin mb-3"></i>
                                 <span class="text-sm font-bold text-slate-600">Loading Records...</span>
                             </div>
-                            <div id="studentMgmtTbody" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                            <div id="studentMgmtTbody" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -229,6 +276,7 @@
                             <p class="text-sm text-slate-500 font-medium">Click any empty cell to assign a teacher and subject.</p>
                         </div>
                     </div>
+                    
                     <div class="border border-slate-200 rounded-2xl overflow-x-auto w-full shadow-inner">
                         <table class="w-full text-sm text-center border-collapse min-w-[800px]">
                             <thead id="ttHead" class="bg-slate-50"></thead>
@@ -248,6 +296,7 @@
                                 <p class="text-sm text-slate-500 font-medium">Manage financial records and payments.</p>
                             </div>
                         </div>
+                        
                         <div class="flex flex-wrap gap-3 w-full md:w-auto mt-4 md:mt-0">
                             <button onclick="openFeeStructureModal()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-sm transition flex items-center gap-2">
                                 <i data-lucide="settings-2" class="w-4 h-4"></i> Fee Structure
@@ -258,6 +307,7 @@
                             <button class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 transition shadow-sm active:scale-95" onclick="loadFeeStudents()">Fetch Records</button>
                         </div>
                     </div>
+                    
                     <div id="feeStudentList" class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 min-h-[300px] bg-slate-50/50">
                         <div class="col-span-full text-center py-16 text-slate-400 font-medium">Select a class and click "Fetch Records" to begin.</div>
                     </div>
@@ -266,8 +316,11 @@
 
             <div id="comms" class="module">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl">
+                    
                     <div class="bg-white border border-slate-200 rounded-3xl shadow-lg shadow-slate-200/40 overflow-hidden relative group hover:border-emerald-300 transition-colors">
-                        <div class="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform translate-x-4 -translate-y-4"><i data-lucide="message-circle" class="w-40 h-40"></i></div>
+                        <div class="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform translate-x-4 -translate-y-4">
+                            <i data-lucide="message-circle" class="w-40 h-40"></i>
+                        </div>
                         <div class="border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white p-6 flex items-center gap-4">
                             <div class="p-3 bg-emerald-100 rounded-2xl"><i data-lucide="message-circle" class="w-6 h-6 text-emerald-600"></i></div>
                             <div>
@@ -287,7 +340,9 @@
                     </div>
 
                     <div class="bg-white border border-slate-200 rounded-3xl shadow-lg shadow-slate-200/40 overflow-hidden relative group hover:border-blue-300 transition-colors">
-                        <div class="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform translate-x-4 -translate-y-4"><i data-lucide="bell" class="w-40 h-40"></i></div>
+                        <div class="absolute top-0 right-0 p-6 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity pointer-events-none transform translate-x-4 -translate-y-4">
+                            <i data-lucide="bell" class="w-40 h-40"></i>
+                        </div>
                         <div class="border-b border-slate-100 bg-gradient-to-r from-blue-50 to-white p-6 flex items-center gap-4">
                             <div class="p-3 bg-blue-100 rounded-2xl"><i data-lucide="bell-ring" class="w-6 h-6 text-blue-600"></i></div>
                             <div>
@@ -322,6 +377,7 @@
                             <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Add Teacher</span><span class="sm:hidden">Add</span>
                         </button>
                     </div>
+                    
                     <div id="staffTbody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         <div class="col-span-full text-center py-16 text-slate-400 font-medium">Loading staff records...</div>
                     </div>
@@ -329,6 +385,7 @@
             </div>
 
             <div id="reports" class="module max-w-5xl space-y-6">
+                
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
                     <div class="border-b border-slate-100 bg-gradient-to-r from-emerald-50 to-white p-6 sm:p-8 flex items-center gap-4">
                         <div class="p-3 bg-emerald-100 text-emerald-600 rounded-2xl shadow-sm"><i data-lucide="file-spreadsheet" class="w-8 h-8"></i></div>
@@ -337,6 +394,7 @@
                             <p class="text-sm text-slate-500 font-medium mt-1">Generate professional monthly attendance sheets with smart arrival/departure tracking.</p>
                         </div>
                     </div>
+                    
                     <div class="p-6 sm:p-8 flex flex-col md:flex-row gap-6 items-end bg-slate-50">
                         <div class="w-full md:w-1/3">
                             <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Select Month</label>
@@ -345,7 +403,7 @@
                         <div class="w-full md:w-1/3">
                             <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Target Group</label>
                             <select id="reportGroupSelect" class="w-full border-2 border-slate-200 rounded-xl p-3.5 text-sm font-bold focus:border-emerald-500 outline-none transition-colors bg-white shadow-sm">
-                            </select>
+                                </select>
                         </div>
                         <button onclick="generateSmartPDFReport()" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-8 py-4 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
                             <i data-lucide="printer" class="w-5 h-5"></i> Print Register
@@ -356,10 +414,18 @@
                 <div class="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm">
                     <h4 class="font-black text-slate-800 text-base mb-4 flex items-center gap-2"><i data-lucide="info" class="w-5 h-5 text-blue-500"></i> Color Legend for Reports</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs font-bold text-slate-600">
-                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"><div class="w-4 h-4 bg-green-600 rounded-md shadow-sm"></div> Perfect Timing (P)</div>
-                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"><div class="w-4 h-4 bg-red-600 rounded-md shadow-sm"></div> Late Arrival / Early Leave</div>
-                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"><div class="w-4 h-4 bg-red-600 rounded-md shadow-sm"></div> Absent (A)</div>
-                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100"><div class="w-4 h-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm"></div> Sundays / Holidays</div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="w-4 h-4 bg-green-600 rounded-md shadow-sm"></div> Perfect Timing (P)
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="w-4 h-4 bg-red-600 rounded-md shadow-sm"></div> Late Arrival / Early Leave
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="w-4 h-4 bg-red-600 rounded-md shadow-sm"></div> Absent (A)
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="w-4 h-4 bg-gray-200 border border-gray-300 rounded-md shadow-sm"></div> Sundays / Holidays
+                        </div>
                     </div>
                 </div>
             </div>
@@ -367,6 +433,7 @@
             <div id="billing" class="module max-w-5xl space-y-6">
                 <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-10 relative overflow-hidden">
                     <div class="absolute top-0 right-0 p-8 opacity-5 pointer-events-none"><i data-lucide="credit-card" class="w-48 h-48"></i></div>
+                    
                     <div class="relative z-10">
                         <h3 class="font-black text-3xl mb-2 text-slate-900">Account Recharge</h3>
                         <p class="text-sm text-slate-500 mb-10 font-medium">Increase your school's software validity or communication limits dynamically.</p>
@@ -415,6 +482,7 @@
             </div>
 
             <div id="settings" class="module max-w-4xl space-y-6">
+                
                 <div class="bg-white border border-slate-200 rounded-3xl shadow-sm p-6 sm:p-8 space-y-8">
                     <div>
                         <h3 class="font-black text-xl border-b border-slate-100 pb-3 mb-6 flex items-center gap-2"><i data-lucide="clock" class="w-6 h-6 text-blue-600"></i> Smart Attendance & Timings</h3>
@@ -515,10 +583,24 @@
     <div id="studentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm border border-slate-200 space-y-5">
             <h3 class="font-black text-xl mb-2 text-slate-800">Register Student</h3>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Roll Number</label><input type="text" id="studRollInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-blue-500 outline-none" placeholder="e.g. 101"></div>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Full Name</label><input type="text" id="studNameInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-blue-500 outline-none" placeholder="e.g. Rohan Sharma"></div>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Parent WhatsApp (10 digits)</label><input type="text" id="studPhoneInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-blue-500 outline-none" placeholder="e.g. 9876543210"></div>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Enrolled Class</label><input type="text" id="studClassInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl bg-slate-50 text-slate-500" readonly></div>
+            
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Roll Number</label>
+                <input type="text" id="studRollInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-blue-500 outline-none" placeholder="e.g. 101">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Full Name</label>
+                <input type="text" id="studNameInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-blue-500 outline-none" placeholder="e.g. Rohan Sharma">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Parent WhatsApp (10 digits)</label>
+                <input type="text" id="studPhoneInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-blue-500 outline-none" placeholder="e.g. 9876543210">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Enrolled Class</label>
+                <input type="text" id="studClassInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl bg-slate-50 text-slate-500" readonly>
+            </div>
+            
             <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
                 <button onclick="closeStudentModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-bold transition-colors">Cancel</button>
                 <button onclick="saveStudent()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md transition-colors active:scale-95">Register</button>
@@ -529,10 +611,24 @@
     <div id="teacherModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm border border-slate-200 space-y-5">
             <h3 id="teacherModalTitle" class="font-black text-xl mb-2 text-slate-800">Add Teacher</h3>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Full Name</label><input type="text" id="teacherNameInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="Mr. John Doe"></div>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Login ID (Username)</label><input type="text" id="teacherLoginIdInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="teacher_john"></div>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Password</label><input type="password" id="teacherPasswordInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="Leave blank to keep old"></div>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Class Teacher Designation</label><select id="teacherClassSelect" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none bg-white"></select></div>
+            
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Full Name</label>
+                <input type="text" id="teacherNameInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="Mr. John Doe">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Login ID (Username)</label>
+                <input type="text" id="teacherLoginIdInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="teacher_john">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Password</label>
+                <input type="text" id="teacherPasswordInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="Leave blank to keep old">
+            </div>
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-500 uppercase">Class Teacher Designation</label>
+                <select id="teacherClassSelect" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none bg-white"></select>
+            </div>
+            
             <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
                 <button onclick="closeTeacherModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-bold transition-colors">Cancel</button>
                 <button onclick="saveTeacher()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md transition-colors active:scale-95">Save Details</button>
@@ -544,10 +640,18 @@
         <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm border border-slate-200">
             <h3 class="font-black text-xl mb-1 text-slate-800">Assign Period</h3>
             <p class="text-slate-500 text-sm mb-6 font-medium bg-slate-50 p-2 rounded-lg inline-block" id="ttModalDesc"></p>
+            
             <div class="space-y-5">
-                <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Select Teacher</label><select id="ttTeacher" class="w-full border-2 border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-indigo-500 bg-white"></select></div>
-                <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Subject</label><input type="text" id="ttSubj" class="w-full border-2 border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-indigo-500" placeholder="e.g. Mathematics"></div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Select Teacher</label>
+                    <select id="ttTeacher" class="w-full border-2 border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-indigo-500 bg-white"></select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Subject</label>
+                    <input type="text" id="ttSubj" class="w-full border-2 border-slate-200 rounded-xl p-3 text-sm font-bold outline-none focus:border-indigo-500" placeholder="e.g. Mathematics">
+                </div>
             </div>
+            
             <div class="mt-8 flex justify-between items-center w-full pt-4 border-t border-slate-100">
                 <button onclick="clearTTCell()" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg text-xs font-bold hover:bg-red-100 transition-colors">Clear Cell</button>
                 <div class="flex gap-2">
@@ -564,7 +668,9 @@
                 <h3 class="font-black text-xl text-slate-800 flex items-center gap-2"><i data-lucide="settings-2" class="w-6 h-6 text-emerald-600"></i> Fee Configuration</h3>
                 <button onclick="closeFeeStructureModal()" class="text-slate-400 hover:text-slate-700 transition-colors bg-slate-50 p-2 rounded-full"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
+            
             <div id="feeClassStructureGrid" class="space-y-4 overflow-y-auto pr-2 flex-1 scrollbar-hide"></div>
+            
             <div class="mt-6 flex justify-end gap-3 border-t border-slate-100 pt-6">
                 <button onclick="closeFeeStructureModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-bold transition-colors">Close</button>
                 <button onclick="saveFeeStructure()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md transition-colors active:scale-95">Save Structure</button>
@@ -580,10 +686,13 @@
         let pollInterval;
         let globalMasterRates = { monthly_rate: 500, message_rate: 0.20, admin_upi_id: 'educore@upi' };
 
+        // UI Name Initialization
         const storedSchoolName = localStorage.getItem('user_name');
         const defaultSchoolName = (storedSchoolName && storedSchoolName.trim() !== '') ? storedSchoolName : 'My School';
         const headerSchoolNameEl = document.getElementById('headerSchoolName');
-        if (headerSchoolNameEl) headerSchoolNameEl.innerText = defaultSchoolName;
+        if (headerSchoolNameEl) {
+            headerSchoolNameEl.innerText = defaultSchoolName;
+        }
 
         function getHeaders() {
             return {
@@ -633,11 +742,10 @@
             const targetMod = document.getElementById(tabId);
             if(targetMod) targetMod.classList.add('active');
             
-            // CLEAN SIDEBAR STYLES (Fixed green button issue)
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 if(btn.dataset.target === tabId) { 
                     btn.classList.add('bg-blue-600', 'text-white', 'shadow-sm'); 
-                    btn.classList.remove('hover:bg-slate-800', 'hover:text-white', 'text-slate-400'); 
+                    btn.classList.remove('hover:bg-slate-800', 'hover:text-white', 'text-slate-400', 'text-emerald-400'); 
                 } else { 
                     btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm'); 
                     btn.classList.add('hover:bg-slate-800', 'hover:text-white', 'text-slate-400'); 
@@ -661,6 +769,7 @@
             if (tabId === 'reports') populateReportDropdowns();
         }
 
+        // --- STATS & BADGES ---
         async function fetchSchoolStats() {
             try {
                 const res = await fetch(`${API_BASE}/school/stats`, { headers: getHeaders() });
@@ -683,6 +792,7 @@
             } catch(e) {}
         }
         
+        // --- BILLING / RECHARGE LOGIC ---
         async function fetchMasterRatesForRecharge() {
             try {
                 const res = await fetch(`${API_BASE}/admin/master_settings`);
@@ -714,6 +824,7 @@
             }
         }
 
+        // --- SETTINGS LOGIC ---
         async function loadSchoolSettings() {
             try {
                 const res = await fetch(`${API_BASE}/school/settings`, { headers: getHeaders() });
@@ -745,6 +856,7 @@
             } catch(e) { showToast('Network Error'); }
         }
 
+        // --- SMART PDF ATTENDANCE REGISTER ENGINE ---
         function populateReportDropdowns() {
             const groupSelect = document.getElementById('reportGroupSelect');
             if(groupSelect) {
@@ -768,10 +880,7 @@
 
             try {
                 const res = await fetch(`${API_BASE}/reports/monthly_register?group=${encodeURIComponent(group)}&month=${monthVal}`, { headers: getHeaders() });
-                if(!res.ok) {
-                    const err = await res.json();
-                    throw new Error(err.message || 'Failed to extract attendance data');
-                }
+                if(!res.ok) throw new Error('Failed to extract attendance data');
                 const data = await res.json();
 
                 if(!window.jspdf || !window.jspdf.jsPDF) {
@@ -875,11 +984,13 @@
                 showToast('Smart PDF Register Downloaded!', 'success');
 
             } catch(e) { 
-                showToast('Execution Error during PDF Build: ' + e.message); 
+                showToast('Execution Error during PDF Build. ' + e.message); 
             }
         }
 
+        // --- ATTENDANCE (LIVE PANEL SYNC) ---
         let viewedClass = null;
+        
         function toggleClassView(cls) {
             viewedClass = cls;
             document.getElementById('attendanceGrid').classList.add('hidden');
@@ -913,24 +1024,47 @@
                 if(res.ok) {
                     const data = await res.json();
                     let presentCount = 0; let html = '';
-                    if(data.length === 0) html = `<div class="col-span-full text-center text-slate-400 py-12 text-sm font-bold">No staff records in directory.</div>`;
-                    else {
+                    if(data.length === 0) {
+                        html = `<div class="col-span-full text-center text-slate-400 py-12 text-sm font-bold">No staff records in directory.</div>`;
+                    } else {
                         data.forEach(t => {
-                            if(t.p) presentCount++;
+                            let badgeClass, badgeText, btnHtml;
+                            
+                            if (t.status === 'IN') {
+                                presentCount++;
+                                badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                                badgeText = '● IN (Working)';
+                                btnHtml = `
+                                    <button onclick="toggleTeacherAtt('${t.id}', 'departure')" class="flex-1 py-2 bg-rose-50 text-rose-600 rounded-lg text-xs font-black shadow-sm active:scale-95 border border-rose-200">Mark Exit</button>
+                                    <button onclick="toggleTeacherAtt('${t.id}', 'absent')" class="px-3 py-2 bg-slate-100 text-slate-500 rounded-lg text-xs font-bold active:scale-95 border border-slate-200 tooltip" title="Clear Entry"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+                            } else if (t.status === 'OUT') {
+                                presentCount++; 
+                                badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+                                badgeText = '● LEFT (Out)';
+                                btnHtml = `
+                                    <button onclick="toggleTeacherAtt('${t.id}', 'absent')" class="w-full py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-black shadow-sm active:scale-95 border border-slate-200">Clear Record</button>`;
+                            } else {
+                                badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+                                badgeText = '○ ABSENT';
+                                btnHtml = `
+                                    <button onclick="toggleTeacherAtt('${t.id}', 'Arrival')" class="w-full py-2 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-black shadow-sm active:scale-95 border border-emerald-200">Mark Entry</button>`;
+                            }
+                            
                             html += `
-                            <div class="bg-white rounded-2xl border ${t.p ? 'border-emerald-200' : 'border-rose-200'} shadow-sm p-5 flex flex-col gap-4">
+                            <div class="bg-white rounded-2xl border ${t.status !== 'ABSENT' ? 'border-emerald-200' : 'border-rose-200'} shadow-sm p-5 flex flex-col gap-4">
                                 <div class="flex justify-between items-start">
                                     <div><p class="font-black text-slate-900 text-sm">${t.name}</p><p class="text-[10px] text-slate-400 font-mono mt-1 font-bold">${t.id}</p></div>
-                                    <span class="shrink-0 px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border ${t.p ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}">${t.p ? '● IN' : '○ OUT'}</span>
+                                    <span class="shrink-0 px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border ${badgeClass}">${badgeText}</span>
                                 </div>
-                                <button onclick="toggleTeacherAtt('${t.id}', '${t.p ? 'absent' : 'present'}')" class="w-full py-2.5 rounded-xl text-xs font-black transition-all active:scale-95 ${t.p ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}">
-                                    ${t.p ? 'Mark Exit' : 'Mark Entry'}
-                                </button>
+                                <div class="flex gap-2">
+                                    ${btnHtml}
+                                </div>
                             </div>`;
                         });
                     }
                     document.getElementById('staffAttTbody').innerHTML = html;
                     document.getElementById('staffAttDetailCount').innerText = `${presentCount} / ${data.length} IN`;
+                    lucide.createIcons();
                 } else {
                     const err = await res.json();
                     document.getElementById('staffAttTbody').innerHTML = `<div class="col-span-full text-center text-red-500 py-16 text-sm font-bold tracking-wider">Error: ${err.message}</div>`;
@@ -971,28 +1105,53 @@
                     });
 
                     let presentCount = 0; let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">`;
+                    
                     studentsStatus.forEach(student => {
-                        const isPresent = student.p;
-                        if (isPresent) presentCount++;
+                        let badgeClass, badgeText, btnHtml;
+                        
+                        if (student.status === 'IN') {
+                            presentCount++;
+                            badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                            badgeText = '● IN (School)';
+                            btnHtml = `
+                                <button onclick="toggleManualAttendance('${student.id}', 'departure')" class="flex-1 py-2.5 rounded-xl text-xs font-black bg-rose-50 text-rose-600 border border-rose-200 active:scale-95 shadow-sm">Mark Exit</button>
+                                <button onclick="toggleManualAttendance('${student.id}', 'absent')" class="px-3 py-2.5 rounded-xl text-xs font-black bg-slate-100 text-slate-500 border border-slate-200 active:scale-95 shadow-sm"><i data-lucide="x" class="w-4 h-4"></i></button>`;
+                        } else if (student.status === 'OUT') {
+                            presentCount++;
+                            badgeClass = 'bg-blue-50 text-blue-700 border-blue-200';
+                            badgeText = '● LEFT (Out)';
+                            btnHtml = `
+                                <button onclick="toggleManualAttendance('${student.id}', 'absent')" class="w-full py-2.5 rounded-xl text-xs font-black bg-slate-100 text-slate-600 border border-slate-200 active:scale-95 shadow-sm">Clear Record</button>`;
+                        } else {
+                            badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
+                            badgeText = '○ ABSENT';
+                            btnHtml = `
+                                <button onclick="toggleManualAttendance('${student.id}', 'Arrival')" class="w-full py-2.5 rounded-xl text-xs font-black bg-emerald-50 text-emerald-700 border border-emerald-200 active:scale-95 shadow-sm">Mark Entry</button>`;
+                        }
+                        
                         html += `
-                        <div class="bg-white rounded-2xl border ${isPresent ? 'border-emerald-200' : 'border-rose-200'} shadow-sm p-5 flex flex-col gap-4">
+                        <div class="bg-white rounded-2xl border ${student.status !== 'ABSENT' ? 'border-emerald-200' : 'border-rose-200'} shadow-sm p-5 flex flex-col gap-4">
                             <div class="flex items-start justify-between gap-2">
                                 <div>
                                     <p class="font-black text-slate-900 text-sm leading-tight">${student.name}</p>
                                     <span class="font-mono text-[10px] font-bold text-slate-400 block mt-1">Roll ID: ${rollMap[student.id] || '---'}</span>
                                 </div>
-                                <span class="shrink-0 px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border ${isPresent ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}">${isPresent ? '● P' : '○ A'}</span>
+                                <span class="shrink-0 px-2 py-1 rounded-md text-[10px] font-black uppercase tracking-wider border ${badgeClass}">${badgeText}</span>
                             </div>
-                            <button onclick="toggleManualAttendance('${student.id}', ${isPresent ? "'absent'" : "'present'"})" class="w-full py-2.5 rounded-xl text-xs font-black transition-all active:scale-95 ${isPresent ? 'bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'}">
-                                ${isPresent ? 'Revert to Absent' : 'Mark Present'}
-                            </button>
+                            <div class="flex gap-2">
+                                ${btnHtml}
+                            </div>
                         </div>`;
                     });
+                    
                     html += `</div>`;
                     
                     const attTbody = document.getElementById('attTbody');
                     if (attTbody) {
-                        if (studentsStatus.length) attTbody.innerHTML = html;
+                        if (studentsStatus.length) {
+                            attTbody.innerHTML = html;
+                            lucide.createIcons();
+                        }
                         else attTbody.innerHTML = `<div class="text-center py-12 text-slate-400 text-sm font-bold tracking-wide">No students enrolled in Class ${viewedClass}.</div>`;
                     }
                     const countEl = document.getElementById('attDetailCount');
@@ -1011,17 +1170,29 @@
         function startLivePolling() {
             clearInterval(pollInterval);
             if(viewedClass) fetchLogs();
-            pollInterval = setInterval(() => { if(viewedClass) fetchLogs(); fetchSchoolStats(); }, 3000);
+            pollInterval = setInterval(() => { 
+                if(viewedClass) fetchLogs(); 
+                fetchSchoolStats(); 
+            }, 3000);
         }
 
-        let schoolClasses = []; let schoolTeachers = []; let editingClassId = null; let editingTeacherId = null; let activeClsName = "";
+        // --- STUDENTS, CLASSES & STAFF CRUD LOGIC ---
+        let schoolClasses = []; 
+        let schoolTeachers = []; 
+        let editingClassId = null; 
+        let editingTeacherId = null; 
+        let activeClsName = "";
 
         async function fetchClasses() {
             try {
                 const res = await fetch(`${API_BASE}/classes`, { headers: getHeaders() });
                 if (res.ok) schoolClasses = await res.json(); else schoolClasses = [];
             } catch (err) { schoolClasses = []; }
-            renderClasses(); renderAttendanceClasses(); renderSettingsClasses(); renderFeeStructure(); await fetchTimetable();
+            renderClasses(); 
+            renderAttendanceClasses(); 
+            renderSettingsClasses(); 
+            renderFeeStructure(); 
+            await fetchTimetable();
         }
 
         function renderClasses() {
@@ -1032,113 +1203,420 @@
                 let html = ''; const colors = ['blue', 'purple', 'amber', 'rose', 'emerald', 'indigo'];
                 schoolClasses.forEach((cls, i) => {
                     const color = colors[i % colors.length];
-                    html += `<div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group" onclick="toggleStudentClassView('${cls.name}')"><div class="flex justify-between items-start"><div><p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Class Identifier</p><p class="text-3xl font-black text-slate-900 group-hover:text-${color}-600 transition-colors mt-1">${cls.name}</p></div><div class="bg-${color}-50 p-3 rounded-2xl text-${color}-600"><i data-lucide="users" class="w-6 h-6"></i></div></div><div class="mt-6 pt-4 border-t border-slate-100"><span class="text-xs font-bold text-slate-500">${cls.count || 0} Registered Scholars</span></div></div>`;
+                    html += `
+                    <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group" onclick="toggleStudentClassView('${cls.name}')">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Class Identifier</p>
+                                <p class="text-3xl font-black text-slate-900 group-hover:text-${color}-600 transition-colors mt-1">${cls.name}</p>
+                            </div>
+                            <div class="bg-${color}-50 p-3 rounded-2xl text-${color}-600">
+                                <i data-lucide="users" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-100">
+                            <span class="text-xs font-bold text-slate-500">${cls.count || 0} Registered Scholars</span>
+                        </div>
+                    </div>`;
                 });
                 container.innerHTML = html; lucide.createIcons();
             }
         }
+
         function renderSettingsClasses() {
             const container = document.getElementById('settingsClassTableBody');
             if(!container) return;
             if(schoolClasses.length===0) container.innerHTML = `<div class="text-center py-10 text-slate-400 font-bold text-sm">No classes configured.</div>`;
-            else container.innerHTML = schoolClasses.map(cls => `<div class="flex items-center justify-between bg-slate-50 rounded-2xl px-5 py-4 border border-slate-100"><p class="font-black text-slate-800 text-base">${cls.name}</p><div class="flex gap-2"><button onclick="editClass('${cls.id}', '${(cls.name||'').replace(/'/g, "\\'")}')" class="text-blue-600 bg-white border border-blue-100 hover:bg-blue-100 px-3 py-1.5 text-xs font-black rounded-lg transition-colors">Edit</button><button onclick="deleteClass('${cls.id}')" class="text-red-500 bg-white border border-red-100 hover:bg-red-100 px-3 py-1.5 text-xs font-black rounded-lg transition-colors">Delete</button></div></div>`).join('');
+            else container.innerHTML = schoolClasses.map(cls => `
+                <div class="flex items-center justify-between bg-slate-50 rounded-2xl px-5 py-4 border border-slate-100">
+                    <p class="font-black text-slate-800 text-base">${cls.name}</p>
+                    <div class="flex gap-2">
+                        <button onclick="editClass('${cls.id}', '${(cls.name||'').replace(/'/g, "\\'")}')" class="text-blue-600 bg-white border border-blue-100 hover:bg-blue-100 px-3 py-1.5 text-xs font-black rounded-lg transition-colors">Edit</button>
+                        <button onclick="deleteClass('${cls.id}')" class="text-red-500 bg-white border border-red-100 hover:bg-red-100 px-3 py-1.5 text-xs font-black rounded-lg transition-colors">Delete</button>
+                    </div>
+                </div>`).join('');
         }
+
         function renderAttendanceClasses() {
             const grid = document.getElementById('studentClassCardsContainer');
             if(!grid) return;
-            grid.innerHTML = schoolClasses.map(cls => `<div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm cursor-pointer hover:ring-2 ring-blue-500 hover:-translate-y-1 transition-all group" onclick="toggleClassView('${cls.name}')"><p class="text-slate-400 text-[10px] font-bold uppercase tracking-wide">Class Grade</p><p class="text-2xl font-black text-slate-900 mt-1">${cls.name}</p><div class="mt-4 pt-4 border-t border-slate-100 flex justify-between text-xs"><span class="text-blue-600 font-bold flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3 group-hover:animate-pulse"></i> Track Log</span><span class="text-slate-400 font-medium">Live</span></div></div>`).join('');
+            grid.innerHTML = schoolClasses.map(cls => `
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm cursor-pointer hover:ring-2 ring-blue-500 hover:-translate-y-1 transition-all group" onclick="toggleClassView('${cls.name}')">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wide">Class Grade</p>
+                    <p class="text-2xl font-black text-slate-900 mt-1">${cls.name}</p>
+                    <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between text-xs">
+                        <span class="text-blue-600 font-bold flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3 group-hover:animate-pulse"></i> Track Log</span>
+                        <span class="text-slate-400 font-medium">Live</span>
+                    </div>
+                </div>`).join('');
         }
 
-        function openClassModal(id = null) { editingClassId = id; const cls = id ? schoolClasses.find(c => c.id === id) : null; document.getElementById('classNameInput').value = cls ? cls.name : ''; document.getElementById('classModalTitle').innerText = id ? 'Edit Configuration' : 'Register New Class'; document.getElementById('classModal').classList.remove('hidden'); }
-        function closeClassModal() { document.getElementById('classModal').classList.add('hidden'); }
-        async function saveClass() { const name = document.getElementById('classNameInput').value.trim(); if (!name) return showToast("Validation Error: Field is empty"); const res = await fetch(editingClassId ? `${API_BASE}/classes/${editingClassId}` : `${API_BASE}/classes`, { method: editingClassId ? 'PUT' : 'POST', headers: getHeaders(), body: JSON.stringify({ name }) }); if (res.ok) { showToast("Configuration Saved", "success"); closeClassModal(); fetchClasses(); } }
-        async function editClass(id, currentName) { const newName = prompt("Modify Class Identification:", currentName); if (newName && newName.trim()) { const res = await fetch(`${API_BASE}/classes/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify({ name: newName.trim() }) }); if(res.ok) fetchClasses(); } }
-        async function deleteClass(id) { if(confirm("Purge class entity? This affects associated data.")) { const res = await fetch(`${API_BASE}/classes/${id}`, { method: 'DELETE', headers: getHeaders() }); if(res.ok) fetchClasses(); } }
+        function openClassModal(id = null) { 
+            editingClassId = id; 
+            const cls = id ? schoolClasses.find(c => c.id === id) : null; 
+            document.getElementById('classNameInput').value = cls ? cls.name : ''; 
+            document.getElementById('classModalTitle').innerText = id ? 'Edit Configuration' : 'Register New Class'; 
+            document.getElementById('classModal').classList.remove('hidden'); 
+        }
 
-        function goBackToStudentHome() { activeClsName = ""; document.getElementById('studentHomeView').classList.remove('hidden'); document.getElementById('studentClassDetail').classList.add('hidden'); }
-        function openStudentModal() { document.getElementById('studRollInput').value = ''; document.getElementById('studNameInput').value = ''; document.getElementById('studPhoneInput').value = ''; document.getElementById('studClassInput').value = activeClsName; document.getElementById('studentModal').classList.remove('hidden'); }
-        function closeStudentModal() { document.getElementById('studentModal').classList.add('hidden'); }
-        async function saveStudent() { const name = document.getElementById('studNameInput').value.trim(); const roll = document.getElementById('studRollInput').value.trim(); const phone = document.getElementById('studPhoneInput').value.trim(); const className = document.getElementById('studClassInput').value.trim(); if(!name) return showToast('Name field required'); const res = await fetch(`${API_BASE}/students`, { method:'POST', headers:getHeaders(), body: JSON.stringify({name, roll_no:roll, whatsapp_no:phone, class_name:className})}); if(res.ok) { showToast('Student Enrolled', 'success'); closeStudentModal(); fetchClasses(); toggleStudentClassView(className); } }
+        function closeClassModal() { 
+            document.getElementById('classModal').classList.add('hidden'); 
+        }
+
+        async function saveClass() { 
+            const name = document.getElementById('classNameInput').value.trim(); 
+            if (!name) return showToast("Validation Error: Field is empty"); 
+            const res = await fetch(editingClassId ? `${API_BASE}/classes/${editingClassId}` : `${API_BASE}/classes`, { method: editingClassId ? 'PUT' : 'POST', headers: getHeaders(), body: JSON.stringify({ name }) }); 
+            if (res.ok) { showToast("Configuration Saved", "success"); closeClassModal(); fetchClasses(); } 
+        }
+
+        async function editClass(id, currentName) { 
+            const newName = prompt("Modify Class Identification:", currentName); 
+            if (newName && newName.trim()) { const res = await fetch(`${API_BASE}/classes/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify({ name: newName.trim() }) }); if(res.ok) fetchClasses(); } 
+        }
+
+        async function deleteClass(id) { 
+            if(confirm("Purge class entity? This affects associated data.")) { const res = await fetch(`${API_BASE}/classes/${id}`, { method: 'DELETE', headers: getHeaders() }); if(res.ok) fetchClasses(); } 
+        }
+
+        function goBackToStudentHome() { 
+            activeClsName = ""; 
+            document.getElementById('studentHomeView').classList.remove('hidden'); 
+            document.getElementById('studentClassDetail').classList.add('hidden'); 
+        }
+
+        function openStudentModal() { 
+            document.getElementById('studRollInput').value = ''; 
+            document.getElementById('studNameInput').value = ''; 
+            document.getElementById('studPhoneInput').value = ''; 
+            document.getElementById('studClassInput').value = activeClsName; 
+            document.getElementById('studentModal').classList.remove('hidden'); 
+        }
+
+        function closeStudentModal() { 
+            document.getElementById('studentModal').classList.add('hidden'); 
+        }
+
+        async function saveStudent() { 
+            const name = document.getElementById('studNameInput').value.trim(); 
+            const roll = document.getElementById('studRollInput').value.trim(); 
+            const phone = document.getElementById('studPhoneInput').value.trim(); 
+            const className = document.getElementById('studClassInput').value.trim(); 
+            if(!name) return showToast('Name field required'); 
+            const res = await fetch(`${API_BASE}/students`, { method:'POST', headers:getHeaders(), body: JSON.stringify({name, roll_no:roll, whatsapp_no:phone, class_name:className})}); 
+            if(res.ok) { showToast('Student Enrolled', 'success'); closeStudentModal(); fetchClasses(); toggleStudentClassView(className); } 
+        }
         
         async function toggleStudentClassView(cls) {
-            activeClsName = cls; document.getElementById('studentHomeView').classList.add('hidden'); document.getElementById('studentClassDetail').classList.remove('hidden'); document.getElementById('studentActClassTitle').innerText = `Enrolled Directory: Class ${cls}`; document.getElementById('studentsLoader').classList.remove('hidden');
+            activeClsName = cls; 
+            document.getElementById('studentHomeView').classList.add('hidden'); 
+            document.getElementById('studentClassDetail').classList.remove('hidden'); 
+            document.getElementById('studentActClassTitle').innerText = `Enrolled Directory: Class ${cls}`; 
+            document.getElementById('studentsLoader').classList.remove('hidden');
             try {
                 const res = await fetch(`${API_BASE}/students?class=${encodeURIComponent(cls)}`, { headers: getHeaders() });
                 const students = res.ok ? await res.json() : [];
                 const container = document.getElementById('studentMgmtTbody');
                 if (students.length === 0) container.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 font-bold bg-slate-50 rounded-2xl text-sm border-2 border-dashed border-slate-200">No records found. Import CSV or Add manually.</div>`;
-                else container.innerHTML = students.map(s => `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4"><div class="flex justify-between items-start"><div><p class="font-black text-sm text-slate-900">${s.name}</p><span class="font-mono text-[10px] text-slate-400 font-bold mt-0.5 block">UUID: ${s.roll_no || '-'}</span></div><span class="bg-blue-50 text-blue-700 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md border border-blue-100">Scholar</span></div>${s.whatsapp_no ? `<p class="text-[11px] text-slate-500 font-bold"><i data-lucide="phone" class="w-3 h-3 inline"></i> ${s.whatsapp_no}</p>` : ''}<div class="flex gap-3 pt-3 border-t border-slate-100"><button onclick="downloadQR('${s.id}')" class="flex-1 py-2.5 text-xs font-black tracking-wide bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex justify-center items-center gap-1"><i data-lucide="qr-code" class="w-4 h-4"></i> Access Card</button><button onclick="deleteStudent('${s.id}', '${cls}')" class="px-4 py-2.5 text-xs font-black bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`).join('');
+                else container.innerHTML = students.map(s => `
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-black text-sm text-slate-900">${s.name}</p>
+                                <span class="font-mono text-[10px] text-slate-400 font-bold mt-0.5 block">UUID: ${s.roll_no || '-'}</span>
+                            </div>
+                            <span class="bg-blue-50 text-blue-700 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md border border-blue-100">Scholar</span>
+                        </div>
+                        ${s.whatsapp_no ? `<p class="text-[11px] text-slate-500 font-bold"><i data-lucide="phone" class="w-3 h-3 inline"></i> ${s.whatsapp_no}</p>` : ''}
+                        <div class="flex gap-3 pt-3 border-t border-slate-100">
+                            <button onclick="downloadQR('${s.id}')" class="flex-1 py-2.5 text-xs font-black tracking-wide bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex justify-center items-center gap-1"><i data-lucide="qr-code" class="w-4 h-4"></i> Access Card</button>
+                            <button onclick="deleteStudent('${s.id}', '${cls}')" class="px-4 py-2.5 text-xs font-black bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>`).join('');
                 lucide.createIcons(); document.getElementById('studentsLoader').classList.add('hidden');
             } catch(e) {}
         }
         
-        async function deleteStudent(id, cls) { if(confirm('Purge student record?')) { const res = await fetch(`${API_BASE}/students/${id}`, {method:'DELETE', headers:getHeaders()}); if(res.ok) { fetchClasses(); toggleStudentClassView(cls); } } }
-        function downloadQR(id) { const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(id)}`; const link = document.createElement('a'); link.href = qrUrl; link.download = `Access_Card_${id}.png`; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
-        document.getElementById('csvUpload').addEventListener('change', function(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async function(e) { showToast('Processing CSV mapping...', 'success'); const res = await fetch(`${API_BASE}/students/batch`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ csv: e.target.result }) }); if(res.ok) { showToast('Database Populated', 'success'); fetchClasses(); } }; reader.readAsText(file); });
+        async function deleteStudent(id, cls) { 
+            if(confirm('Purge student record?')) { 
+                const res = await fetch(`${API_BASE}/students/${id}`, {method:'DELETE', headers:getHeaders()}); 
+                if(res.ok) { fetchClasses(); toggleStudentClassView(cls); } 
+            } 
+        }
 
-        async function fetchStaff() { try { const res = await fetch(`${API_BASE}/teachers`, { headers: getHeaders() }); schoolTeachers = res.ok ? await res.json() : []; } catch(e) { schoolTeachers = []; } renderStaff(); renderTT(); populateReportDropdowns(); }
+        function downloadQR(id) { 
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(id)}`; 
+            const link = document.createElement('a'); 
+            link.href = qrUrl; 
+            link.download = `Access_Card_${id}.png`; 
+            document.body.appendChild(link); link.click(); document.body.removeChild(link); 
+        }
+
+        document.getElementById('csvUpload').addEventListener('change', function(e) { 
+            const file = e.target.files[0]; if(!file) return; 
+            const reader = new FileReader(); 
+            reader.onload = async function(e) { 
+                showToast('Processing CSV mapping...', 'success'); 
+                const res = await fetch(`${API_BASE}/students/batch`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ csv: e.target.result }) }); 
+                if(res.ok) { showToast('Database Populated', 'success'); fetchClasses(); } 
+            }; 
+            reader.readAsText(file); 
+        });
+
+        async function fetchStaff() { 
+            try { 
+                const res = await fetch(`${API_BASE}/teachers`, { headers: getHeaders() }); 
+                schoolTeachers = res.ok ? await res.json() : []; 
+            } catch(e) { schoolTeachers = []; } 
+            renderStaff(); 
+            renderTT(); 
+            populateReportDropdowns(); 
+        }
         
         function renderStaff() {
             const container = document.getElementById('staffTbody');
             if(!container) return;
             if(schoolTeachers.length === 0) container.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 font-bold text-sm bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">No staff members in directory.</div>`;
-            else container.innerHTML = schoolTeachers.map(t => { const loginID = t.login_id || t.username || t.loginId || t.id; return `<div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 flex flex-col gap-4 hover:shadow-lg transition-all"><div class="flex justify-between items-start"><div><p class="font-black text-slate-900 text-lg">${t.name}</p><p class="text-[10px] text-slate-400 font-mono mt-1 font-bold bg-slate-50 inline-block px-1.5 py-0.5 rounded">ID: ${loginID}</p></div>${t.class_teacher_of ? `<span class="bg-purple-50 text-purple-700 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md border border-purple-100">Class ${t.class_teacher_of}</span>` : `<span class="text-[10px] text-slate-400 font-bold italic">Standard</span>`}</div><div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100"><button onclick="downloadQR('${loginID}')" class="flex-1 py-2 text-xs font-black tracking-wide bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition-colors"><i data-lucide="qr-code" class="w-3.5 h-3.5 inline mr-1"></i> Pass</button><button onclick="openTeacherModal('${t.id}')" class="px-3 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors"><i data-lucide="pencil" class="w-4 h-4"></i></button><button onclick="deleteTeacher('${t.id}')" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`; }).join('');
+            else container.innerHTML = schoolTeachers.map(t => { 
+                const loginID = t.login_id || t.username || t.loginId || t.id; 
+                return `
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 flex flex-col gap-4 hover:shadow-lg transition-all">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-black text-slate-900 text-lg">${t.name}</p>
+                            <p class="text-[10px] text-slate-400 font-mono mt-1 font-bold bg-slate-50 inline-block px-1.5 py-0.5 rounded">ID: ${loginID}</p>
+                        </div>
+                        ${t.class_teacher_of ? `<span class="bg-purple-50 text-purple-700 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md border border-purple-100">Class ${t.class_teacher_of}</span>` : `<span class="text-[10px] text-slate-400 font-bold italic">Standard</span>`}
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
+                        <button onclick="downloadQR('${loginID}')" class="flex-1 py-2 text-xs font-black tracking-wide bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition-colors"><i data-lucide="qr-code" class="w-3.5 h-3.5 inline mr-1"></i> Pass</button>
+                        <button onclick="openTeacherModal('${t.id}')" class="px-3 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <button onclick="deleteTeacher('${t.id}')" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>`; 
+            }).join('');
             lucide.createIcons();
         }
         
-        function openTeacherModal(id = null) { editingTeacherId = id; const tSel = document.getElementById('teacherClassSelect'); if (tSel) { tSel.innerHTML = '<option value="">Standard Teacher (No specific class)</option>' + schoolClasses.map(c => `<option value="${c.name}">Class ${c.name}</option>`).join(''); } const t = id ? schoolTeachers.find(x => String(x.id) === String(id)) : null; document.getElementById('teacherNameInput').value = t ? t.name : ''; document.getElementById('teacherLoginIdInput').value = t ? (t.login_id || t.username) : ''; document.getElementById('teacherPasswordInput').value = ''; if (tSel && t) tSel.value = t.class_teacher_of || ''; document.getElementById('teacherModalTitle').innerText = id ? 'Modify Details' : 'Add Teacher Account'; document.getElementById('teacherModal').classList.remove('hidden'); }
-        function closeTeacherModal() { document.getElementById('teacherModal').classList.add('hidden'); }
-        async function saveTeacher() { const name = document.getElementById('teacherNameInput').value.trim(); const login_id = document.getElementById('teacherLoginIdInput').value.trim(); const password = document.getElementById('teacherPasswordInput').value; const class_teacher_of = document.getElementById('teacherClassSelect').value; if(!name || !login_id) return showToast("Validation Error"); const payload = { name, login_id, class_teacher_of }; if(password) payload.password = password; const res = await fetch(editingTeacherId ? `${API_BASE}/teachers/${editingTeacherId}` : `${API_BASE}/teachers`, { method: editingTeacherId ? 'PUT' : 'POST', headers: getHeaders(), body: JSON.stringify(payload) }); if(res.ok) { closeTeacherModal(); fetchStaff(); } }
-        async function deleteTeacher(id) { if(confirm('Disable and purge account?')) { const res = await fetch(`${API_BASE}/teachers/${id}`, { method: 'DELETE', headers: getHeaders() }); if(res.ok) fetchStaff(); } }
+        function openTeacherModal(id = null) { 
+            editingTeacherId = id; 
+            const tSel = document.getElementById('teacherClassSelect'); 
+            if (tSel) { tSel.innerHTML = '<option value="">Standard Teacher (No specific class)</option>' + schoolClasses.map(c => `<option value="${c.name}">Class ${c.name}</option>`).join(''); } 
+            const t = id ? schoolTeachers.find(x => String(x.id) === String(id)) : null; 
+            document.getElementById('teacherNameInput').value = t ? t.name : ''; 
+            document.getElementById('teacherLoginIdInput').value = t ? (t.login_id || t.username) : ''; 
+            document.getElementById('teacherPasswordInput').value = ''; 
+            if (tSel && t) tSel.value = t.class_teacher_of || ''; 
+            document.getElementById('teacherModalTitle').innerText = id ? 'Modify Details' : 'Add Teacher Account'; 
+            document.getElementById('teacherModal').classList.remove('hidden'); 
+        }
 
-        let ttData = {}; let actTTRow = null; let actTTCol = null;
+        function closeTeacherModal() { document.getElementById('teacherModal').classList.add('hidden'); }
+
+        async function saveTeacher() { 
+            const name = document.getElementById('teacherNameInput').value.trim(); 
+            const login_id = document.getElementById('teacherLoginIdInput').value.trim(); 
+            const password = document.getElementById('teacherPasswordInput').value; 
+            const class_teacher_of = document.getElementById('teacherClassSelect').value; 
+            if(!name || !login_id) return showToast("Validation Error"); 
+            const payload = { name, login_id, class_teacher_of }; 
+            if(password) payload.password = password; 
+            const res = await fetch(editingTeacherId ? `${API_BASE}/teachers/${editingTeacherId}` : `${API_BASE}/teachers`, { method: editingTeacherId ? 'PUT' : 'POST', headers: getHeaders(), body: JSON.stringify(payload) }); 
+            if(res.ok) { closeTeacherModal(); fetchStaff(); } 
+        }
+
+        async function deleteTeacher(id) { 
+            if(confirm('Disable and purge account?')) { 
+                const res = await fetch(`${API_BASE}/teachers/${id}`, { method: 'DELETE', headers: getHeaders() }); 
+                if(res.ok) fetchStaff(); 
+            } 
+        }
+
+        // --- TIMETABLE MATRIX ---
+        let ttData = {}; 
+        let actTTRow = null; 
+        let actTTCol = null;
+
         function renderTT() {
-            const activeClasses = schoolClasses.map(c => c.name); const ttGrid = document.getElementById('ttGrid');
+            const activeClasses = schoolClasses.map(c => c.name); 
+            const ttGrid = document.getElementById('ttGrid');
             if (activeClasses.length === 0) { ttGrid.innerHTML = `<tr><td class="p-8 text-center text-slate-500 font-bold">Please configure classes first.</td></tr>`; return; }
             document.getElementById('ttTeacher').innerHTML = schoolTeachers.length ? schoolTeachers.map(t => `<option value="${t.name}">${t.name}</option>`).join('') : '<option value="">No valid accounts</option>';
-            let html = ''; [1, 2, 3, 4, 'L', 5, 6, 7].forEach((p, rIdx) => {
+            
+            let html = ''; 
+            [1, 2, 3, 4, 'L', 5, 6, 7].forEach((p, rIdx) => {
                 html += `<tr class="hover:bg-slate-50/50 transition-colors"><td class="bg-slate-50 border-b border-slate-200 p-4 font-black text-slate-700 sticky left-0 z-10 w-20 shadow-sm">${p==='L'?'LUNCH':`P${p}`}</td>`;
-                if(p === 'L') html += `<td colspan="${activeClasses.length}" class="bg-indigo-50/50 text-indigo-400 font-black tracking-[0.2em] uppercase py-3 border border-slate-200">-- BREAK --</td>`;
-                else { activeClasses.forEach((c, cIdx) => { const d = ttData[`${rIdx}_${cIdx}`]; html += d ? `<td onclick="openTTModal(${rIdx},${cIdx}, '${c}')" class="border border-slate-200 p-3 cursor-pointer hover:bg-white hover:shadow-inner transition-all"><div class="text-[11px] font-black text-indigo-900">${d.subj}</div><div class="text-[9px] font-bold text-slate-500 uppercase mt-0.5">${d.teacher}</div></td>` : `<td onclick="openTTModal(${rIdx},${cIdx}, '${c}')" class="border border-slate-200 p-3 cursor-pointer hover:bg-white text-slate-300 transition-all"><i data-lucide="plus-circle" class="w-4 h-4 mx-auto opacity-50"></i></td>`; }); }
+                if(p === 'L') {
+                    html += `<td colspan="${activeClasses.length}" class="bg-indigo-50/50 text-indigo-400 font-black tracking-[0.2em] uppercase py-3 border border-slate-200">-- BREAK --</td>`;
+                } else { 
+                    activeClasses.forEach((c, cIdx) => { 
+                        const d = ttData[`${rIdx}_${cIdx}`]; 
+                        html += d ? `<td onclick="openTTModal(${rIdx},${cIdx}, '${c}')" class="border border-slate-200 p-3 cursor-pointer hover:bg-white hover:shadow-inner transition-all"><div class="text-[11px] font-black text-indigo-900">${d.subj}</div><div class="text-[9px] font-bold text-slate-500 uppercase mt-0.5">${d.teacher}</div></td>` : `<td onclick="openTTModal(${rIdx},${cIdx}, '${c}')" class="border border-slate-200 p-3 cursor-pointer hover:bg-white text-slate-300 transition-all"><i data-lucide="plus-circle" class="w-4 h-4 mx-auto opacity-50"></i></td>`; 
+                    }); 
+                }
                 html += `</tr>`;
             });
             document.getElementById('ttHead').innerHTML = `<tr><th class="bg-slate-900 text-white border-b border-slate-800 p-4 sticky left-0 z-10 uppercase text-xs tracking-wider">Slot</th>` + activeClasses.map(c => `<th class="bg-slate-800 text-white border-b border-slate-700 border-l border-slate-700 p-4 font-black text-sm uppercase tracking-widest">${c}</th>`).join('') + `</tr>`;
-            ttGrid.innerHTML = html; lucide.createIcons();
+            ttGrid.innerHTML = html; 
+            lucide.createIcons();
         }
-        function openTTModal(r, c, cName) { actTTRow = r; actTTCol = c; document.getElementById('ttModalDesc').innerText = `Period ${r+1} Matrix - Class ${cName}`; const d = ttData[`${r}_${c}`]; document.getElementById('ttTeacher').value = d ? d.teacher : (schoolTeachers[0]?.name || ''); document.getElementById('ttSubj').value = d ? d.subj : ''; document.getElementById('ttModal').classList.remove('hidden'); }
+
+        function openTTModal(r, c, cName) { 
+            actTTRow = r; 
+            actTTCol = c; 
+            document.getElementById('ttModalDesc').innerText = `Period ${r+1} Matrix - Class ${cName}`; 
+            const d = ttData[`${r}_${c}`]; 
+            document.getElementById('ttTeacher').value = d ? d.teacher : (schoolTeachers[0]?.name || ''); 
+            document.getElementById('ttSubj').value = d ? d.subj : ''; 
+            document.getElementById('ttModal').classList.remove('hidden'); 
+        }
+
         function closeTTModal() { document.getElementById('ttModal').classList.add('hidden'); }
-        async function clearTTCell() { delete ttData[`${actTTRow}_${actTTCol}`]; closeTTModal(); renderTT(); fetch(`${API_BASE}/timetable/sync`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ timetable: ttData }) }); }
-        async function saveTTModal() { const t = document.getElementById('ttTeacher').value; const s = document.getElementById('ttSubj').value.trim(); if(t && s) { ttData[`${actTTRow}_${actTTCol}`] = { teacher: t, subj: s }; closeTTModal(); renderTT(); fetch(`${API_BASE}/timetable/sync`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ timetable: ttData }) }); } }
-        async function fetchTimetable() { try { const res = await fetch(`${API_BASE}/timetable`, { headers: getHeaders() }); if(res.ok) { const data = await res.json(); ttData = {}; data.forEach(item => { const cIdx = schoolClasses.findIndex(c => c.name === item.class_name); if(cIdx !== -1) ttData[`${item.period_idx}_${cIdx}`] = { teacher: item.teacher_name, subj: item.subject }; }); renderTT(); } } catch(e) {} }
+
+        async function clearTTCell() { 
+            delete ttData[`${actTTRow}_${actTTCol}`]; 
+            closeTTModal(); 
+            renderTT(); 
+            fetch(`${API_BASE}/timetable/sync`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ timetable: ttData }) }); 
+        }
+
+        async function saveTTModal() { 
+            const t = document.getElementById('ttTeacher').value; 
+            const s = document.getElementById('ttSubj').value.trim(); 
+            if(t && s) { 
+                ttData[`${actTTRow}_${actTTCol}`] = { teacher: t, subj: s }; 
+                closeTTModal(); 
+                renderTT(); 
+                fetch(`${API_BASE}/timetable/sync`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ timetable: ttData }) }); 
+            } 
+        }
+
+        async function fetchTimetable() { 
+            try { 
+                const res = await fetch(`${API_BASE}/timetable`, { headers: getHeaders() }); 
+                if(res.ok) { 
+                    const data = await res.json(); 
+                    ttData = {}; 
+                    data.forEach(item => { 
+                        const cIdx = schoolClasses.findIndex(c => c.name === item.class_name); 
+                        if(cIdx !== -1) ttData[`${item.period_idx}_${cIdx}`] = { teacher: item.teacher_name, subj: item.subject }; 
+                    }); 
+                    renderTT(); 
+                } 
+            } catch(e) {} 
+        }
 
         // --- FEE MODULE LOGIC ---
         function renderFeeStructure() {
-            const grid = document.getElementById('feeClassStructureGrid'); if(!grid) return;
-            grid.innerHTML = schoolClasses.map(cls => `<div class="bg-slate-50 p-4 rounded-xl border border-slate-100"><label class="text-[10px] font-black text-emerald-800 uppercase tracking-widest mb-1 block">Class ${cls.name} Baseline Fee</label><input type="number" id="feeInput_${cls.name}" value="${localStorage.getItem(`fee_class_${cls.name}`) || '25000'}" class="w-full border-2 border-slate-200 p-2.5 rounded-lg text-sm font-bold focus:border-emerald-500 outline-none transition-colors"></div>`).join('');
-            const cSel = document.getElementById('feeClassSelect'); if(cSel) cSel.innerHTML = '<option value="">Select Target Class</option>' + schoolClasses.map(c => `<option value="${c.name}">Class ${c.name}</option>`).join('');
+            const grid = document.getElementById('feeClassStructureGrid'); 
+            if(!grid) return;
+            
+            grid.innerHTML = schoolClasses.map(cls => `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <label class="text-[10px] font-black text-emerald-800 uppercase tracking-widest mb-1 block">Class ${cls.name} Baseline Fee</label>
+                    <input type="number" id="feeInput_${cls.name}" value="${localStorage.getItem(`fee_class_${cls.name}`) || '25000'}" class="w-full border-2 border-slate-200 p-2.5 rounded-lg text-sm font-bold focus:border-emerald-500 outline-none transition-colors">
+                </div>`).join('');
+                
+            const cSel = document.getElementById('feeClassSelect'); 
+            if(cSel) cSel.innerHTML = '<option value="">Select Target Class</option>' + schoolClasses.map(c => `<option value="${c.name}">Class ${c.name}</option>`).join('');
         }
-        function openFeeStructureModal() { document.getElementById('feeStructureModal').classList.remove('hidden'); renderFeeStructure(); }
+
+        function openFeeStructureModal() { 
+            document.getElementById('feeStructureModal').classList.remove('hidden'); 
+            renderFeeStructure(); 
+        }
+
         function closeFeeStructureModal() { document.getElementById('feeStructureModal').classList.add('hidden'); }
-        function saveFeeStructure() { schoolClasses.forEach(cls => { const el = document.getElementById(`feeInput_${cls.name}`); if(el) localStorage.setItem(`fee_class_${cls.name}`, el.value); }); closeFeeStructureModal(); loadFeeStudents(); showToast('Financial parameters updated.', 'success');}
-        async function fetchFees() { await fetchClasses(); renderFeeStructure(); }
+
+        function saveFeeStructure() { 
+            schoolClasses.forEach(cls => { 
+                const el = document.getElementById(`feeInput_${cls.name}`); 
+                if(el) localStorage.setItem(`fee_class_${cls.name}`, el.value); 
+            }); 
+            closeFeeStructureModal(); 
+            loadFeeStudents(); 
+            showToast('Financial parameters updated.', 'success');
+        }
+
+        async function fetchFees() { 
+            await fetchClasses(); 
+            renderFeeStructure(); 
+        }
+
         async function loadFeeStudents() {
-            const cls = document.getElementById('feeClassSelect').value; const container = document.getElementById('feeStudentList'); if(!cls) return;
+            const cls = document.getElementById('feeClassSelect').value; 
+            const container = document.getElementById('feeStudentList'); 
+            if(!cls) return;
+            
             container.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 font-bold text-sm animate-pulse">Running Financial Scan...</div>`;
+            
             try {
                 const res = await fetch(`${API_BASE}/students?class=${encodeURIComponent(cls)}`, { headers: getHeaders() });
                 const students = res.ok ? await res.json() : [];
                 const tFee = parseFloat(localStorage.getItem(`fee_class_${cls}`) || '25000');
-                container.innerHTML = students.length === 0 ? '<div class="col-span-full py-12 text-center text-slate-400 font-bold bg-white rounded-2xl">No active accounts in class.</div>' : students.map(s => { const pFee = parseFloat(localStorage.getItem(`fee_paid_${s.id || s.student_id}`) || '0'); const dFee = tFee - pFee; return `<div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm"><div class="flex justify-between font-black text-sm mb-4"><span class="text-slate-900">${s.name}</span><span class="px-2.5 py-1 rounded-md text-[10px] tracking-widest uppercase ${dFee>0?'bg-rose-50 text-rose-700':'bg-emerald-50 text-emerald-700'}">${dFee>0?'Unpaid Balance':'Cleared'}</span></div><div class="grid grid-cols-3 gap-3 text-center text-xs"><div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">TOTAL</p><p class="font-black text-slate-800">₹${tFee}</p></div><div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100"><p class="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1">PAID</p><p class="font-black text-emerald-700">₹${pFee}</p></div><div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100"><p class="text-[9px] font-bold text-rose-600/70 uppercase tracking-widest mb-1">DUE</p><p class="font-black text-rose-700">₹${dFee}</p></div></div><button onclick="collectFeePrompt('${s.id || s.student_id}', '${s.name.replace(/'/g,"\\'")}', ${tFee}, ${pFee})" class="w-full mt-5 py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-emerald-600 transition-colors shadow-md active:scale-95 flex justify-center items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Add Transaction</button></div>`; }).join('');
+                
+                if (students.length === 0) {
+                    container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 font-bold bg-white rounded-2xl">No active accounts in class.</div>';
+                } else {
+                    container.innerHTML = students.map(s => { 
+                        const pFee = parseFloat(localStorage.getItem(`fee_paid_${s.id || s.student_id}`) || '0'); 
+                        const dFee = tFee - pFee; 
+                        return `
+                        <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
+                            <div class="flex justify-between font-black text-sm mb-4">
+                                <span class="text-slate-900">${s.name}</span>
+                                <span class="px-2.5 py-1 rounded-md text-[10px] tracking-widest uppercase ${dFee>0?'bg-rose-50 text-rose-700':'bg-emerald-50 text-emerald-700'}">${dFee>0?'Unpaid Balance':'Cleared'}</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3 text-center text-xs">
+                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">TOTAL</p><p class="font-black text-slate-800">₹${tFee}</p></div>
+                                <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100"><p class="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1">PAID</p><p class="font-black text-emerald-700">₹${pFee}</p></div>
+                                <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100"><p class="text-[9px] font-bold text-rose-600/70 uppercase tracking-widest mb-1">DUE</p><p class="font-black text-rose-700">₹${dFee}</p></div>
+                            </div>
+                            <button onclick="collectFeePrompt('${s.id || s.student_id}', '${s.name.replace(/'/g,"\\'")}', ${tFee}, ${pFee})" class="w-full mt-5 py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-emerald-600 transition-colors shadow-md active:scale-95 flex justify-center items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Add Transaction</button>
+                        </div>`; 
+                    }).join('');
+                }
                 lucide.createIcons();
             } catch(e) {}
         }
-        function collectFeePrompt(id, name, tFee, pFee) { const amt = parseFloat(prompt(`Transaction Portal\\nClient: ${name}\\nCurrent Outstanding: ₹${tFee-pFee}\\n\\nEnter Deposit Amount:`)); if(amt>0) { localStorage.setItem(`fee_paid_${id}`, pFee+amt); loadFeeStudents(); showToast('Transaction logged into ledger.', 'success');} }
 
-        function toggleNotifications() { document.getElementById('notifDropdown').classList.toggle('hidden'); fetchNotifications(); }
-        async function fetchNotifications() { try { const res = await fetch(`${API_BASE}/notifications`, { headers: getHeaders() }); const notifs = res.ok ? await res.json() : []; const container = document.getElementById('notifListContainer'); container.innerHTML = notifs.length === 0 ? `<div class="p-5 text-center text-xs text-slate-400 font-bold tracking-wide">No active pings.</div>` : notifs.map(n => `<div class="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors"><p class="font-black text-sm text-slate-800">${n.title}</p><p class="text-xs font-medium text-slate-500 mt-1">${n.message}</p></div>`).join(''); } catch(e){} }
+        function collectFeePrompt(id, name, tFee, pFee) { 
+            const amt = parseFloat(prompt(`Transaction Portal\nClient: ${name}\nCurrent Outstanding: ₹${tFee-pFee}\n\nEnter Deposit Amount:`)); 
+            if(amt>0) { 
+                localStorage.setItem(`fee_paid_${id}`, pFee+amt); 
+                loadFeeStudents(); 
+                showToast('Transaction logged into ledger.', 'success');
+            } 
+        }
 
-        // BOOTSTRAP INIT
-        fetchSchoolStats(); fetchClasses();
+        // --- NOTIFICATIONS ---
+        function toggleNotifications() { 
+            document.getElementById('notifDropdown').classList.toggle('hidden'); 
+            fetchNotifications(); 
+        }
+
+        async function fetchNotifications() { 
+            try { 
+                const res = await fetch(`${API_BASE}/notifications`, { headers: getHeaders() }); 
+                const notifs = res.ok ? await res.json() : []; 
+                const container = document.getElementById('notifListContainer'); 
+                
+                if(notifs.length === 0) {
+                    container.innerHTML = `<div class="p-5 text-center text-xs text-slate-400 font-bold tracking-wide">No active pings.</div>`;
+                } else {
+                    container.innerHTML = notifs.map(n => `
+                        <div class="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                            <p class="font-black text-sm text-slate-800">${n.title}</p>
+                            <p class="text-xs font-medium text-slate-500 mt-1">${n.message}</p>
+                        </div>`).join(''); 
+                }
+            } catch(e){} 
+        }
+
+        // --- BOOTSTRAP INIT ---
+        fetchSchoolStats(); 
+        fetchClasses();
+
     </script>
 </body>
 </html>
