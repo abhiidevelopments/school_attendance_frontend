@@ -14,8 +14,6 @@
         body { font-family: 'Inter', sans-serif; }
         .module { display: none; }
         .module.active { display: block; }
-        
-        /* Custom Scrollbar for better look */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -37,35 +35,33 @@
             <button onclick="switchTab('attendance')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm" data-target="attendance">
                 <i data-lucide="user-check" class="w-4 h-4"></i> Attendance
             </button>
-            <button onclick="switchTab('students')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="students">
+            <button onclick="switchTab('students')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="students">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i> Students
             </button>
-            <button onclick="switchTab('fees')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="fees">
+            <button onclick="switchTab('fees')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="fees">
                 <i data-lucide="indian-rupee" class="w-4 h-4"></i> Fee Management
             </button>
-            <button onclick="switchTab('timetable')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="timetable">
+            <button onclick="switchTab('timetable')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="timetable">
                 <i data-lucide="grid-3x3" class="w-4 h-4"></i> Timetable Master
             </button>
-            <button onclick="switchTab('comms')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="comms">
+            <button onclick="switchTab('comms')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="comms">
                 <i data-lucide="message-square" class="w-4 h-4"></i> Communication
             </button>
-            <button onclick="switchTab('staff')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="staff">
+            <button onclick="switchTab('staff')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="staff">
                 <i data-lucide="users" class="w-4 h-4"></i> Staff Directory
             </button>
-            
-            <button onclick="switchTab('reports')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-emerald-400" data-target="reports">
+            <button onclick="switchTab('reports')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="reports">
                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Attendance Report
             </button>
-
-            <button onclick="switchTab('billing')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="billing">
+            <button onclick="switchTab('billing')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="billing">
                 <i data-lucide="credit-card" class="w-4 h-4"></i> Billing & Recharge
             </button>
-            <button onclick="switchTab('holidays')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="holidays">
+            <button onclick="switchTab('holidays')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="holidays">
                 <i data-lucide="calendar" class="w-4 h-4"></i> Holidays
             </button>
         </div>
         <div class="p-4 border-t border-slate-800">
-            <button onclick="switchTab('settings')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 border-b border-slate-800 pb-4 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white mb-4" data-target="settings">
+            <button onclick="switchTab('settings')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 border-b border-slate-800 pb-4 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400 mb-4" data-target="settings">
                 <i data-lucide="settings" class="w-4 h-4"></i> School Settings
             </button>
             <div class="flex items-center gap-3 px-2">
@@ -349,7 +345,7 @@
                         <div class="w-full md:w-1/3">
                             <label class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Target Group</label>
                             <select id="reportGroupSelect" class="w-full border-2 border-slate-200 rounded-xl p-3.5 text-sm font-bold focus:border-emerald-500 outline-none transition-colors bg-white shadow-sm">
-                                </select>
+                            </select>
                         </div>
                         <button onclick="generateSmartPDFReport()" class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-8 py-4 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
                             <i data-lucide="printer" class="w-5 h-5"></i> Print Register
@@ -535,7 +531,7 @@
             <h3 id="teacherModalTitle" class="font-black text-xl mb-2 text-slate-800">Add Teacher</h3>
             <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Full Name</label><input type="text" id="teacherNameInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="Mr. John Doe"></div>
             <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Login ID (Username)</label><input type="text" id="teacherLoginIdInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="teacher_john"></div>
-            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Password</label><input type="text" id="teacherPasswordInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="Leave blank to keep old"></div>
+            <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Password</label><input type="password" id="teacherPasswordInput" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none" placeholder="Leave blank to keep old"></div>
             <div class="space-y-1"><label class="text-[10px] font-bold text-slate-500 uppercase">Class Teacher Designation</label><select id="teacherClassSelect" class="w-full border-2 border-slate-200 p-3 text-sm font-bold rounded-xl focus:border-purple-500 outline-none bg-white"></select></div>
             <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
                 <button onclick="closeTeacherModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-bold transition-colors">Cancel</button>
@@ -584,7 +580,6 @@
         let pollInterval;
         let globalMasterRates = { monthly_rate: 500, message_rate: 0.20, admin_upi_id: 'educore@upi' };
 
-        // UI Name Initialization
         const storedSchoolName = localStorage.getItem('user_name');
         const defaultSchoolName = (storedSchoolName && storedSchoolName.trim() !== '') ? storedSchoolName : 'My School';
         const headerSchoolNameEl = document.getElementById('headerSchoolName');
@@ -638,17 +633,14 @@
             const targetMod = document.getElementById(tabId);
             if(targetMod) targetMod.classList.add('active');
             
+            // CLEAN SIDEBAR STYLES (Fixed green button issue)
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 if(btn.dataset.target === tabId) { 
                     btn.classList.add('bg-blue-600', 'text-white', 'shadow-sm'); 
-                    btn.classList.remove('hover:bg-slate-800', 'hover:text-white', 'text-slate-400', 'text-emerald-400'); 
+                    btn.classList.remove('hover:bg-slate-800', 'hover:text-white', 'text-slate-400'); 
                 } else { 
                     btn.classList.remove('bg-blue-600', 'text-white', 'shadow-sm'); 
-                    if(btn.dataset.target === 'reports') {
-                        btn.classList.add('hover:bg-slate-800', 'hover:text-white', 'text-emerald-400');
-                    } else {
-                        btn.classList.add('hover:bg-slate-800', 'hover:text-white', 'text-slate-400'); 
-                    }
+                    btn.classList.add('hover:bg-slate-800', 'hover:text-white', 'text-slate-400'); 
                 }
             });
             
@@ -669,7 +661,6 @@
             if (tabId === 'reports') populateReportDropdowns();
         }
 
-        // --- GLOBAL STATS & DYNAMIC RED ALERT SYSTEM ---
         async function fetchSchoolStats() {
             try {
                 const res = await fetch(`${API_BASE}/school/stats`, { headers: getHeaders() });
@@ -681,7 +672,6 @@
                     document.getElementById('headerValidity').innerText = `${days} Days`;
                     document.getElementById('headerMessages').innerText = `${msgs} Msgs`;
                     
-                    // Core Alert Logic
                     const badgeVal = document.getElementById('badgeValidity');
                     if (days < 10) badgeVal.className = "flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-[11px] sm:text-xs font-black shadow-sm transition-colors uppercase tracking-widest";
                     else badgeVal.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider";
@@ -693,7 +683,6 @@
             } catch(e) {}
         }
         
-        // --- BILLING / RECHARGE LOGIC ---
         async function fetchMasterRatesForRecharge() {
             try {
                 const res = await fetch(`${API_BASE}/admin/master_settings`);
@@ -716,7 +705,6 @@
                 else if (months > 0) note = `${sName} - Monthly Recharge - ${months} Months`;
                 else note = `${sName} - Message Recharge - ${msgs} Msgs`;
                 
-                // CRITICAL: URL Encode transaction note for UPI compatibility
                 const safeNote = encodeURIComponent(note);
                 const upiStr = `upi://pay?pa=${globalMasterRates.admin_upi_id}&pn=EduCoreSaaS&am=${total.toFixed(2)}&tn=${safeNote}&cu=INR`;
                 qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(upiStr)}" class="rounded-2xl w-full h-full object-contain">`;
@@ -726,7 +714,6 @@
             }
         }
 
-        // --- SMART SETTINGS LOGIC ---
         async function loadSchoolSettings() {
             try {
                 const res = await fetch(`${API_BASE}/school/settings`, { headers: getHeaders() });
@@ -758,7 +745,6 @@
             } catch(e) { showToast('Network Error'); }
         }
 
-        // --- NEW: SMART PDF ATTENDANCE REGISTER ENGINE ---
         function populateReportDropdowns() {
             const groupSelect = document.getElementById('reportGroupSelect');
             if(groupSelect) {
@@ -782,7 +768,10 @@
 
             try {
                 const res = await fetch(`${API_BASE}/reports/monthly_register?group=${encodeURIComponent(group)}&month=${monthVal}`, { headers: getHeaders() });
-                if(!res.ok) throw new Error('Failed to extract attendance data');
+                if(!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.message || 'Failed to extract attendance data');
+                }
                 const data = await res.json();
 
                 if(!window.jspdf || !window.jspdf.jsPDF) {
@@ -792,7 +781,6 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF('landscape', 'pt', 'a4');
 
-                // Header Generation
                 doc.setFontSize(18);
                 doc.setFont("helvetica", "bold");
                 const sName = localStorage.getItem('user_name') || 'School Entity';
@@ -802,7 +790,6 @@
                 doc.setFont("helvetica", "normal");
                 const groupName = group === 'staff' ? 'Staff Members' : `Class ${group}`;
                 
-                // Print School Parameters
                 doc.text(`Target Group: ${groupName}   |   Recorded Month: ${data.month}   |   Start Time: ${data.arrival_time}   |   Exit Time: ${data.departure_time}`, 40, 65);
 
                 const head = [['Name & Details']];
@@ -819,7 +806,6 @@
 
                 if(body.length === 0) return showToast(`No enrolled users found in ${groupName}.`);
 
-                // AutoTable Generation Matrix
                 doc.autoTable({
                     startY: 85,
                     head: head,
@@ -836,7 +822,6 @@
                         0: { halign: 'left', cellWidth: 90, fontStyle: 'bold', fillColor: [248, 250, 252], fontSize: 7 } 
                     },
                     didParseCell: function(info) {
-                        // Parse matrix for 1st to 31st Dates
                         if (info.section === 'body' && info.column.index >= 1 && info.column.index <= data.days) {
                             const day = info.column.index;
                             const r = data.records[info.row.index]; 
@@ -854,12 +839,10 @@
                                     
                                     if (log.arr) {
                                         textArr.push(`A:${log.arr}`);
-                                        // Smart Logic: RED if arrival is greater than school start time
                                         if (log.arr > data.arrival_time) isRed = true; 
                                     }
                                     if (log.dep) {
                                         textArr.push(`D:${log.dep}`);
-                                        // Smart Logic: RED if departure is before school end time
                                         if (log.dep < data.departure_time) isRed = true;
                                     }
                                     
@@ -879,7 +862,6 @@
                                 }
                             }
                         }
-                        // Format summary columns
                         if (info.section === 'body' && info.column.index > data.days) {
                             info.cell.styles.fontStyle = 'bold';
                             info.cell.styles.fillColor = [248, 250, 252];
@@ -893,11 +875,10 @@
                 showToast('Smart PDF Register Downloaded!', 'success');
 
             } catch(e) { 
-                showToast('Execution Error during PDF Build. ' + e.message); 
+                showToast('Execution Error during PDF Build: ' + e.message); 
             }
         }
 
-        // --- ATTENDANCE (LIVE PANEL SYNC) ---
         let viewedClass = null;
         function toggleClassView(cls) {
             viewedClass = cls;
@@ -950,8 +931,13 @@
                     }
                     document.getElementById('staffAttTbody').innerHTML = html;
                     document.getElementById('staffAttDetailCount').innerText = `${presentCount} / ${data.length} IN`;
+                } else {
+                    const err = await res.json();
+                    document.getElementById('staffAttTbody').innerHTML = `<div class="col-span-full text-center text-red-500 py-16 text-sm font-bold tracking-wider">Error: ${err.message}</div>`;
                 }
-            } catch(e) {}
+            } catch(e) {
+                document.getElementById('staffAttTbody').innerHTML = `<div class="col-span-full text-center text-red-500 py-16 text-sm font-bold tracking-wider">Network Connection Error.</div>`;
+            }
         }
 
         async function toggleTeacherAtt(tid, targetStatus) {
@@ -1028,7 +1014,6 @@
             pollInterval = setInterval(() => { if(viewedClass) fetchLogs(); fetchSchoolStats(); }, 3000);
         }
 
-        // --- STUDENTS, CLASSES, STAFF CRUD & TIMETABLE MATRIX ---
         let schoolClasses = []; let schoolTeachers = []; let editingClassId = null; let editingTeacherId = null; let activeClsName = "";
 
         async function fetchClasses() {
@@ -1157,4 +1142,3 @@
     </script>
 </body>
 </html>
-
