@@ -20,94 +20,152 @@
                 <h1 class="text-xl font-bold tracking-tight">EduCore SaaS Central</h1>
             </div>
             <div class="flex items-center gap-4 text-sm font-medium shrink-0">
-                <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700/50">
-                    <i data-lucide="shield-alert" class="w-4 h-4 text-blue-400"></i>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Super Admin</span>
+                <button onclick="openGlobalSettingsModal()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition border border-slate-700 text-emerald-400">
+                    <i data-lucide="settings" class="w-4 h-4"></i> Global Rates
+                </button>
+                <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span class="text-slate-300">Super Admin</span>
                 </div>
-                
-                <button onclick="logout()" class="p-2 text-slate-400 hover:bg-slate-800 hover:text-red-400 rounded-full transition focus:outline-none flex items-center gap-1.5" title="Log out">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                    <span class="font-bold text-xs uppercase tracking-wider">Logout</span>
+                <button onclick="logout()" class="text-slate-400 hover:text-red-400 transition ml-2" title="Logout">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        <div class="flex justify-between items-end mb-8">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-                <h2 class="text-3xl font-bold tracking-tight text-slate-900">Registered Schools</h2>
-                <p class="text-slate-500 mt-1 text-sm">Manage tenant schools, billing limits, and credentials.</p>
+                <h2 class="text-2xl font-bold text-slate-900">Client Schools</h2>
+                <p class="text-sm text-slate-500 mt-1">Manage subscriptions, devices, and limits for all registered schools.</p>
             </div>
-            <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold inline-flex items-center gap-2 shadow-sm transition-all">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                Add New School
+            <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm hover:shadow active:scale-95">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i> Onboard New School
             </button>
         </div>
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-slate-500 uppercase bg-slate-50/80 border-b border-slate-200">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
                         <tr>
-                            <th class="px-6 py-4 font-semibold">School Details</th>
-                            <th class="px-6 py-4 font-semibold">Admin Credentials</th>
-                            <th class="px-6 py-4 font-semibold">Student Limit vs Actual</th>
-                            <th class="px-6 py-4 font-semibold">Status</th>
-                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                            <th class="p-4 whitespace-nowrap">School Details</th>
+                            <th class="p-4 whitespace-nowrap">Device Link (ESP32)</th>
+                            <th class="p-4 whitespace-nowrap">Validity & Limits</th>
+                            <th class="p-4 whitespace-nowrap">Students</th>
+                            <th class="p-4 text-right whitespace-nowrap">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="schoolTableBody" class="divide-y divide-slate-200">
-                        </tbody>
+                    <tbody id="schoolsList" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-slate-500 font-medium">Loading client data...</td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <div id="addModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-xl w-full max-w-lg shadow-2xl border border-slate-200 transform transition-all">
-            <div class="p-6 border-b border-slate-100">
-                <h3 class="text-lg font-bold text-slate-900" id="modalTitle">Add New Client School</h3>
-                <p class="text-sm text-slate-500">Configure limits and credentials.</p>
+    <div id="globalSettingsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+            <div class="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 flex justify-between items-center">
+                <h3 class="font-bold text-xl text-slate-900 flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-emerald-600"></i> Platform Pricing</h3>
+                <button onclick="closeGlobalSettingsModal()" class="text-slate-400 hover:text-slate-700 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="p-6 space-y-4">
-                <div class="space-y-2">
-                    <label class="text-sm font-semibold text-slate-700">School Name</label>
-                    <input type="text" id="schoolName" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="e.g. Springfield High">
+            <div class="p-4 sm:p-6 space-y-4">
+                <p class="text-xs font-bold text-slate-500 mb-2">These rates apply to dynamic QR recharges.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Monthly Subscription Rate (₹)</label>
+                    <input type="number" id="global_monthly_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. 500">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-700">Admin Login ID</label>
-                        <input type="text" id="schoolUsername" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="admin_xyz">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-700">Password</label>
-                        <input type="password" id="schoolPassword" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="New password">
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Per Message Rate (₹)</label>
+                    <input type="number" step="0.01" id="global_message_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. 0.20">
                 </div>
-                <div class="space-y-2 pt-2 border-t border-slate-100">
-                    <label class="text-sm font-bold text-slate-900 flex items-center justify-between">
-                        Maximum Student Limit <span class="text-xs font-normal text-slate-500 bg-slate-100 px-2 py-0.5 rounded">Crucial: Billing Control</span>
-                    </label>
-                    <p class="text-xs text-slate-500 mb-2">They cannot add more students than this limit.</p>
-                    <input type="number" id="schoolLimit" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm" value="250">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Master Admin UPI ID</label>
+                    <input type="text" id="global_admin_upi" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. educore@upi">
                 </div>
             </div>
-            <div class="flex items-center justify-end p-6 pt-0 gap-3">
-                <button onclick="closeModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg">Cancel</button>
-                <button onclick="saveSchool()" class="px-4 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg">Save Settings</button>
+            <div class="border-t border-slate-100 p-4 sm:p-6 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeGlobalSettingsModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-200 rounded-xl text-sm font-bold transition">Cancel</button>
+                <button onclick="saveGlobalSettings()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold transition shadow-sm">Save Global Settings</button>
             </div>
         </div>
     </div>
 
-    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2"></div>
+    <div id="schoolModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+            <div class="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 flex justify-between items-center">
+                <h3 id="modalTitle" class="font-bold text-xl text-slate-900">Onboard New School</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-4 sm:p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">School Full Name</label>
+                    <input type="text" id="schoolName" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Springfield High">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Admin Login ID</label>
+                        <input type="text" id="adminUsername" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. admin_springfield">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Admin Password</label>
+                        <input type="text" id="adminPassword" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave blank to keep current">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Student Capacity Limit</label>
+                    <input type="number" id="studentLimit" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 500" value="250">
+                </div>
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <label class="block text-sm font-bold text-blue-900 mb-1">Hardware Device Code (ESP32 MAC)</label>
+                    <input type="text" id="deviceCode" class="w-full border border-blue-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white font-mono" placeholder="e.g. 24:6F:28:AB:CD:EF">
+                    <p class="text-[10px] text-blue-600 mt-1 font-semibold">Links the physical scanner to this school's database.</p>
+                </div>
+            </div>
+            <div class="border-t border-slate-100 p-4 sm:p-6 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-200 rounded-xl text-sm font-bold transition">Cancel</button>
+                <button onclick="saveSchool()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition shadow-sm">Save Client</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="rechargeModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
+            <div class="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-amber-500"></i> Manual Recharge</h3>
+                <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-slate-700 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p id="rechargeSchoolName" class="text-sm font-bold text-slate-600 mb-4">School Name</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Set Validity Days</label>
+                    <input type="number" id="rech_val_days" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Set Message Limit</label>
+                    <input type="number" id="rech_msg_limit" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+            <div class="border-t border-slate-100 p-4 bg-slate-50 flex justify-end gap-2">
+                <button onclick="closeRechargeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-xl text-sm font-bold transition">Cancel</button>
+                <button onclick="processManualRecharge()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-bold transition shadow-sm">Update Account</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
     <script>
         lucide.createIcons();
-        
-        // YEH RAHI HAMARI FIX KI HUI LINE!
         const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
-        
+        let currentEditId = null;
+        let currentRechargeId = null;
+
         function showToast(message, type = 'error') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -115,13 +173,12 @@
             const borderColor = type === 'success' ? 'border-emerald-200' : 'border-red-200';
             const textColor = type === 'success' ? 'text-emerald-800' : 'text-red-800';
             const icon = type === 'success' ? 'check-circle' : 'alert-circle';
-            
-            toast.className = `flex items-center gap-2 p-4 rounded-xl border ${borderColor} ${bgColor} ${textColor} shadow-lg transform transition-all duration-300 translate-x-full`;
+
+            toast.className = `flex items-center gap-2 p-4 rounded-xl border ${borderColor} ${bgColor} ${textColor} shadow-lg transform transition-all duration-300 translate-x-full pointer-events-auto`;
             toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i><span class="font-medium text-sm">${message}</span>`;
-            
             container.appendChild(toast);
             lucide.createIcons();
-            
+
             requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
             setTimeout(() => {
                 toast.classList.add('translate-x-full');
@@ -129,205 +186,219 @@
             }, 3000);
         }
 
-        let schools = [];
+        async function fetchMasterSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/master_settings`);
+                if(res.ok) {
+                    const data = await res.json();
+                    document.getElementById('global_monthly_rate').value = data.monthly_rate;
+                    document.getElementById('global_message_rate').value = data.message_rate;
+                    document.getElementById('global_admin_upi').value = data.admin_upi_id;
+                }
+            } catch(e) {}
+        }
 
-        function renderSkeleton() {
-            const tbody = document.getElementById('schoolTableBody');
-            let skeletonHtml = '';
-            for(let i=0; i<3; i++) {
-                skeletonHtml += `
-                    <tr class="animate-pulse bg-white">
-                        <td class="px-6 py-4"><div class="h-4 bg-slate-200 rounded w-3/4 mb-2"></div><div class="h-3 bg-slate-100 rounded w-1/2"></div></td>
-                        <td class="px-6 py-4"><div class="h-4 bg-slate-200 rounded w-1/2 mb-2"></div><div class="h-3 bg-slate-100 rounded w-1/4"></div></td>
-                        <td class="px-6 py-4"><div class="h-2 bg-slate-200 rounded-full w-full mb-1 mt-1"></div></td>
-                        <td class="px-6 py-4"><div class="h-5 bg-slate-200 rounded-full w-16"></div></td>
-                        <td class="px-6 py-4 text-right"><div class="h-8 bg-slate-200 rounded w-8 inline-block"></div></td>
-                    </tr>
-                `;
-            }
-            tbody.innerHTML = skeletonHtml;
+        function openGlobalSettingsModal() {
+            fetchMasterSettings();
+            document.getElementById('globalSettingsModal').classList.remove('hidden');
+        }
+        function closeGlobalSettingsModal() { document.getElementById('globalSettingsModal').classList.add('hidden'); }
+        
+        async function saveGlobalSettings() {
+            const payload = {
+                monthly_rate: parseFloat(document.getElementById('global_monthly_rate').value) || 500,
+                message_rate: parseFloat(document.getElementById('global_message_rate').value) || 0.20,
+                admin_upi_id: document.getElementById('global_admin_upi').value.trim()
+            };
+            try {
+                const res = await fetch(`${API_BASE}/admin/master_settings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) { showToast('Global settings updated!', 'success'); closeGlobalSettingsModal(); }
+            } catch(e) { showToast('Failed to update global settings.'); }
         }
 
         async function fetchSchools() {
-            renderSkeleton();
-            const token = localStorage.getItem('auth_token');
-            if(!token) {
-                window.location.href = 'login.html';
-                return;
-            }
-
             try {
-                const response = await fetch(`${API_BASE}/admin/schools`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch(`${API_BASE}/admin/schools`);
+                if (!response.ok) throw new Error('Failed to fetch');
+                const schools = await response.json();
                 
-                if (!response.ok) {
-                    if(response.status === 401) window.location.href = 'login.html';
-                    throw new Error('Failed to fetch schools');
+                const container = document.getElementById('schoolsList');
+                if (schools.length === 0) {
+                    container.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium">No schools found. Add one to get started.</td></tr>`;
+                    return;
                 }
-                
-                const data = await response.json();
-                schools = data.schools || data;
-                renderTable();
+
+                let html = '';
+                schools.forEach(school => {
+                    const isExpiring = (school.validity_days || 0) < 5;
+                    const lowMsg = (school.message_limit || 0) < 100;
+                    
+                    html += `
+                        <tr class="hover:bg-slate-50 transition-colors group">
+                            <td class="p-4">
+                                <p class="font-bold text-slate-900">${school.name}</p>
+                                <div class="flex items-center gap-1 text-xs text-slate-500 mt-1 font-mono">
+                                    <i data-lucide="key" class="w-3 h-3"></i> ${school.admin_username}
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                ${school.device_code ? 
+                                    `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-700 font-mono border border-slate-200"><i data-lucide="cpu" class="w-3.5 h-3.5 text-blue-500"></i> ${school.device_code}</span>` 
+                                    : `<span class="text-xs font-medium text-slate-400 italic">No device linked</span>`}
+                            </td>
+                            <td class="p-4 space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isExpiring ? 'bg-red-100 text-red-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                                        ${school.validity_days || 0} Days
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lowMsg ? 'bg-amber-100 text-amber-700' : 'bg-blue-50 text-blue-700 border border-blue-200'}">
+                                        ${school.message_limit || 0} Msgs
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full bg-blue-500" style="width: ${(school.student_count / school.max_student_limit) * 100}%"></div>
+                                    </div>
+                                    <span class="text-xs font-bold text-slate-600">${school.student_count} / ${school.max_student_limit}</span>
+                                </div>
+                            </td>
+                            <td class="p-4 text-right">
+                                <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button onclick="openRechargeModal(${school.id}, '${school.name.replace(/'/g, "\\'")}', ${school.validity_days || 0}, ${school.message_limit || 0})" class="p-2 text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-lg transition tooltip" title="Manual Recharge">
+                                        <i data-lucide="zap" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="editSchool(${school.id})" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition" title="Edit School">
+                                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                                    </button>
+                                    <button onclick="deleteSchool(${school.id})" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition" title="Delete">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+                container.innerHTML = html;
+                lucide.createIcons();
             } catch (error) {
-                console.error(error);
-                showToast('Failed to load schools', 'error');
-                document.getElementById('schoolTableBody').innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Error loading data. Could not connect to server.</td></tr>`;
+                showToast('Failed to load schools');
             }
         }
 
-        function renderTable() {
-            const tbody = document.getElementById('schoolTableBody');
-            tbody.innerHTML = '';
-            if(!schools || schools.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">No schools found. Create one.</td></tr>`;
-                return;
-            }
-            schools.forEach(s => {
-                const limit = s.max_student_limit || s.limit || 0;
-                const count = s.count || s.student_count || 0;
-                const adminId = s.admin_username || s.adminId || 'N/A';
-                const perc = limit > 0 ? Math.min((count / limit) * 100, 100) : 0;
-                const isMax = count >= limit && limit > 0;
+        function openModal() {
+            currentEditId = null;
+            document.getElementById('modalTitle').innerText = 'Onboard New School';
+            document.getElementById('schoolName').value = '';
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('studentLimit').value = '250';
+            document.getElementById('deviceCode').value = '';
+            document.getElementById('schoolModal').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('schoolModal').classList.add('hidden'); }
+
+        async function editSchool(id) {
+            currentEditId = id;
+            try {
+                const response = await fetch(`${API_BASE}/admin/schools`);
+                const schools = await response.json();
+                const school = schools.find(s => s.id === id);
                 
-                tbody.innerHTML += `
-                    <tr class="bg-white hover:bg-slate-50/50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="font-semibold text-slate-900">${s.name}</div>
-                            <div class="text-slate-500 text-xs mt-0.5">ID: SCH-${s.id}</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="text-slate-900 font-mono text-xs bg-slate-100 px-2 py-1 rounded inline-block">${adminId}</div>
-                            <div class="text-slate-400 text-xs mt-1">Pwd: ••••••••</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-full bg-slate-100 rounded-full h-1.5 max-w-[100px]">
-                                    <div class="h-1.5 rounded-full ${isMax ? 'bg-red-500' : 'bg-blue-500'}" style="width: ${perc}%"></div>
-                                </div>
-                                <div class="font-medium text-xs whitespace-nowrap ${isMax ? 'text-red-600' : 'text-slate-600'}">
-                                    ${count.toLocaleString()} / ${limit.toLocaleString()}
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full flex items-center gap-1.5 w-fit ${isMax ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'}">
-                                <span class="w-1.5 h-1.5 rounded-full ${isMax ? 'bg-amber-500' : 'bg-emerald-500'}"></span>
-                                ${isMax ? 'Limit Reached' : 'Active'}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button onclick="openModal(${s.id})" class="text-blue-600 hover:text-blue-800 p-2 hover:bg-blue-50 rounded-lg transition-colors inline-flex items-center" title="Edit">
-                                <i data-lucide="edit" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="deleteSchool(${s.id})" class="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded-lg transition-colors inline-flex items-center" title="Delete">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            lucide.createIcons();
-        }
-
-        let editingId = null;
-
-        function openModal(id = null) {
-            const m = document.getElementById('addModal');
-            m.classList.remove('hidden');
-            editingId = id;
-            if(id) {
-                const s = schools.find(x => x.id === id);
-                document.getElementById('modalTitle').innerText = 'Edit School Limits';
-                document.getElementById('schoolName').value = s.name;
-                document.getElementById('schoolUsername').value = s.admin_username || s.adminId || '';
-                document.getElementById('schoolPassword').value = '';
-                document.getElementById('schoolPassword').placeholder = 'Leave blank to keep current';
-                document.getElementById('schoolLimit').value = s.max_student_limit || s.limit || 0;
-            } else {
-                document.getElementById('modalTitle').innerText = 'Add New Client School';
-                document.getElementById('schoolName').value = '';
-                document.getElementById('schoolUsername').value = '';
-                document.getElementById('schoolPassword').value = '';
-                document.getElementById('schoolPassword').placeholder = 'New password';
-                document.getElementById('schoolLimit').value = 250;
+                if (school) {
+                    document.getElementById('modalTitle').innerText = 'Edit School details';
+                    document.getElementById('schoolName').value = school.name;
+                    document.getElementById('adminUsername').value = school.admin_username;
+                    document.getElementById('adminPassword').value = ''; // Don't show current password
+                    document.getElementById('studentLimit').value = school.max_student_limit;
+                    document.getElementById('deviceCode').value = school.device_code || '';
+                    document.getElementById('schoolModal').classList.remove('hidden');
+                }
+            } catch(e) {
+                showToast('Error loading school details');
             }
-        }
-
-        function closeModal() {
-            document.getElementById('addModal').classList.add('hidden');
         }
 
         async function saveSchool() {
-            const name = document.getElementById('schoolName').value.trim();
-            const uname = document.getElementById('schoolUsername').value.trim();
-            const pwd = document.getElementById('schoolPassword').value;
-            const lim = parseInt(document.getElementById('schoolLimit').value) || 0;
-            
-            if(!name || !uname) {
-                showToast('Name and Admin Login ID are required');
-                return;
-            }
-            if(!editingId && !pwd) {
-                showToast('Password is required for new schools');
+            const data = {
+                name: document.getElementById('schoolName').value,
+                admin_username: document.getElementById('adminUsername').value,
+                max_student_limit: parseInt(document.getElementById('studentLimit').value),
+                device_code: document.getElementById('deviceCode').value.trim()
+            };
+
+            const pwd = document.getElementById('adminPassword').value;
+            if (pwd) data.admin_password = pwd;
+
+            if (!data.name || !data.admin_username) {
+                showToast('Name and Admin ID are required');
                 return;
             }
 
-            const token = localStorage.getItem('auth_token');
-            const payload = { 
-                name: name, 
-                admin_username: uname, 
-                max_student_limit: lim 
-            };
-            if(pwd) payload.admin_password = pwd;
+            const url = currentEditId ? `${API_BASE}/admin/schools/${currentEditId}` : `${API_BASE}/admin/schools`;
+            const method = currentEditId ? 'PUT' : 'POST';
 
             try {
-                let url = `${API_BASE}/admin/schools`;
-                let method = 'POST';
-                if(editingId) {
-                    url = `${API_BASE}/admin/schools/${editingId}`;
-                    method = 'PUT'; // or PATCH
-                }
-                
                 const response = await fetch(url, {
                     method: method,
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(payload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
                 });
-                
+
                 if (response.ok) {
-                    showToast(editingId ? 'School updated successfully' : 'School created successfully', 'success');
+                    showToast(currentEditId ? 'School updated successfully' : 'School created successfully', 'success');
                     closeModal();
                     fetchSchools();
                 } else {
                     const error = await response.json();
                     showToast(error.message || 'Failed to save school');
                 }
-            } catch(e) {
-                showToast('Network error while saving');
-            }
+            } catch(e) { showToast('Network error while saving'); }
         }
 
-        document.addEventListener('DOMContentLoaded', fetchSchools);
+        function openRechargeModal(id, name, currentDays, currentMsgs) {
+            currentRechargeId = id;
+            document.getElementById('rechargeSchoolName').innerText = name;
+            document.getElementById('rech_val_days').value = currentDays;
+            document.getElementById('rech_msg_limit').value = currentMsgs;
+            document.getElementById('rechargeModal').classList.remove('hidden');
+        }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'login.html';
+        function closeRechargeModal() { document.getElementById('rechargeModal').classList.add('hidden'); }
+
+        async function processManualRecharge() {
+            if(!currentRechargeId) return;
+            const data = {
+                validity_days: parseInt(document.getElementById('rech_val_days').value) || 0,
+                message_limit: parseInt(document.getElementById('rech_msg_limit').value) || 0
+            };
+            try {
+                const response = await fetch(`${API_BASE}/admin/schools/${currentRechargeId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    showToast('Account Recharged Successfully!', 'success');
+                    closeRechargeModal();
+                    fetchSchools();
+                } else showToast('Failed to update recharge.');
+            } catch(e) { showToast('Network Error'); }
         }
 
         async function deleteSchool(id) {
-            if(!confirm("Are you sure you want to delete this school? This action is irreversible.")) return;
+            if(!confirm("Are you sure you want to delete this school? This action is irreversible and deletes all associated students and attendance data.")) return;
 
-            const token = localStorage.getItem('auth_token');
             try {
-                const response = await fetch(`${API_BASE}/admin/schools/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
+                const response = await fetch(`${API_BASE}/admin/schools/${id}`, { method: 'DELETE' });
                 if (response.ok) {
                     showToast('School deleted successfully', 'success');
                     fetchSchools();
@@ -335,10 +406,16 @@
                     const error = await response.json();
                     showToast(error.message || 'Failed to delete school');
                 }
-            } catch(e) {
-                showToast('Network error while deleting');
-            }
+            } catch(e) { showToast('Network error while deleting'); }
         }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', fetchSchools);
     </script>
 </body>
 </html>
