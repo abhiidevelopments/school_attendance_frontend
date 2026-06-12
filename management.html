@@ -14,10 +14,8 @@
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex font-sans overflow-hidden">
-    <!-- Mobile Sidebar Backdrop -->
     <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/50 z-30 hidden md:hidden" onclick="toggleSidebar()"></div>
 
-    <!-- Sidebar -->
     <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 h-screen absolute md:relative z-40 transition-transform -translate-x-full md:translate-x-0">
         <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
             <h1 id="sidebarSchoolName" class="text-white font-bold text-lg tracking-tight truncate">Loading...</h1>
@@ -42,6 +40,9 @@
             <button onclick="switchTab('staff')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="staff">
                 <i data-lucide="users" class="w-4 h-4"></i> Staff Directory
             </button>
+            <button onclick="switchTab('billing')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="billing">
+                <i data-lucide="credit-card" class="w-4 h-4"></i> Billing & Recharge
+            </button>
             <button onclick="switchTab('holidays')" class="tab-btn w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white" data-target="holidays">
                 <i data-lucide="calendar" class="w-4 h-4"></i> Holidays
             </button>
@@ -51,9 +52,9 @@
                 <i data-lucide="settings" class="w-4 h-4"></i> School Settings
             </button>
             <div class="flex items-center gap-3 px-2">
-                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">SA</div>
+                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">A</div>
                 <div class="text-sm">
-                    <p class="text-white font-medium">System Admin</p>
+                    <p class="text-white font-medium">School Admin</p>
                     <button onclick="logout()" class="text-slate-500 text-xs hover:text-white transition">Sign out</button>
                 </div>
             </div>
@@ -69,9 +70,15 @@
                 <h2 id="headerTitle" class="text-xl font-bold text-slate-900 capitalize truncate">Attendance Module</h2>
             </div>
             <div class="flex items-center gap-4 text-sm shrink-0">
-                <span class="hidden sm:inline-block text-slate-500 bg-slate-100 px-3 py-1 rounded-full font-medium border border-slate-200">Session: 2026-2027</span>
+                <div class="hidden md:flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-full text-xs font-bold shadow-sm">
+                        <i data-lucide="clock" class="w-3.5 h-3.5"></i> <span id="headerValidity">-- Days</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-full text-xs font-bold shadow-sm">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i> <span id="headerMessages">-- Msgs</span>
+                    </div>
+                </div>
 
-                <!-- Notification Bell -->
                 <div class="relative">
                     <button id="notifBtn" class="relative p-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 rounded-full transition focus:outline-none" onclick="toggleNotifications()">
                         <i data-lucide="bell" class="w-5 h-5"></i>
@@ -96,10 +103,18 @@
 
         <div class="flex-1 overflow-auto p-4 md:p-8 pb-32">
 
-            <!-- ATTENDANCE MODULE -->
-            <div id="attendance" class="module active max-w-4xl space-y-6">
-                <div id="attendanceGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Dynamic class cards rendered here -->
+            <div id="attendance" class="module active max-w-5xl space-y-6">
+                <div id="attendanceGrid" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-200 p-5 shadow-sm cursor-pointer hover:shadow-md transition-all group" onclick="toggleStaffAttView()">
+                        <div class="p-2 bg-purple-100 text-purple-600 rounded-lg inline-block mb-3 group-hover:scale-110 transition-transform"><i data-lucide="users-round" class="w-5 h-5"></i></div>
+                        <p class="text-slate-500 text-xs font-bold uppercase">Staff & Teachers</p>
+                        <p class="text-2xl font-bold text-slate-900 mt-1">Directory</p>
+                        <div class="mt-2 flex justify-between text-xs">
+                            <span class="text-purple-600 font-bold">Track Staff</span>
+                            <span class="text-slate-400 font-medium">Live logs</span>
+                        </div>
+                    </div>
+                    <div id="studentClassCardsContainer" class="contents"></div>
                 </div>
 
                 <div id="attendanceDetail" class="hidden space-y-4">
@@ -111,18 +126,30 @@
                             <h3 class="font-bold text-lg" id="actClassTitle">Detailed List</h3>
                             <span id="attDetailCount" class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded font-semibold shrink-0"></span>
                         </div>
-                        <!-- CARD LIST replaces <table> in attendance detail -->
                         <div id="attTbody" class="p-4 space-y-3">
                             <div class="text-center text-slate-400 py-8 animate-pulse text-sm font-medium">Loading class roster and logs...</div>
                         </div>
                     </div>
                 </div>
+
+                <div id="staffAttendanceDetail" class="hidden space-y-4">
+                    <button onclick="goBackToAttendanceHub()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Hub
+                    </button>
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center gap-2">
+                            <h3 class="font-bold text-lg text-purple-900"><i data-lucide="users" class="w-5 h-5 inline-block mr-1"></i> Today's Staff Attendance</h3>
+                            <span id="staffAttDetailCount" class="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded font-bold shrink-0"></span>
+                        </div>
+                        <div id="staffAttTbody" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div class="col-span-full text-center text-slate-400 py-8 text-sm font-medium">Loading staff roster...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- STUDENTS MODULE -->
             <div id="students" class="module max-w-5xl space-y-8">
                 <div id="studentHomeView" class="space-y-8">
-                    <!-- Bulk Import -->
                     <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-5">
                         <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
                             <div class="p-2 bg-blue-50 rounded-lg">
@@ -141,18 +168,15 @@
                         </div>
                     </div>
 
-                    <!-- Individual Management (Class-wise) -->
                     <div>
                         <div class="flex justify-between items-center mb-5">
                             <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2"><i data-lucide="users" class="w-5 h-5 text-slate-400"></i> Class-Wise Overview</h3>
                         </div>
                         <div id="classesGrid" class="grid grid-cols-2 md:grid-cols-4 gap-5">
-                            <!-- Dynamic class tiles -->
-                        </div>
+                            </div>
                     </div>
                 </div>
 
-                <!-- Students Listing: CARD GRID replaces <table> -->
                 <div id="studentClassDetail" class="hidden space-y-4">
                     <button onclick="goBackToStudentHome()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Classes
@@ -169,14 +193,12 @@
                                 <i data-lucide="loader-2" class="w-6 h-6 text-blue-600 animate-spin mb-2"></i>
                                 <span class="text-sm font-medium text-slate-600">Loading...</span>
                             </div>
-                            <!-- Card grid injected by JS -->
                             <div id="studentMgmtTbody" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TIMETABLE MODULE — keeps <table> intentionally (grid editor) -->
             <div id="timetable" class="module max-w-full pb-4">
                 <div class="mb-4 flex justify-between items-center">
                     <p class="text-slate-600 text-sm md:text-base">Click any empty cell to assign a teacher and subject.</p>
@@ -189,7 +211,6 @@
                 </div>
             </div>
 
-            <!-- FEE MODULE: CARD GRID replaces <table> -->
             <div id="fees" class="module max-w-6xl space-y-6 pb-48">
                 <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mt-6">
                     <div class="border-b border-slate-100 bg-slate-50 p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -207,14 +228,12 @@
                             <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700 transition shrink-0" onclick="loadFeeStudents()">Fetch Students</button>
                         </div>
                     </div>
-                    <!-- Fee cards injected by JS -->
                     <div id="feeStudentList" class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div class="col-span-full text-center py-8 text-slate-400">Select a class and click "Fetch Students" above.</div>
                     </div>
                 </div>
             </div>
 
-            <!-- COMMS MODULE -->
             <div id="comms" class="module">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl">
                     <div class="bg-white border border-slate-200 rounded-2xl shadow-lg shadow-slate-200/40 overflow-hidden relative group hover:border-emerald-200 transition-colors">
@@ -259,34 +278,115 @@
                 </div>
             </div>
 
-            <!-- STAFF MODULE: CARD GRID replaces <table> -->
-            <div id="staff" class="module max-w-4xl">
-                <div class="flex justify-between items-center mb-4 gap-4">
-                    <h3 class="font-bold text-lg flex items-center gap-2"><i data-lucide="users-round" class="w-5 h-5 text-blue-600"></i> Staff Login Management</h3>
+            <div id="staff" class="module max-w-5xl space-y-6">
+                
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-5 flex flex-col md:flex-row gap-4 items-end">
+                    <div class="w-full md:w-1/3">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Select Teacher</label>
+                        <select id="reportTeacherSelect" class="w-full border border-slate-300 rounded-lg p-2.5 mt-1 text-sm font-medium focus:ring-2 focus:ring-blue-500"></select>
+                    </div>
+                    <div class="w-full md:w-1/4">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Month</label>
+                        <input type="month" id="reportMonth" class="w-full border border-slate-300 rounded-lg p-2.5 mt-1 text-sm font-medium focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button onclick="generateTeacherReport()" class="w-full md:w-auto bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                        <i data-lucide="file-bar-chart-2" class="w-4 h-4"></i> Get Report
+                    </button>
+                </div>
+
+                <div id="reportResult" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                    <h4 class="font-bold text-emerald-900 mb-2">Monthly Attendance Summary</h4>
+                    <p class="text-sm text-emerald-800" id="reportResultText"></p>
+                </div>
+
+                <div class="flex justify-between items-center mb-4 gap-4 mt-8 border-t border-slate-200 pt-6">
+                    <h3 class="font-bold text-lg flex items-center gap-2"><i data-lucide="users-round" class="w-5 h-5 text-blue-600"></i> Staff Directory & Login IDs</h3>
                     <button onclick="openTeacherModal()" class="bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 text-white px-3 md:px-4 py-2 rounded-lg text-sm font-bold transition-all flex gap-2 shrink-0">
                         <i data-lucide="user-plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Add Teacher</span><span class="sm:hidden">Add</span>
                     </button>
                 </div>
-                <!-- Staff cards injected by JS into staffTbody -->
-                <div id="staffTbody" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <div id="staffTbody" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="col-span-full text-center py-8 text-slate-400 text-sm">Loading staff...</div>
                 </div>
             </div>
 
-            <!-- SETTINGS MODULE -->
-            <div id="settings" class="module max-w-2xl space-y-6">
-                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-6">
-                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-2 flex items-center gap-2"><i data-lucide="clock" class="w-5 h-5 text-slate-400"></i> Academic & Timing Settings</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2"><label class="text-sm font-semibold text-slate-700">Total Classes</label><input type="number" value="12" class="w-full p-2 border border-slate-300 rounded-lg text-sm"></div>
-                        <div class="space-y-2"><label class="text-sm font-semibold text-slate-700">Periods in Day</label><input type="number" value="8" class="w-full p-2 border border-slate-300 rounded-lg text-sm"></div>
-                        <div class="space-y-2"><label class="text-sm font-semibold text-slate-700">School Start</label><input type="time" value="08:00" class="w-full p-2 border border-slate-300 rounded-lg text-sm"></div>
-                        <div class="space-y-2"><label class="text-sm font-semibold text-slate-700">Absent Alert Time</label><input type="time" value="09:30" class="w-full p-2 border border-slate-300 rounded-lg text-sm"></div>
+            <div id="billing" class="module max-w-5xl space-y-6">
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-8">
+                    <h3 class="font-black text-2xl mb-2 text-slate-900">Account Recharge</h3>
+                    <p class="text-sm text-slate-500 mb-8">Increase your school's validity or message quota dynamically.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Add Validity (Months)</label>
+                                <select id="rech_months" class="w-full border-2 border-slate-100 p-4 rounded-2xl bg-slate-50 font-bold text-slate-700 mt-1 focus:border-blue-500 focus:outline-none transition" onchange="calcRecharge()">
+                                    <option value="0">0 Months</option>
+                                    <option value="3">3 Months</option>
+                                    <option value="4">4 Months</option>
+                                    <option value="5">5 Months</option>
+                                    <option value="6">6 Months</option>
+                                    <option value="12">12 Months</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Add SMS Messages</label>
+                                <input type="number" id="rech_msgs" placeholder="e.g. 500" class="w-full border-2 border-slate-100 p-4 rounded-2xl bg-slate-50 font-bold text-slate-700 mt-1 focus:border-blue-500 focus:outline-none transition" oninput="calcRecharge()">
+                            </div>
+                            <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-3xl flex justify-between items-center shadow-lg shadow-blue-500/30 mt-4">
+                                <div>
+                                    <span class="font-bold text-blue-100 text-sm block">Total Payable</span>
+                                    <span class="text-3xl font-black">₹<span id="rech_total">0</span></span>
+                                </div>
+                                <i data-lucide="receipt" class="w-8 h-8 text-blue-300 opacity-50"></i>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-8 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50">
+                            <div id="rech_qr_box" class="bg-white w-48 h-48 rounded-2xl flex flex-col items-center justify-center text-slate-400 text-sm font-medium text-center p-4 border border-slate-100 shadow-sm transition-all">
+                                <i data-lucide="qr-code" class="w-8 h-8 mb-2 opacity-50"></i>
+                                Select plan to generate QR
+                            </div>
+                            <p class="text-xs text-slate-500 mt-6 font-medium text-center max-w-[200px] leading-relaxed">
+                                <span class="text-blue-600 font-bold">Important:</span> If you paid, this recharge will be added to your account within 24 hours.
+                            </p>
+                        </div>
                     </div>
-                    <button class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium" onclick="alert('Settings Saved')">Save Configuration</button>
+                </div>
+            </div>
+
+            <div id="settings" class="module max-w-4xl space-y-6">
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-6">
+                    <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-2 flex items-center gap-2"><i data-lucide="clock" class="w-5 h-5 text-blue-600"></i> Smart Attendance & Timings</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2"><label class="text-xs font-bold text-slate-500 uppercase tracking-wide">School Start Time</label><input type="time" id="set_arr" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 bg-slate-50"></div>
+                        <div class="space-y-2"><label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Cut-Off Time (Late Mark)</label><input type="time" id="set_cut" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 bg-slate-50"></div>
+                        <div class="space-y-2"><label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Departure Time</label><input type="time" id="set_dep" class="w-full p-2.5 border border-slate-300 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 bg-slate-50"></div>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-slate-100">
+                        <h3 class="font-bold text-lg mb-4 flex items-center gap-2"><i data-lucide="message-square" class="w-5 h-5 text-emerald-600"></i> Automated Messaging Templates</h3>
+                        <label class="flex items-center gap-3 cursor-pointer bg-emerald-50 border border-emerald-200 p-4 rounded-xl w-full mb-4">
+                            <input type="checkbox" id="set_send_dep" class="w-4 h-4 text-emerald-600 rounded">
+                            <span class="text-sm font-bold text-emerald-900">Send WhatsApp Notification on Student Departure</span>
+                        </label>
+
+                        <div class="space-y-4">
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Arrival Template</label>
+                                <textarea id="set_arr_msg" rows="2" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 bg-white font-medium"></textarea>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-xs font-bold text-slate-500 uppercase tracking-wide">Departure Template</label>
+                                <textarea id="set_dep_msg" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 bg-white font-medium"></textarea>
+                            </div>
+                            <p class="text-[10px] font-bold text-slate-400 tracking-wider">AVAILABLE PLACEHOLDERS: <span class="text-blue-500">{student_name}</span>, <span class="text-blue-500">{school_name}</span>, <span class="text-blue-500">{time}</span>, <span class="text-blue-500">{homework_link}</span></p>
+                        </div>
+                    </div>
+                    
+                    <button class="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 rounded-xl text-sm font-bold transition shadow-md" onclick="saveSchoolSettings()">Save Smart Configurations</button>
                 </div>
 
-                <!-- Class Management: small list stays as-is (not student data) -->
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-4">
                     <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                         <h3 class="font-bold text-lg flex items-center gap-2 text-slate-800"><i data-lucide="folder-open" class="w-5 h-5 text-slate-400"></i> Class Management</h3>
@@ -294,14 +394,12 @@
                             <i data-lucide="plus" class="w-4 h-4"></i> Add New Class
                         </button>
                     </div>
-                    <!-- Compact class list cards -->
                     <div id="settingsClassTableBody" class="space-y-2">
                         <div class="text-center py-6 text-slate-400 text-sm">Loading classes...</div>
                     </div>
                 </div>
             </div>
 
-            <!-- HOLIDAYS MODULE -->
             <div id="holidays" class="module max-w-2xl">
                 <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-6 space-y-4">
                     <h3 class="font-bold text-lg border-b border-slate-100 pb-3 mb-2 flex items-center gap-2"><i data-lucide="sun" class="w-5 h-5 text-amber-500"></i> Declare Holiday</h3>
@@ -310,15 +408,14 @@
                         <div><label class="text-sm font-semibold">Start Date</label><input type="date" class="w-full p-2 border border-slate-300 rounded-lg mt-1"></div>
                         <div><label class="text-sm font-semibold">End Date</label><input type="date" class="w-full p-2 border border-slate-300 rounded-lg mt-1"></div>
                     </div>
-                    <button class="w-full bg-slate-900 text-white rounded-lg py-2 mt-4 font-medium" onclick="alert('Added to Calendar')">Add to Calendar</button>
+                    <button class="w-full bg-slate-900 text-white rounded-lg py-3 mt-4 font-bold" onclick="alert('Added to Calendar')">Add to Calendar</button>
                 </div>
             </div>
 
         </div>
     </main>
 
-    <!-- Add/Edit Class Modal -->
-    <div id="classModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4 hidden">
+    <div id="classModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border border-slate-200">
             <h3 id="classModalTitle" class="font-bold text-lg mb-4">Add New Class</h3>
             <div class="space-y-4">
@@ -334,8 +431,7 @@
         </div>
     </div>
 
-    <!-- Add/Edit Student Modal -->
-    <div id="studentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4 hidden">
+    <div id="studentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border border-slate-200">
             <h3 class="font-bold text-lg mb-4">Add New Student</h3>
             <div class="space-y-4">
@@ -351,8 +447,7 @@
         </div>
     </div>
 
-    <!-- Add/Edit Teacher Modal -->
-    <div id="teacherModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4 hidden">
+    <div id="teacherModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border border-slate-200">
             <h3 id="teacherModalTitle" class="font-bold text-lg mb-4">Add Teacher</h3>
             <div class="space-y-4">
@@ -373,8 +468,7 @@
         </div>
     </div>
 
-    <!-- Timetable Cell Click Modal -->
-    <div id="ttModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-sm p-4 hidden">
+    <div id="ttModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm border border-slate-200">
             <h3 class="font-bold text-lg mb-1">Assign Class</h3>
             <p class="text-slate-500 text-sm mb-4" id="ttModalDesc">Period 1 • Class 9A</p>
@@ -392,7 +486,6 @@
         </div>
     </div>
 
-    <!-- Class Fee Structure Modal -->
     <div id="feeStructureModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md border border-slate-200">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
@@ -416,12 +509,21 @@
         lucide.createIcons();
         const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
         let pollInterval;
+        let globalMasterRates = { monthly_rate: 500, message_rate: 0.20, admin_upi_id: 'educore@upi' };
 
-        // Show actual logged-in school name (set during login)
+        // Set School Name in Sidebar
         const schoolNameEl = document.getElementById('sidebarSchoolName');
         if (schoolNameEl) {
             const storedSchoolName = localStorage.getItem('user_name');
             schoolNameEl.innerText = (storedSchoolName && storedSchoolName.trim() !== '') ? storedSchoolName : 'My School';
+        }
+
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                'School-Id': localStorage.getItem('school_id')
+            };
         }
 
         function logout() {
@@ -439,7 +541,6 @@
 
             toast.className = `flex items-center gap-2 p-4 rounded-xl border ${borderColor} ${bgColor} ${textColor} shadow-lg transform transition-all duration-300 translate-x-full pointer-events-auto`;
             toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5 inline-block align-middle mr-2 mt-[-3px]"></i><span class="font-medium text-sm align-middle">${message}</span>`;
-
             container.appendChild(toast);
             lucide.createIcons();
 
@@ -481,45 +582,157 @@
             } else {
                 clearInterval(pollInterval);
             }
+            if (tabId === 'students') goBackToStudentHome();
+            if (tabId === 'students' || tabId === 'attendance' || tabId === 'timetable' || tabId === 'settings' || tabId === 'fees') fetchClasses();
+            if (tabId === 'staff' || tabId === 'timetable') fetchStaff();
+            if (tabId === 'fees') fetchFees();
+            if (tabId === 'billing') fetchMasterRatesForRecharge();
+            if (tabId === 'settings') loadSchoolSettings();
+        }
 
-            if (tabId === 'students') {
-                goBackToStudentHome();
-            }
+        // --- GLOBAL STATS ---
+        async function fetchSchoolStats() {
+            try {
+                const res = await fetch(`${API_BASE}/school/stats`, { headers: getHeaders() });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('headerValidity').innerText = `${data.validity_days} Days`;
+                    document.getElementById('headerMessages').innerText = `${data.message_limit} Msgs`;
+                }
+            } catch(e) {}
+        }
+        
+        async function fetchMasterRatesForRecharge() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/master_settings`);
+                if(res.ok) {
+                    globalMasterRates = await res.json();
+                    calcRecharge();
+                }
+            } catch(e){}
+        }
 
-            if (tabId === 'students' || tabId === 'attendance' || tabId === 'timetable' || tabId === 'settings') {
-                fetchClasses();
-            }
-            if (tabId === 'staff' || tabId === 'timetable' || tabId === 'settings') {
-                fetchStaff();
-            }
-            if (tabId === 'fees') {
-                fetchFees();
+        // --- BILLING / RECHARGE LOGIC ---
+        function calcRecharge() {
+            const months = parseInt(document.getElementById('rech_months').value) || 0;
+            const msgs = parseInt(document.getElementById('rech_msgs').value) || 0;
+            
+            const total = (months * globalMasterRates.monthly_rate) + (msgs * globalMasterRates.message_rate);
+            document.getElementById('rech_total').innerText = total.toFixed(2);
+            
+            const qrBox = document.getElementById('rech_qr_box');
+            if(total > 0) {
+                const sName = localStorage.getItem('user_name') || 'School';
+                let note = '';
+                if(months > 0 && msgs > 0) note = `${sName} - Sub & Msg Topup`;
+                else if (months > 0) note = `${sName} - Monthly Recharge - ${months} Months`;
+                else note = `${sName} - Message Recharge - ${msgs} Msgs`;
+                
+                const upiStr = `upi://pay?pa=${globalMasterRates.admin_upi_id}&pn=EduCoreSaaS&am=${total.toFixed(2)}&tn=${note}&cu=INR`;
+                qrBox.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiStr)}" class="rounded-xl w-full h-full object-contain">`;
+            } else {
+                qrBox.innerHTML = `<i data-lucide="qr-code" class="w-8 h-8 mb-2 opacity-50"></i> Select plan to generate QR`;
+                lucide.createIcons();
             }
         }
 
-        function getHeaders() {
-            return {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
-                'School-Id': localStorage.getItem('school_id')
+        // --- SETTINGS LOGIC ---
+        async function loadSchoolSettings() {
+            try {
+                const res = await fetch(`${API_BASE}/school/settings`, { headers: getHeaders() });
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('set_arr').value = data.arrival_time || '08:00';
+                    document.getElementById('set_cut').value = data.cut_off_time || '08:30';
+                    document.getElementById('set_dep').value = data.departure_time || '14:00';
+                    document.getElementById('set_send_dep').checked = data.send_departure_msg !== false;
+                    document.getElementById('set_arr_msg').value = data.arrival_msg_template || '';
+                    document.getElementById('set_dep_msg').value = data.departure_msg_template || '';
+                }
+            } catch(e) {}
+        }
+
+        async function saveSchoolSettings() {
+            const payload = {
+                arrival_time: document.getElementById('set_arr').value,
+                cut_off_time: document.getElementById('set_cut').value,
+                departure_time: document.getElementById('set_dep').value,
+                send_departure_msg: document.getElementById('set_send_dep').checked,
+                arrival_msg_template: document.getElementById('set_arr_msg').value,
+                departure_msg_template: document.getElementById('set_dep_msg').value
             };
+            try {
+                const res = await fetch(`${API_BASE}/school/settings`, { method: 'POST', headers: getHeaders(), body: JSON.stringify(payload) });
+                if(res.ok) showToast('Smart Configurations Saved Successfully!', 'success');
+                else showToast('Failed to save settings.');
+            } catch(e) { showToast('Network Error'); }
         }
 
-        // ── ATTENDANCE ────────────────────────────────────────────────────────
+        // --- ATTENDANCE (STAFF & STUDENTS) ---
         let viewedClass = null;
+
         function toggleClassView(cls) {
             viewedClass = cls;
             document.getElementById('attendanceGrid').classList.add('hidden');
+            document.getElementById('staffAttendanceDetail').classList.add('hidden');
             document.getElementById('attendanceDetail').classList.remove('hidden');
             document.getElementById('actClassTitle').innerText = `Detailed Live List: Class ${cls}`;
-            document.getElementById('attTbody').innerHTML = `<div class="text-center text-slate-500 animate-pulse py-8 text-sm font-medium">Loading class roster and logs...</div>`;
+            document.getElementById('attTbody').innerHTML = `<div class="text-center text-slate-500 animate-pulse py-8 text-sm font-medium">Loading class roster...</div>`;
             startLivePolling();
+        }
+
+        function toggleStaffAttView() {
+            viewedClass = null;
+            document.getElementById('attendanceGrid').classList.add('hidden');
+            document.getElementById('attendanceDetail').classList.add('hidden');
+            document.getElementById('staffAttendanceDetail').classList.remove('hidden');
+            document.getElementById('staffAttTbody').innerHTML = `<div class="col-span-full text-center text-slate-400 py-8 text-sm font-medium animate-pulse">Loading staff roster...</div>`;
+            fetchStaffAtt();
         }
 
         function goBackToAttendanceHub() {
             viewedClass = null;
-            document.getElementById('attendanceGrid').classList.remove('hidden');
             document.getElementById('attendanceDetail').classList.add('hidden');
+            document.getElementById('staffAttendanceDetail').classList.add('hidden');
+            document.getElementById('attendanceGrid').classList.remove('hidden');
+            clearInterval(pollInterval);
+        }
+
+        async function fetchStaffAtt() {
+            try {
+                const res = await fetch(`${API_BASE}/attendance/staff`, { headers: getHeaders() });
+                if(res.ok) {
+                    const data = await res.json();
+                    let presentCount = 0;
+                    let html = '';
+                    if(data.length === 0) {
+                        html = `<div class="col-span-full text-center text-slate-400 py-8 text-sm">No staff configured yet.</div>`;
+                    } else {
+                        data.forEach(t => {
+                            if(t.p) presentCount++;
+                            html += `
+                            <div class="bg-white rounded-xl border ${t.p ? 'border-emerald-200' : 'border-rose-200'} shadow-sm p-4 flex flex-col gap-3">
+                                <div class="flex justify-between items-start">
+                                    <div><p class="font-bold text-slate-900 text-sm">${t.name}</p><p class="text-[10px] text-slate-400 font-mono mt-0.5">${t.id}</p></div>
+                                    <span class="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold border ${t.p ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}">${t.p ? '● Present' : '○ Absent'}</span>
+                                </div>
+                                <button onclick="toggleTeacherAtt('${t.id}', '${t.p ? 'absent' : 'present'}')" class="w-full py-2 rounded-lg text-xs font-bold transition ${t.p ? 'bg-rose-50 text-rose-600 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'}">
+                                    ${t.p ? 'Mark Absent' : 'Mark Present'}
+                                </button>
+                            </div>`;
+                        });
+                    }
+                    document.getElementById('staffAttTbody').innerHTML = html;
+                    document.getElementById('staffAttDetailCount').innerText = `${presentCount} / ${data.length} Present`;
+                }
+            } catch(e) {}
+        }
+
+        async function toggleTeacherAtt(tid, targetStatus) {
+            try {
+                const res = await fetch(`${API_BASE}/attendance/staff`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({id: tid, status: targetStatus})});
+                if(res.ok) fetchStaffAtt();
+            } catch(e) { showToast('Error updating staff attendance'); }
         }
 
         async function fetchLogs() {
@@ -546,7 +759,7 @@
                     });
 
                     let presentCount = 0;
-                    let html = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">`;
+                    let html = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">`;
                     studentsStatus.forEach(student => {
                         const studentId = student.id;
                         const isPresent = student.p;
@@ -558,9 +771,9 @@
                             <div class="flex items-start justify-between gap-2">
                                 <div>
                                     <p class="font-bold text-slate-900 text-sm leading-tight">${student.name}</p>
-                                    <span class="font-mono text-xs font-bold text-slate-400">Roll ${roll}</span>
+                                    <span class="font-mono text-[10px] font-bold text-slate-400">Roll ${roll}</span>
                                 </div>
-                                <span class="shrink-0 px-2 py-0.5 rounded-full text-xs font-bold border
+                                <span class="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold border
                                     ${isPresent ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}">
                                     ${isPresent ? '● Present' : '○ Absent'}
                                 </span>
@@ -576,97 +789,110 @@
 
                     const attTbody = document.getElementById('attTbody');
                     if (attTbody) {
-                        if (studentsStatus.length) {
-                            attTbody.innerHTML = html;
-                        } else {
-                            attTbody.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">No students found in Class ${viewedClass}.</div>`;
-                        }
+                        if (studentsStatus.length) attTbody.innerHTML = html;
+                        else attTbody.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">No students found in Class ${viewedClass}.</div>`;
                     }
                     const countEl = document.getElementById('attDetailCount');
                     if (countEl) countEl.innerText = `${presentCount} / ${studentsStatus.length} Present`;
-                    lucide.createIcons();
-                } else {
-                    const res = await fetch(`${API_BASE}/logs`, { headers: getHeaders() });
-                    if(!res.ok) return;
-                    const logs = await res.json();
-
-                    let html = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">`;
-                    logs.slice(0, 5).forEach((log) => {
-                        const isAbs = log.status === 'absent';
-                        const sName = log.student ? log.student.name : 'Unknown';
-                        const rootRoll = log.student_id ? log.student_id.substring(0, 6) : '---';
-                        html += `
-                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex items-center justify-between gap-3">
-                            <div>
-                                <p class="font-bold text-slate-900 text-sm">${sName}</p>
-                                <p class="font-mono text-xs text-slate-400">${rootRoll}</p>
-                            </div>
-                            <span class="shrink-0 px-2 py-0.5 rounded-full text-xs font-bold border
-                                ${isAbs ? 'bg-red-50 text-red-700 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'}">
-                                ${isAbs ? 'Absent' : 'Present'}
-                            </span>
-                        </div>`;
-                    });
-                    html += `</div>`;
-
-                    const attTbody = document.getElementById('attTbody');
-                    if (attTbody) {
-                        attTbody.innerHTML = logs.length
-                            ? html
-                            : `<div class="text-center py-8 text-slate-400 text-sm">No active logs received today.</div>`;
-                    }
-                    lucide.createIcons();
                 }
-            } catch(e) {
-                console.log('Polling error', e);
-            }
+            } catch(e) {}
         }
 
         async function toggleManualAttendance(studentId, targetStatus) {
             try {
                 const res = await fetch(`${API_BASE}/attendance/manual`, {
-                    method: 'POST',
-                    headers: getHeaders(),
-                    body: JSON.stringify({ student_id: studentId, status: targetStatus })
+                    method: 'POST', headers: getHeaders(), body: JSON.stringify({ student_id: studentId, status: targetStatus })
                 });
-                if (res.ok) {
-                    showToast(`Attendance updated successfully!`, 'success');
-                    fetchLogs();
-                } else {
-                    showToast('Failed to change attendance status.');
-                }
-            } catch (err) {
-                showToast('Error changing attendance.');
-            }
+                if (res.ok) { fetchLogs(); }
+            } catch (err) { showToast('Error changing attendance.'); }
         }
 
         function startLivePolling() {
             clearInterval(pollInterval);
-            fetchLogs();
-            pollInterval = setInterval(fetchLogs, 3000);
+            if(viewedClass) fetchLogs();
+            pollInterval = setInterval(() => {
+                if(viewedClass) fetchLogs();
+            }, 3000);
         }
 
-        // ── STUDENTS ──────────────────────────────────────────────────────────
+        // --- STUDENTS & CLASSES LOGIC ---
         let schoolClasses = [];
         let editingClassId = null;
 
         async function fetchClasses() {
             try {
                 const res = await fetch(`${API_BASE}/classes`, { headers: getHeaders() });
-                if (res.ok) {
-                    const data = await res.json();
-                    schoolClasses = Array.isArray(data) ? data : [];
-                } else {
-                    schoolClasses = [];
-                }
-            } catch (err) {
-                console.error("Failed to fetch classes:", err);
-                schoolClasses = [];
-            }
+                if (res.ok) schoolClasses = await res.json();
+                else schoolClasses = [];
+            } catch (err) { schoolClasses = []; }
             renderClasses();
             renderAttendanceClasses();
+            renderSettingsClasses();
             renderFeeStructure();
             await fetchTimetable();
+        }
+
+        function renderClasses() {
+            const container = document.getElementById('classesGrid');
+            if (!container) return;
+            if (!schoolClasses || schoolClasses.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-8 text-center text-slate-500 bg-white rounded-xl border border-dashed border-slate-300 text-sm">No classes found. Add them in Settings.</div>`;
+            } else {
+                let html = '';
+                const colors = ['blue', 'purple', 'amber', 'rose', 'emerald', 'indigo'];
+                schoolClasses.forEach((cls, i) => {
+                    const color = colors[i % colors.length];
+                    const numStudents = cls.count !== undefined ? cls.count : 0;
+                    html += `
+                    <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all cursor-pointer group" onclick="toggleStudentClassView('${cls.name}')">
+                        <div class="flex justify-between items-start">
+                            <div><p class="text-slate-400 text-[10px] font-bold uppercase">Class</p><p class="text-2xl font-black text-slate-900 group-hover:text-${color}-600 transition">${cls.name}</p></div>
+                            <div class="bg-${color}-50 p-2 rounded-lg text-${color}-600"><i data-lucide="users" class="w-4 h-4"></i></div>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-100"><span class="text-[10px] font-bold text-slate-500">${numStudents} Students</span></div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            }
+            lucide.createIcons();
+        }
+
+        function renderSettingsClasses() {
+            const container = document.getElementById('settingsClassTableBody');
+            if (!container) return;
+            if (!schoolClasses || schoolClasses.length === 0) container.innerHTML = `<div class="text-center py-6 text-slate-400 text-sm">No classes configured.</div>`;
+            else {
+                let html = '';
+                schoolClasses.forEach((cls) => {
+                    const escapeName = (cls.name || '').replace(/'/g, "\\'");
+                    html += `
+                    <div class="flex items-center justify-between bg-slate-50 rounded-lg px-4 py-3 border border-slate-100">
+                        <p class="font-bold text-slate-800 text-sm">${cls.name}</p>
+                        <div class="flex gap-2">
+                            <button onclick="editClass('${cls.id}', '${escapeName}')" class="text-blue-600 hover:bg-blue-100 px-2 py-1 text-xs font-bold rounded">Edit</button>
+                            <button onclick="deleteClass('${cls.id}')" class="text-red-500 hover:bg-red-100 px-2 py-1 text-xs font-bold rounded">Delete</button>
+                        </div>
+                    </div>`;
+                });
+                container.innerHTML = html;
+            }
+        }
+
+        async function renderAttendanceClasses() {
+            const grid = document.getElementById('studentClassCardsContainer');
+            if(!grid) return;
+            let html = '';
+            schoolClasses.forEach(cls => {
+                html += `
+                <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm cursor-pointer hover:ring-2 ring-blue-500 transition-all" onclick="toggleClassView('${cls.name}')">
+                    <p class="text-slate-400 text-[10px] font-bold uppercase">Class</p>
+                    <p class="text-2xl font-bold text-slate-900 mt-1">${cls.name}</p>
+                    <div class="mt-2 flex justify-between text-[10px] font-bold">
+                        <span class="text-emerald-600">Track class</span><span class="text-slate-400">Live logs</span>
+                    </div>
+                </div>`;
+            });
+            grid.innerHTML = html;
         }
 
         function openClassModal(id = null) {
@@ -686,152 +912,33 @@
 
         async function saveClass() {
             const name = document.getElementById('classNameInput').value.trim();
-            if (!name) { showToast("Class name is required."); return; }
+            if (!name) return showToast("Class name is required.");
             try {
                 const url = editingClassId ? `${API_BASE}/classes/${editingClassId}` : `${API_BASE}/classes`;
                 const method = editingClassId ? 'PUT' : 'POST';
                 const res = await fetch(url, { method, headers: getHeaders(), body: JSON.stringify({ name }) });
-                if (res.ok) {
-                    showToast(editingClassId ? "Class updated successfully" : "Class added successfully", "success");
-                    closeClassModal();
-                    await fetchClasses();
-                } else {
-                    const err = await res.json();
-                    showToast(err.message || "Failed to save class");
-                }
-            } catch (err) { showToast("Network error while saving class"); }
-        }
-
-        async function deleteClass(id) {
-            if (!confirm("Are you sure you want to delete this class? All students and records in this class will be affected.")) return;
-            try {
-                const res = await fetch(`${API_BASE}/classes/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('auth_token')}`, 'School-Id': localStorage.getItem('school_id') }
-                });
-                if (res.ok) { showToast("Class deleted successfully", "success"); await fetchClasses(); }
-                else { const err = await res.json(); showToast(err.message || "Failed to delete class"); }
-            } catch (err) { showToast("Network error while deleting class"); }
+                if (res.ok) { showToast("Class saved", "success"); closeClassModal(); fetchClasses(); }
+            } catch(e) { showToast("Error saving class"); }
         }
 
         async function editClass(id, currentName) {
             const newName = prompt("Edit Class Name:", currentName);
-            if (newName === null) return;
-            const name = newName.trim();
-            if (!name) { showToast("Class name cannot be empty"); return; }
-            try {
-                const res = await fetch(`${API_BASE}/classes/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('auth_token')}`, 'School-Id': localStorage.getItem('school_id') },
-                    body: JSON.stringify({ name })
-                });
-                if (res.ok) { showToast("Class updated successfully", "success"); await fetchClasses(); }
-                else { const err = await res.json(); showToast(err.message || "Failed to update class"); }
-            } catch (err) { showToast("Network error while saving class"); }
-        }
-
-        function renderClasses() {
-            const container = document.getElementById('classesGrid');
-            if (!container) return;
-            if (!schoolClasses || schoolClasses.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-12 flex flex-col justify-center items-center text-center bg-white border border-slate-200 border-dashed rounded-2xl w-full">
-                        <div class="p-3 bg-slate-50 rounded-full mb-3"><i data-lucide="folder-open" class="w-6 h-6 text-slate-400"></i></div>
-                        <p class="text-slate-500 font-medium text-sm">No classes added yet.</p>
-                        <p class="text-slate-400 text-xs mt-1">Configure classes in the School Settings module.</p>
-                    </div>
-                `;
-            } else {
-                let html = '';
-                const colors = ['blue', 'purple', 'amber', 'rose', 'emerald', 'indigo'];
-                schoolClasses.forEach((cls, i) => {
-                    const color = colors[i % colors.length];
-                    const numStudents = cls.count !== undefined ? cls.count : (cls.students ? cls.students.length : 0);
-                    html += `
-                    <div class="bg-gradient-to-br from-white to-slate-50 rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all group relative">
-                        <div class="flex justify-between items-start cursor-pointer" onclick="toggleStudentClassView('${cls.name}')">
-                            <div>
-                                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Class</p>
-                                <p class="text-3xl font-extrabold text-slate-900 mt-1 drop-shadow-sm group-hover:text-${color}-600 transition-colors">${cls.name}</p>
-                            </div>
-                            <div class="bg-${color}-50 p-2 rounded-lg text-${color}-600 group-hover:scale-110 transition-transform"><i data-lucide="users" class="w-4 h-4"></i></div>
-                        </div>
-                        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between cursor-pointer" onclick="toggleStudentClassView('${cls.name}')">
-                            <span class="text-xs font-bold text-slate-600">${numStudents} Students</span>
-                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 group-hover:text-${color}-500 group-hover:translate-x-1 transition-all"></i>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = html;
+            if (newName && newName.trim()) {
+                try {
+                    const res = await fetch(`${API_BASE}/classes/${id}`, { method: 'PUT', headers: getHeaders(), body: JSON.stringify({ name: newName.trim() }) });
+                    if(res.ok) fetchClasses();
+                } catch(e){}
             }
-            lucide.createIcons();
-            renderSettingsClasses();
         }
 
-        function renderSettingsClasses() {
-            const container = document.getElementById('settingsClassTableBody');
-            if (!container) return;
-            if (!schoolClasses || schoolClasses.length === 0) {
-                container.innerHTML = `<div class="text-center py-6 text-slate-500 text-sm">No classes configured. Click "Add New Class" to create one.</div>`;
-            } else {
-                let html = '';
-                schoolClasses.forEach((cls) => {
-                    const numStudents = cls.count !== undefined ? cls.count : (cls.students ? cls.students.length : 0);
-                    const escapeName = (cls.name || '').replace(/'/g, "\\'");
-                    html += `
-                    <div class="flex items-center justify-between bg-slate-50 rounded-lg px-4 py-3 border border-slate-100">
-                        <div>
-                            <p class="font-semibold text-slate-800 text-sm">${cls.name || ''}</p>
-                            <p class="text-xs text-slate-400">${numStudents} Students</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="editClass('${cls.id}', '${escapeName}')" class="p-1 px-2.5 bg-blue-50 text-blue-600 rounded hover:bg-blue-100 text-xs font-bold transition inline-flex items-center gap-1">
-                                <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit
-                            </button>
-                            <button onclick="deleteClass('${cls.id}')" class="p-1 px-2.5 bg-red-50 text-red-600 rounded hover:bg-red-100 text-xs font-bold transition inline-flex items-center gap-1">
-                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
-                            </button>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = html;
+        async function deleteClass(id) {
+            if(confirm("Delete this class?")) {
+                const res = await fetch(`${API_BASE}/classes/${id}`, { method: 'DELETE', headers: getHeaders() });
+                if(res.ok) fetchClasses();
             }
-            lucide.createIcons();
         }
-
-        async function renderAttendanceClasses() {
-            const grid = document.getElementById('attendanceGrid');
-            if (!schoolClasses || schoolClasses.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full py-12 flex flex-col justify-center items-center text-center bg-white border border-slate-200 border-dashed rounded-2xl w-full">
-                        <div class="p-3 bg-slate-50 rounded-full mb-3"><i data-lucide="user-check" class="w-6 h-6 text-slate-400"></i></div>
-                        <p class="text-slate-500 font-medium text-sm">No classes found.</p>
-                        <p class="text-slate-400 text-xs mt-1">Please add classes in the Students module.</p>
-                    </div>
-                `;
-            } else {
-                let html = '';
-                schoolClasses.forEach(cls => {
-                    html += `
-                        <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm cursor-pointer hover:ring-2 ring-blue-500 transition-all" onclick="toggleClassView('${cls.name}')">
-                            <p class="text-slate-500 text-xs font-semibold uppercase">Class</p>
-                            <p class="text-3xl font-bold text-slate-900 mt-1">${cls.name}</p>
-                            <div class="mt-2 flex justify-between text-sm">
-                                <span class="text-emerald-600 font-medium">Click to track</span>
-                                <span class="text-slate-400 font-medium">Live logs</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                grid.innerHTML = html;
-            }
-            lucide.createIcons();
-        }
-
-        fetchClasses();
 
         let activeClsName = "";
-
         function goBackToStudentHome() {
             activeClsName = "";
             document.getElementById('studentHomeView').classList.remove('hidden');
@@ -845,7 +952,6 @@
             document.getElementById('studClassInput').value = activeClsName;
             document.getElementById('studentModal').classList.remove('hidden');
         }
-
         function closeStudentModal() { document.getElementById('studentModal').classList.add('hidden'); }
 
         async function saveStudent() {
@@ -853,23 +959,9 @@
             const roll = document.getElementById('studRollInput').value.trim();
             const phone = document.getElementById('studPhoneInput').value.trim();
             const className = document.getElementById('studClassInput').value.trim();
-            if (!name) { showToast("Student Name is required"); return; }
-            try {
-                const res = await fetch(`${API_BASE}/students`, {
-                    method: 'POST',
-                    headers: getHeaders(),
-                    body: JSON.stringify({ name, roll_no: roll, whatsapp_no: phone, class_name: className })
-                });
-                if (res.ok) {
-                    showToast("Student added successfully!", "success");
-                    closeStudentModal();
-                    await fetchClasses();
-                    toggleStudentClassView(className);
-                } else {
-                    const err = await res.json();
-                    showToast(err.message || "Failed to save student");
-                }
-            } catch (err) { showToast("Network error while adding student"); }
+            if(!name) return showToast('Name required');
+            const res = await fetch(`${API_BASE}/students`, { method:'POST', headers:getHeaders(), body: JSON.stringify({name, roll_no:roll, whatsapp_no:phone, class_name:className})});
+            if(res.ok) { showToast('Student Added', 'success'); closeStudentModal(); fetchClasses(); toggleStudentClassView(className); }
         }
 
         async function toggleStudentClassView(cls) {
@@ -881,39 +973,23 @@
 
             try {
                 const res = await fetch(`${API_BASE}/students?class=${encodeURIComponent(cls)}`, { headers: getHeaders() });
-                let students = [];
-                if (res.ok) { students = await res.json(); }
-
+                let students = res.ok ? await res.json() : [];
                 const container = document.getElementById('studentMgmtTbody');
-                if (!students || students.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-span-full py-8 text-center text-slate-500 bg-slate-50 border border-dashed border-slate-200 rounded-xl text-sm">
-                            No students found in this class. Add individually or upload CSV to import.
-                        </div>`;
+                if (students.length === 0) {
+                    container.innerHTML = `<div class="col-span-full py-8 text-center text-slate-500 bg-slate-50 rounded-xl text-sm border border-dashed">No students found in this class.</div>`;
                 } else {
                     let html = '';
                     students.forEach(student => {
-                        const sId = student.id || student.student_id;
                         html += `
-                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3 hover:shadow-md transition-shadow">
-                            <!-- Top: Name + Roll -->
-                            <div class="flex items-start justify-between gap-2">
-                                <div>
-                                    <p class="font-bold text-slate-900 text-sm leading-tight">${student.name || ''}</p>
-                                    <span class="font-mono text-xs font-bold text-slate-400">Roll ${student.roll_no || student.rollNo || '—'}</span>
-                                </div>
-                                <span class="shrink-0 bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-100">Student</span>
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3">
+                            <div class="flex justify-between items-start">
+                                <div><p class="font-bold text-sm">${student.name}</p><span class="font-mono text-[10px] text-slate-400">Roll ${student.roll_no || '-'}</span></div>
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-100">Student</span>
                             </div>
-                            <!-- Middle: WhatsApp -->
-                            ${(student.whatsapp_no || student.whatsappNo) ? `<p class="text-xs text-slate-500 font-medium">📱 ${student.whatsapp_no || student.whatsappNo}</p>` : ''}
-                            <!-- Bottom: Actions -->
+                            ${student.whatsapp_no ? `<p class="text-[10px] text-slate-500 font-bold">📱 ${student.whatsapp_no}</p>` : ''}
                             <div class="flex gap-2">
-                                <button onclick="downloadQR('${sId}')" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition">
-                                    <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> Get QR
-                                </button>
-                                <button onclick="deleteStudent('${sId}', '${cls}')" class="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 transition" title="Delete">
-                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                </button>
+                                <button onclick="downloadQR('${student.id}')" class="flex-1 py-2 text-[10px] font-bold bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"><i data-lucide="qr-code" class="w-3 h-3 inline"></i> QR</button>
+                                <button onclick="deleteStudent('${student.id}', '${cls}')" class="px-3 py-2 text-[10px] font-bold bg-red-50 text-red-500 rounded-lg"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
                             </div>
                         </div>`;
                     });
@@ -921,114 +997,108 @@
                 }
                 lucide.createIcons();
                 document.getElementById('studentsLoader').classList.add('hidden');
-            } catch(e) {
-                showToast('Failed to fetch students from DB');
-                document.getElementById('studentsLoader').classList.add('hidden');
+            } catch(e) {}
+        }
+
+        async function deleteStudent(id, cls) {
+            if(confirm('Delete student?')) {
+                const res = await fetch(`${API_BASE}/students/${id}`, {method:'DELETE', headers:getHeaders()});
+                if(res.ok) { fetchClasses(); toggleStudentClassView(cls); }
             }
         }
 
-        async function deleteStudent(studentId, className) {
-            if (!confirm("Are you sure you want to delete this student?")) return;
-            try {
-                const res = await fetch(`${API_BASE}/students/${studentId}`, { method: 'DELETE', headers: getHeaders() });
-                if (res.ok) { showToast("Student deleted successfully", "success"); await fetchClasses(); toggleStudentClassView(className); }
-                else { const err = await res.json(); showToast(err.message || "Failed to delete student"); }
-            } catch(e) { showToast("Network error while deleting student"); }
+        function downloadQR(id) {
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(id)}`;
+            const link = document.createElement('a'); link.href = qrUrl; link.download = `QR_${id}.png`; link.target = '_blank';
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        async function downloadQR(studentId) {
-            try {
-                showToast(`Generating QR Code for ${studentId}...`, 'success');
-                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent('https://school-attendance-vdbg.onrender.com/student_view.html?student_id='+studentId)}`;
-                const link = document.createElement('a');
-                link.href = qrUrl;
-                link.download = `QR_${studentId}.png`;
-                link.target = '_blank';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            } catch (err) { showToast('Failed to download QR code'); }
-        }
-
-        // CSV Upload Logic
+        // --- CSV UPLOAD ---
         document.getElementById('csvUpload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
             reader.onload = async function(e) {
-                const rawData = e.target.result;
-                const rows = rawData.split('\n');
-                if(rows.length > 1) {
-                    showToast(`Parsed ${rows.length - 1} rows from CSV. Starting upload...`, 'success');
-                    try {
-                        const res = await fetch(`${API_BASE}/students/batch`, {
-                            method: 'POST', headers: getHeaders(), body: JSON.stringify({ csv: rawData })
-                        });
-                        if (res.ok) { showToast('CSV Imported Successfully!', 'success'); fetchClasses(); }
-                        else { const err = await res.json(); showToast(err.message || 'CSV Import failed'); }
-                    } catch(err) { showToast('Network error during CSV upload'); }
-                }
+                showToast('Uploading CSV...', 'success');
+                const res = await fetch(`${API_BASE}/students/batch`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ csv: e.target.result }) });
+                if(res.ok) { showToast('CSV Imported', 'success'); fetchClasses(); }
             };
             reader.readAsText(file);
         });
 
-        function toggleNotifications() {
-            const dropdown = document.getElementById('notifDropdown');
-            const wasHidden = dropdown.classList.contains('hidden');
-            dropdown.classList.toggle('hidden');
-            if (wasHidden) fetchNotifications();
-        }
-
-        async function fetchNotifications() {
-            const container = document.getElementById('notifListContainer');
-            const badge = document.getElementById('notifCountBadge');
-            try {
-                const res = await fetch(`${API_BASE}/notifications`, { headers: getHeaders() });
-                if (!res.ok) throw new Error('Failed to load');
-                const notifications = await res.json();
-
-                if (!notifications || notifications.length === 0) {
-                    container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400 font-medium">No active notifications.</div>`;
-                    if (badge) badge.classList.add('hidden');
-                    const dot = document.querySelector('#notifBtn .bg-red-500');
-                    if (dot) dot.classList.add('hidden');
-                    return;
-                }
-
-                let html = '';
-                notifications.forEach((n, idx) => {
-                    const isFirst = idx === 0;
-                    html += `
-                    <div class="p-3 ${isFirst ? 'bg-blue-50/60 border border-blue-100' : 'hover:bg-slate-50 border border-transparent'} rounded-lg transition cursor-pointer group relative">
-                        ${isFirst ? '<span class="absolute top-3 right-3 w-2 h-2 bg-blue-500 rounded-full"></span>' : ''}
-                        <p class="text-sm font-semibold ${isFirst ? 'text-slate-800' : 'text-slate-700 group-hover:text-slate-900'} mb-1 pr-4">${n.title}</p>
-                        <p class="text-xs ${isFirst ? 'text-slate-600' : 'text-slate-500 group-hover:text-slate-600'} leading-relaxed">${n.message}</p>
-                        <p class="text-[10px] text-slate-400 mt-2 font-medium flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3"></i> ${n.time}</p>
-                    </div>`;
-                });
-                container.innerHTML = html;
-
-                if (badge) {
-                    badge.innerText = `${notifications.length} New`;
-                    badge.classList.remove('hidden');
-                }
-                lucide.createIcons();
-            } catch (e) {
-                container.innerHTML = `<div class="p-4 text-center text-xs text-rose-500 font-medium">Failed to load notifications.</div>`;
-            }
-        }
-
-        document.addEventListener('click', function(event) {
-            const notifBtn = document.getElementById('notifBtn');
-            const notifDropdown = document.getElementById('notifDropdown');
-            if (notifBtn && notifDropdown && !notifBtn.contains(event.target) && !notifDropdown.contains(event.target)) {
-                notifDropdown.classList.add('hidden');
-            }
-        });
-
-        // ── STAFF ─────────────────────────────────────────────────────────────
+        // --- STAFF DIRECTORY & REPORTS ---
         let schoolTeachers = [];
         let editingTeacherId = null;
+
+        async function fetchStaff() {
+            try {
+                const res = await fetch(`${API_BASE}/teachers`, { headers: getHeaders() });
+                if (res.ok) schoolTeachers = await res.json();
+                else schoolTeachers = [];
+            } catch(e) { schoolTeachers = []; }
+            renderStaff();
+            renderTT();
+            
+            // Populate Teacher dropdown for report
+            const rSelect = document.getElementById('reportTeacherSelect');
+            if(rSelect) {
+                rSelect.innerHTML = '<option value="">Select Teacher...</option>' + schoolTeachers.map(t => `<option value="${t.login_id}">${t.name} (${t.login_id})</option>`).join('');
+            }
+        }
+
+        function renderStaff() {
+            const container = document.getElementById('staffTbody');
+            if(!container) return;
+            if(schoolTeachers.length === 0) {
+                container.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400 text-sm">No staff added.</div>`;
+                return;
+            }
+            let html = '';
+            schoolTeachers.forEach(t => {
+                const loginID = t.login_id || t.username || t.loginId || t.id;
+                html += `
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3 hover:shadow-md transition">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-slate-900 text-sm">${t.name}</p>
+                            <p class="text-[10px] text-slate-400 font-mono mt-0.5">${loginID}</p>
+                        </div>
+                        ${t.class_teacher_of ? `<span class="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200">${t.class_teacher_of}</span>` : `<span class="text-[10px] text-slate-400">Not assigned</span>`}
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        <button onclick="downloadTeacherQR('${loginID}')" class="flex-1 py-1.5 text-[10px] font-bold bg-slate-800 text-white rounded-lg"><i data-lucide="qr-code" class="w-3 h-3 inline"></i> Get QR</button>
+                        <button onclick="openTeacherModal('${t.id}')" class="px-2 py-1.5 bg-blue-50 text-blue-600 rounded-lg"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="deleteTeacher('${t.id}')" class="px-2 py-1.5 bg-red-50 text-red-600 rounded-lg"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function downloadTeacherQR(id) {
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(id)}`;
+            const link = document.createElement('a'); link.href = qrUrl; link.download = `QR_Teacher_${id}.png`; link.target = '_blank';
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
+        }
+
+        async function generateTeacherReport() {
+            const tid = document.getElementById('reportTeacherSelect').value;
+            const monthVal = document.getElementById('reportMonth').value; // format: YYYY-MM
+            if(!tid || !monthVal) return showToast('Please select a teacher and a month.');
+            const [y, m] = monthVal.split('-');
+            
+            try {
+                const res = await fetch(`${API_BASE}/reports/teacher/monthly?id=${encodeURIComponent(tid)}&m=${m}&y=${y}`, { headers: getHeaders() });
+                if(res.ok) {
+                    const data = await res.json();
+                    const box = document.getElementById('reportResult');
+                    const txt = document.getElementById('reportResultText');
+                    box.classList.remove('hidden');
+                    txt.innerHTML = `Total Present Days in ${m}/${y}: <b>${data.total_present}</b><br><br>Dates Present:<br><span class="font-mono text-xs">${data.present_dates.join(', ') || 'No records found.'}</span>`;
+                }
+            } catch(e) { showToast('Failed to fetch report.'); }
+        }
 
         function openTeacherModal(id = null) {
             editingTeacherId = id;
@@ -1041,7 +1111,7 @@
             if (id) {
                 const t = schoolTeachers.find(x => String(x.id) === String(id));
                 document.getElementById('teacherNameInput').value = t ? t.name : '';
-                document.getElementById('teacherLoginIdInput').value = t ? (t.login_id || t.username || t.loginId) : '';
+                document.getElementById('teacherLoginIdInput').value = t ? (t.login_id || t.username) : '';
                 document.getElementById('teacherPasswordInput').value = '';
                 if (tClassSelect && t) tClassSelect.value = t.class_teacher_of || '';
                 document.getElementById('teacherModalTitle').innerText = 'Edit Teacher';
@@ -1054,156 +1124,57 @@
             }
             document.getElementById('teacherModal').classList.remove('hidden');
         }
-
         function closeTeacherModal() { document.getElementById('teacherModal').classList.add('hidden'); }
 
         async function saveTeacher() {
             const name = document.getElementById('teacherNameInput').value.trim();
             const loginId = document.getElementById('teacherLoginIdInput').value.trim();
             const password = document.getElementById('teacherPasswordInput').value;
-            const classTeacherSelect = document.getElementById('teacherClassSelect');
-            const classTeacherOf = classTeacherSelect ? classTeacherSelect.value : '';
-            if (!name || !loginId) { showToast("Name and Login ID are required"); return; }
-            try {
-                const url = editingTeacherId ? `${API_BASE}/teachers/${editingTeacherId}` : `${API_BASE}/teachers`;
-                const method = editingTeacherId ? 'PUT' : 'POST';
-                const payload = { name, login_id: loginId, class_teacher_of: classTeacherOf };
-                if (password) payload.password = password;
-                const res = await fetch(url, { method, headers: getHeaders(), body: JSON.stringify(payload) });
-                if (res.ok) {
-                    showToast(editingTeacherId ? "Teacher updated successfully" : "Teacher added successfully", "success");
-                    closeTeacherModal();
-                    await fetchStaff();
-                } else {
-                    let errMsg = `Failed to save teacher (Status: ${res.status})`;
-                    try { const err = await res.json(); if (err && err.message) errMsg = err.message; } catch (_) {}
-                    showToast(errMsg, 'error');
-                }
-            } catch(e) { showToast("Network error while saving teacher"); }
+            const classTeacherOf = document.getElementById('teacherClassSelect').value;
+            if(!name || !loginId) return showToast("Name and ID required");
+            const url = editingTeacherId ? `${API_BASE}/teachers/${editingTeacherId}` : `${API_BASE}/teachers`;
+            const method = editingTeacherId ? 'PUT' : 'POST';
+            const payload = { name, login_id: loginId, class_teacher_of: classTeacherOf };
+            if(password) payload.password = password;
+            const res = await fetch(url, { method, headers: getHeaders(), body: JSON.stringify(payload) });
+            if(res.ok) { closeTeacherModal(); fetchStaff(); }
         }
 
         async function deleteTeacher(id) {
-            if (!confirm("Are you sure you want to delete this teacher?")) return;
-            try {
+            if(confirm('Delete Teacher?')) {
                 const res = await fetch(`${API_BASE}/teachers/${id}`, { method: 'DELETE', headers: getHeaders() });
-                if (res.ok) { showToast("Teacher deleted successfully", "success"); await fetchStaff(); }
-                else {
-                    let errMsg = `Failed to delete teacher (Status: ${res.status})`;
-                    try { const err = await res.json(); if (err && err.message) errMsg = err.message; } catch (_) {}
-                    showToast(errMsg, 'error');
-                }
-            } catch(e) { showToast("Network error while deleting teacher"); }
-        }
-
-        async function fetchStaff() {
-            try {
-                const res = await fetch(`${API_BASE}/teachers`, { headers: getHeaders() });
-                if (res.ok) { const data = await res.json(); schoolTeachers = Array.isArray(data) ? data : []; }
-                else { schoolTeachers = []; }
-            } catch(err) { console.error("Failed to fetch staff:", err); schoolTeachers = []; }
-            renderStaff();
-            renderTT();
-        }
-
-        function renderStaff() {
-            const container = document.getElementById('staffTbody');
-            if (!schoolTeachers || schoolTeachers.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-12 flex flex-col items-center justify-center text-center bg-white border border-dashed border-slate-200 rounded-xl">
-                        <div class="bg-white p-3 border border-slate-200 rounded-full mb-3"><i data-lucide="user-x" class="w-6 h-6 text-slate-400"></i></div>
-                        <p class="font-medium text-sm text-slate-500">No staff members added yet.</p>
-                        <button onclick="openTeacherModal()" class="text-blue-600 hover:text-blue-800 text-sm font-semibold mt-1 transition-colors">Click 'Add Teacher' above</button>
-                    </div>`;
-                lucide.createIcons();
-                return;
+                if(res.ok) fetchStaff();
             }
-
-            let html = '';
-            schoolTeachers.forEach(t => {
-                const loginDisplay = t.login_id || t.username || t.loginId || '';
-                const classTag = t.class_teacher_of
-                    ? `<span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-bold rounded border border-blue-200">${t.class_teacher_of}</span>`
-                    : `<span class="text-slate-400 text-xs">Not assigned</span>`;
-
-                html += `
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3 hover:shadow-md transition-shadow">
-                    <!-- Top: Name + Class Teacher badge -->
-                    <div class="flex items-start justify-between gap-2">
-                        <div>
-                            <p class="font-bold text-slate-900 text-sm leading-tight">${t.name || ''}</p>
-                            <p class="font-mono text-xs text-slate-400 mt-0.5">${loginDisplay}</p>
-                        </div>
-                        ${classTag}
-                    </div>
-                    <!-- Bottom: Actions -->
-                    <div class="flex flex-wrap gap-2">
-                        <button onclick="openTeacherModal('${t.id}')" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition" title="Edit Teacher">
-                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit
-                        </button>
-                        <button onclick="deleteTeacher('${t.id}')" class="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-red-50 text-red-600 border border-red-100 hover:bg-red-100 transition" title="Delete Teacher">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                        <button onclick="resetStaffPwd('${loginDisplay}')" class="flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-bold bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 transition">
-                            Reset Pwd
-                        </button>
-                    </div>
-                </div>`;
-            });
-            container.innerHTML = html;
-            lucide.createIcons();
         }
 
-        async function resetStaffPwd(username) {
-            try {
-                showToast(`Resetting password for ${username}...`, 'success');
-                const response = await fetch(`${API_BASE}/teachers/${username}/reset`, { method: 'POST', headers: getHeaders() });
-                if (response.ok) { showToast('Password reset successfully to default (12345)', 'success'); }
-                else {
-                    let errMsg = `Reset failed (Status: ${response.status})`;
-                    try { const err = await response.json(); if (err && err.message) errMsg = err.message; } catch (_) {}
-                    showToast(errMsg, 'error');
-                }
-            } catch(e) { showToast('Reset failed due to network error'); }
-        }
-
-        // ── TIMETABLE (keeps <table>) ──────────────────────────────────────────
+        // --- TIMETABLE ---
         const periods = [1, 2, 3, 4, 'L', 5, 6, 7];
-        const ttGrid = document.getElementById('ttGrid');
         let ttData = {};
         let actTTRow = null, actTTCol = null;
 
         function renderTT() {
-            let html = '';
             const activeClasses = schoolClasses.map(c => c.name);
-            if (activeClasses.length === 0) {
-               ttGrid.innerHTML = `<tr><td class="bg-white p-8 text-center text-slate-500 rounded-xl">Please add classes in Class Management first to build timetable.</td></tr>`;
-               return;
-            }
+            const ttGrid = document.getElementById('ttGrid');
+            if (activeClasses.length === 0) { ttGrid.innerHTML = `<tr><td class="p-8 text-center text-slate-500">Add classes first.</td></tr>`; return; }
             const ttTeacherSelect = document.getElementById('ttTeacher');
             if (ttTeacherSelect) {
-                ttTeacherSelect.innerHTML = schoolTeachers.length
-                    ? schoolTeachers.map(t => `<option value="${t.name}">${t.name}</option>`).join('')
-                    : '<option value="">No teachers available</option>';
+                ttTeacherSelect.innerHTML = schoolTeachers.length ? schoolTeachers.map(t => `<option value="${t.name}">${t.name}</option>`).join('') : '<option value="">No teachers available</option>';
             }
+            let html = '';
             periods.forEach((p, rIdx) => {
-                html += `<tr><td class="bg-slate-50 border-b border-slate-200 font-medium p-3 sticky left-0 z-10 shadow-[1px_0_0_#e2e8f0]">${p==='L'?'LUNCH':`P${p}`}</td>`;
-                if(p === 'L') {
-                    html += `<td colspan="${activeClasses.length}" class="bg-slate-100/50 border-b border-slate-200 text-slate-400 font-medium tracking-widest py-2 text-center w-full block sm:table-cell">---- BREAK ----</td>`;
-                } else {
+                html += `<tr><td class="bg-slate-50 border-b p-3 font-bold sticky left-0 z-10">${p==='L'?'LUNCH':`P${p}`}</td>`;
+                if(p === 'L') html += `<td colspan="${activeClasses.length}" class="bg-slate-100 text-slate-400 font-bold py-2">-- BREAK --</td>`;
+                else {
                     activeClasses.forEach((c, cIdx) => {
-                        const key = `${rIdx}_${cIdx}`;
-                        const d = ttData[key];
-                        if(d) {
-                            html += `<td onclick="openTTModal(${rIdx},${cIdx}, '${c}')" class="border-l border-b border-slate-200 p-2 cursor-pointer hover:bg-slate-50 bg-white group relative whitespace-nowrap"><div class="flex flex-col gap-0.5"><span class="font-bold text-slate-900 text-xs">${d.subj}</span><span class="text-[10px] text-slate-500 truncate max-w-[80px]">${d.teacher}</span></div></td>`;
-                        } else {
-                            html += `<td onclick="openTTModal(${rIdx},${cIdx}, '${c}')" class="border-l border-b border-slate-200 p-2 cursor-pointer hover:bg-slate-50 bg-white group relative"><span class="opacity-0 group-hover:opacity-100 text-blue-500"><i data-lucide="plus" class="w-4 h-4 mx-auto"></i></span></td>`;
-                        }
+                        const d = ttData[`${rIdx}_${cIdx}`];
+                        if(d) html += `<td onclick="openTTModal(${rIdx},${cIdx}, '${c}')" class="border p-2 cursor-pointer hover:bg-slate-50"><div class="text-[10px] font-bold text-slate-900">${d.subj}</div><div class="text-[9px] text-slate-500">${d.teacher}</div></td>`;
+                        else html += `<td onclick="openTTModal(${rIdx},${cIdx}, '${c}')" class="border p-2 cursor-pointer hover:bg-slate-50 text-slate-300"><i data-lucide="plus" class="w-3 h-3 mx-auto"></i></td>`;
                     });
                 }
                 html += `</tr>`;
             });
-            let theadHtml = `<tr><th class="bg-slate-100 border-b border-slate-300 font-semibold p-2 md:p-3 w-12 md:w-16 sticky left-0 z-10 shadow-[1px_0_0_#cbd5e1]">P/C</th>`;
-            activeClasses.forEach(c => { theadHtml += `<th class="bg-slate-50 border-l border-b border-slate-200 p-3 font-semibold text-slate-700 min-w-[120px]">${c}</th>`; });
+            let theadHtml = `<tr><th class="bg-slate-100 border-b p-3 w-16 sticky left-0 z-10">P/C</th>`;
+            activeClasses.forEach(c => { theadHtml += `<th class="bg-slate-50 border p-3 font-bold text-sm">${c}</th>`; });
             theadHtml += `</tr>`;
             document.getElementById('ttHead').innerHTML = theadHtml;
             ttGrid.innerHTML = html;
@@ -1212,10 +1183,10 @@
 
         function openTTModal(rIdx, cIdx, className) {
             actTTRow = rIdx; actTTCol = cIdx;
-            const currentCell = ttData[`${rIdx}_${cIdx}`];
+            const cell = ttData[`${rIdx}_${cIdx}`];
             document.getElementById('ttModalDesc').innerText = `Period ${periods[rIdx]} • Class ${className}`;
-            document.getElementById('ttTeacher').value = currentCell ? currentCell.teacher : (schoolTeachers[0] ? schoolTeachers[0].name : '');
-            document.getElementById('ttSubj').value = currentCell ? currentCell.subj : '';
+            document.getElementById('ttTeacher').value = cell ? cell.teacher : (schoolTeachers[0] ? schoolTeachers[0].name : '');
+            document.getElementById('ttSubj').value = cell ? cell.subj : '';
             document.getElementById('ttModal').classList.remove('hidden');
         }
         function closeTTModal() { document.getElementById('ttModal').classList.add('hidden'); }
@@ -1224,41 +1195,17 @@
             if (actTTRow !== null && actTTCol !== null) {
                 delete ttData[`${actTTRow}_${actTTCol}`];
                 closeTTModal(); renderTT();
-                try {
-                    const token = localStorage.getItem('auth_token');
-                    if(token) {
-                        await fetch(`${API_BASE}/timetable/sync`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ timetable: ttData }) });
-                        showToast('Timetable cell cleared', 'success');
-                    }
-                } catch(e) { showToast('Failed to sync cleared cell with server'); }
+                fetch(`${API_BASE}/timetable/sync`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ timetable: ttData }) });
             }
         }
 
         async function saveTTModal() {
             const t = document.getElementById('ttTeacher').value;
             const s = document.getElementById('ttSubj').value.trim();
-            if(!t) { showToast("Please select/add a teacher first."); return; }
-            if(!s) { showToast("Please enter a subject."); return; }
-
-            let conflictClass = null;
-            schoolClasses.forEach((cls, colIdx) => {
-                if (colIdx !== actTTCol) {
-                    const cell = ttData[`${actTTRow}_${colIdx}`];
-                    if (cell && cell.teacher === t) conflictClass = cls.name;
-                }
-            });
-            if (conflictClass) { showToast(`Conflict: ${t} is already teaching Class ${conflictClass} in Period ${periods[actTTRow]}!`, 'error'); return; }
-
+            if(!t || !s) return;
             ttData[`${actTTRow}_${actTTCol}`] = { teacher: t, subj: s };
             closeTTModal(); renderTT();
-            try {
-                const token = localStorage.getItem('auth_token');
-                if(token) {
-                    const res = await fetch(`${API_BASE}/timetable/sync`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ timetable: ttData }) });
-                    if (res.ok) { showToast('Timetable cell saved and synced to cloud', 'success'); }
-                    else { showToast('Failed to sync timetable with database'); }
-                }
-            } catch(e) { showToast('Failed to sync timetable with server'); }
+            fetch(`${API_BASE}/timetable/sync`, { method: 'POST', headers: getHeaders(), body: JSON.stringify({ timetable: ttData }) });
         }
 
         async function fetchTimetable() {
@@ -1269,153 +1216,79 @@
                     ttData = {};
                     data.forEach(item => {
                         const cIdx = schoolClasses.findIndex(c => c.name === item.class_name);
-                        if(cIdx !== -1) { ttData[`${item.period_idx}_${cIdx}`] = { teacher: item.teacher_name, subj: item.subject }; }
+                        if(cIdx !== -1) ttData[`${item.period_idx}_${cIdx}`] = { teacher: item.teacher_name, subj: item.subject };
                     });
                     renderTT();
                 }
-            } catch(e) { console.error("Failed to fetch timetable", e); }
+            } catch(e) {}
         }
 
-        // ── FEES ──────────────────────────────────────────────────────────────
+        // --- FEES ---
         function renderFeeStructure() {
             const grid = document.getElementById('feeClassStructureGrid');
-            if (!grid) return;
-            if (!schoolClasses || schoolClasses.length === 0) {
-                grid.innerHTML = '<p class="text-slate-400 text-sm col-span-full">No classes configured yet.</p>';
-                return;
-            }
+            if(!grid) return;
             let html = '';
             schoolClasses.forEach(cls => {
-                const currentFee = localStorage.getItem(`fee_class_${cls.name}`) || '25000';
-                html += `
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-slate-700 uppercase tracking-wide">Class ${cls.name} Total Fee</label>
-                        <input type="number" id="feeInput_${cls.name}" value="${currentFee}" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-semibold focus:ring-2 focus:ring-blue-500 shadow-sm transition">
-                    </div>
-                `;
+                const fee = localStorage.getItem(`fee_class_${cls.name}`) || '25000';
+                html += `<div class="space-y-1"><label class="text-[10px] font-bold text-slate-700 uppercase">Class ${cls.name} Total Fee</label><input type="number" id="feeInput_${cls.name}" value="${fee}" class="w-full border p-2 rounded-lg text-sm"></div>`;
             });
             grid.innerHTML = html;
-            const classSelect = document.getElementById('feeClassSelect');
-            if (classSelect) {
-                let sHtml = '<option value="">Select Class</option>';
-                schoolClasses.forEach(cls => { sHtml += `<option value="${cls.name}">Class ${cls.name}</option>`; });
-                classSelect.innerHTML = sHtml;
-            }
+            const cSel = document.getElementById('feeClassSelect');
+            if(cSel) cSel.innerHTML = '<option value="">Select Class</option>' + schoolClasses.map(c => `<option value="${c.name}">Class ${c.name}</option>`).join('');
         }
-
-        function openFeeStructureModal() {
-            const modal = document.getElementById('feeStructureModal');
-            if (modal) modal.classList.remove('hidden');
-            renderFeeStructure();
-        }
-
-        function closeFeeStructureModal() {
-            const modal = document.getElementById('feeStructureModal');
-            if (modal) modal.classList.add('hidden');
-        }
-
+        function openFeeStructureModal() { document.getElementById('feeStructureModal').classList.remove('hidden'); renderFeeStructure(); }
+        function closeFeeStructureModal() { document.getElementById('feeStructureModal').classList.add('hidden'); }
         function saveFeeStructure() {
-            if (!schoolClasses || schoolClasses.length === 0) { showToast('No classes configured to save fees for.'); return; }
-            schoolClasses.forEach(cls => {
-                const el = document.getElementById(`feeInput_${cls.name}`);
-                if (el) localStorage.setItem(`fee_class_${cls.name}`, el.value);
-            });
-            showToast('Class Fees structures updated successfully!', 'success');
-            closeFeeStructureModal();
-            loadFeeStudents();
+            schoolClasses.forEach(cls => { const el = document.getElementById(`feeInput_${cls.name}`); if(el) localStorage.setItem(`fee_class_${cls.name}`, el.value); });
+            closeFeeStructureModal(); loadFeeStudents();
         }
-
         async function fetchFees() { await fetchClasses(); renderFeeStructure(); }
-
         async function loadFeeStudents() {
-            const classSelect = document.getElementById('feeClassSelect');
-            if (!classSelect) return;
-            const className = classSelect.value;
+            const cls = document.getElementById('feeClassSelect').value;
             const container = document.getElementById('feeStudentList');
-            if (!container) return;
-
-            if (!className) {
-                container.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-sm">Please select a class first.</div>`;
-                return;
-            }
-            container.innerHTML = `<div class="col-span-full text-center py-8 text-slate-500 animate-pulse font-bold text-sm">Fetching live class student fee info...</div>`;
-
+            if(!cls) return;
             try {
-                const res = await fetch(`${API_BASE}/students?class=${encodeURIComponent(className)}`, { headers: getHeaders() });
-                if (!res.ok) throw new Error("Failed to load students");
-                const students = await res.json();
-
-                if (!students || students.length === 0) {
-                    container.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-sm">No fee records found.</div>`;
-                    return;
-                }
-
-                const totalClassFee = parseFloat(localStorage.getItem(`fee_class_${className}`) || '25000');
+                const res = await fetch(`${API_BASE}/students?class=${encodeURIComponent(cls)}`, { headers: getHeaders() });
+                const students = res.ok ? await res.json() : [];
+                const tFee = parseFloat(localStorage.getItem(`fee_class_${cls}`) || '25000');
                 let html = '';
                 students.forEach(s => {
-                    const studentId = s.id || s.student_id;
-                    const paidVal = parseFloat(localStorage.getItem(`fee_paid_${studentId}`) || '0');
-                    const dueVal = totalClassFee - paidVal;
-                    const dueColor = dueVal > 0 ? 'text-rose-600' : 'text-emerald-600';
-
+                    const pFee = parseFloat(localStorage.getItem(`fee_paid_${s.id || s.student_id}`) || '0');
+                    const dFee = tFee - pFee;
                     html += `
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col gap-3 hover:shadow-md transition-shadow">
-                        <!-- Top: Name + Roll -->
-                        <div class="flex items-start justify-between gap-2">
-                            <div>
-                                <p class="font-bold text-slate-900 text-sm leading-tight">${s.name}</p>
-                                <span class="font-mono text-xs text-slate-400">Roll ${s.roll_no || '—'}</span>
-                            </div>
-                            <span class="shrink-0 px-2 py-0.5 rounded-full text-xs font-bold border ${dueVal > 0 ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">
-                                ${dueVal > 0 ? 'Due' : 'Paid'}
-                            </span>
+                    <div class="bg-white rounded-xl border p-4 shadow-sm">
+                        <div class="flex justify-between font-bold text-sm mb-3"><span>${s.name}</span><span class="${dFee>0?'text-rose-600':'text-emerald-600'}">${dFee>0?'Due':'Paid'}</span></div>
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div class="bg-slate-50 p-2 rounded"><p class="text-[9px] text-slate-400">TOTAL</p><p class="font-bold">₹${tFee}</p></div>
+                            <div class="bg-emerald-50 p-2 rounded"><p class="text-[9px] text-slate-400">PAID</p><p class="font-bold text-emerald-600">₹${pFee}</p></div>
+                            <div class="bg-rose-50 p-2 rounded"><p class="text-[9px] text-slate-400">DUE</p><p class="font-bold text-rose-600">₹${dFee}</p></div>
                         </div>
-                        <!-- Middle: Fee breakdown -->
-                        <div class="grid grid-cols-3 gap-2 text-center">
-                            <div class="bg-slate-50 rounded-lg p-2">
-                                <p class="text-[10px] text-slate-400 font-semibold uppercase">Total</p>
-                                <p class="text-sm font-bold text-slate-700">₹${totalClassFee}</p>
-                            </div>
-                            <div class="bg-emerald-50 rounded-lg p-2">
-                                <p class="text-[10px] text-slate-400 font-semibold uppercase">Paid</p>
-                                <p class="text-sm font-bold text-emerald-600">₹${paidVal}</p>
-                            </div>
-                            <div class="bg-rose-50 rounded-lg p-2">
-                                <p class="text-[10px] text-slate-400 font-semibold uppercase">Due</p>
-                                <p class="text-sm font-bold ${dueColor}">₹${dueVal}</p>
-                            </div>
-                        </div>
-                        <!-- Bottom: Actions -->
-                        <div class="flex gap-2">
-                            ${s.whatsapp_no ? `
-                            <a href="https://wa.me/${s.whatsapp_no}" target="_blank" class="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-100 transition">
-                                📲 WhatsApp
-                            </a>` : ''}
-                            <button onclick="collectFeePrompt('${studentId}', '${s.name.replace(/'/g, "\\'")}', ${totalClassFee}, ${paidVal})"
-                                class="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white hover:bg-blue-700 transition shadow-sm">
-                                Collect Fee
-                            </button>
-                        </div>
+                        <button onclick="collectFeePrompt('${s.id || s.student_id}', '${s.name.replace(/'/g,"\\'")}', ${tFee}, ${pFee})" class="w-full mt-3 py-2 bg-blue-600 text-white rounded text-xs font-bold">Collect Fee</button>
                     </div>`;
                 });
-                container.innerHTML = html;
-                lucide.createIcons();
-            } catch (err) {
-                container.innerHTML = `<div class="col-span-full text-center py-8 text-rose-500 font-bold text-sm">Error loading students fee information.</div>`;
-            }
+                container.innerHTML = html || '<div class="col-span-full py-8 text-center text-slate-400">No students.</div>';
+            } catch(e) {}
+        }
+        function collectFeePrompt(id, name, tFee, pFee) {
+            const amt = parseFloat(prompt(`Collect for ${name}\nDue: ₹${tFee-pFee}\nAmount:`));
+            if(amt>0) { localStorage.setItem(`fee_paid_${id}`, pFee+amt); loadFeeStudents(); }
         }
 
-        function collectFeePrompt(studentId, sName, totalFee, paidVal) {
-            const amountStr = prompt(`Collect fees for ${sName}\nTotal Fee: ₹${totalFee}\nAlready Paid: ₹${paidVal}\n\nEnter amount to add to Paid balance:`);
-            if (amountStr === null) return;
-            const amount = parseFloat(amountStr);
-            if (isNaN(amount) || amount <= 0) { alert("Please enter a valid amount."); return; }
-            const newPaid = paidVal + amount;
-            if (newPaid > totalFee) { alert("Warning: Total paid amount cannot exceed total class fee ₹" + totalFee); return; }
-            localStorage.setItem(`fee_paid_${studentId}`, newPaid);
-            showToast(`Received ₹${amount} from ${sName}!`, 'success');
-            loadFeeStudents();
+        // --- NOTIFICATIONS ---
+        function toggleNotifications() { document.getElementById('notifDropdown').classList.toggle('hidden'); fetchNotifications(); }
+        async function fetchNotifications() {
+            try {
+                const res = await fetch(`${API_BASE}/notifications`, { headers: getHeaders() });
+                const notifs = res.ok ? await res.json() : [];
+                const container = document.getElementById('notifListContainer');
+                if(notifs.length === 0) container.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No new notifications.</div>`;
+                else container.innerHTML = notifs.map(n => `<div class="p-3 border-b"><p class="font-bold text-sm">${n.title}</p><p class="text-xs text-slate-500">${n.message}</p></div>`).join('');
+            } catch(e){}
         }
+
+        // INIT
+        fetchSchoolStats();
+        fetchClasses();
     </script>
 </body>
 </html>
