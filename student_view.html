@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Student Diary</title>
+    <title>Student Diary</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,13 +11,13 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 font-sans sm:py-8 sm:px-4 flex justify-center items-center min-h-screen">
+<body class="bg-slate-50 font-sans sm:py-8 sm:px-4 flex justify-center items-start min-h-screen">
     
     <div class="max-w-xl w-full bg-white sm:rounded-2xl shadow-xl border-slate-200 sm:border overflow-hidden min-h-screen sm:min-h-[80vh]">
         
         <div class="bg-slate-900 text-center py-6 px-4 relative overflow-hidden">
             <div class="absolute top-0 right-0 p-8 opacity-5"><i data-lucide="book-open" class="w-32 h-32"></i></div>
-            <h1 class="text-2xl font-black text-white relative z-10 tracking-tight" id="schoolNameHeader">Digital School Diary</h1>
+            <h1 class="text-2xl font-black text-white relative z-10 tracking-tight" id="schoolNameHeader">Vivekanand Vidhya Mandir, Bamani</h1>
             <p class="text-slate-400 text-sm font-medium relative z-10 mt-1 uppercase tracking-widest">Student Homework Portal</p>
         </div>
 
@@ -50,14 +50,6 @@
                      <div class="p-8 text-center"><i data-lucide="loader-2" class="w-6 h-6 animate-spin text-blue-600 mx-auto"></i></div>
                 </div>
             </div>
-            
-            <div class="text-center pt-2">
-                <a href="login.html" class="text-sm font-semibold text-blue-600 hover:underline">School Login Portal</a>
-             </div>
-        </div>
-        
-        <div class="bg-slate-50 p-6 text-center border-t border-slate-200 mt-auto">
-            <p class="text-xs text-slate-500 leading-relaxed font-medium">This is a read-only digital diary generated dynamically.</p>
         </div>
     </div>
 
@@ -92,7 +84,6 @@
 
         async function fetchStudentDiary() {
             const params = new URLSearchParams(window.location.search);
-            // Fix: Check for both 'id' and 'student_id' so it works perfectly with the WhatsApp Link
             const studentId = params.get('id') || params.get('student_id');
             const hwId = params.get('hw_id');
 
@@ -129,11 +120,10 @@
                             <div class="border border-slate-200 rounded-xl overflow-hidden bg-white">
                                 <div class="bg-slate-50 px-4 py-2 border-b border-slate-200 flex justify-between items-center">
                                     <h4 class="font-bold text-slate-800 text-sm">
-                                        ${homeworkList.length > 1 ? `Assignment ${homeworkList.length - index}` : 'Class Work & Tasks'}
+                                        Subject / Task ${homeworkList.length > 1 ? (homeworkList.length - index) : ''}
                                     </h4>
                                     <div class="flex items-center gap-2">
                                         ${hw.created_at ? `<span class="text-[10px] text-slate-400 font-medium">${hw.created_at}</span>` : ''}
-                                        <span class="text-xs font-extrabold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-100 uppercase tracking-wider">Active</span>
                                     </div>
                                 </div>
                                 <div class="p-4 bg-white">
