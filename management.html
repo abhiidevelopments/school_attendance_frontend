@@ -582,7 +582,7 @@
 
     <div id="studentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 hidden">
         <div class="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-sm border border-slate-200 space-y-5">
-            <h3 class="font-black text-xl mb-2 text-slate-800">Register Student</h3>
+            <h3 id="studentModalTitle" class="font-black text-xl mb-2 text-slate-800">Register Student</h3>
             
             <div class="space-y-1">
                 <label class="text-[10px] font-bold text-slate-500 uppercase">Roll Number</label>
@@ -603,7 +603,7 @@
             
             <div class="flex justify-end gap-3 mt-8 pt-4 border-t border-slate-100">
                 <button onclick="closeStudentModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-xl text-sm font-bold transition-colors">Cancel</button>
-                <button onclick="saveStudent()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md transition-colors active:scale-95">Register</button>
+                <button onclick="saveStudent()" id="studentModalActionBtn" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-md transition-colors active:scale-95">Register</button>
             </div>
         </div>
     </div>
@@ -1181,6 +1181,7 @@
         let schoolTeachers = []; 
         let editingClassId = null; 
         let editingTeacherId = null; 
+        let editingStudentId = null; // New tracking variable
         let activeClsName = "";
 
         async function fetchClasses() {
@@ -1286,10 +1287,24 @@
         }
 
         function openStudentModal() { 
+            editingStudentId = null; // Clear edit mode
             document.getElementById('studRollInput').value = ''; 
             document.getElementById('studNameInput').value = ''; 
             document.getElementById('studPhoneInput').value = ''; 
             document.getElementById('studClassInput').value = activeClsName; 
+            document.getElementById('studentModalTitle').innerText = 'Register Student';
+            document.getElementById('studentModalActionBtn').innerText = 'Register';
+            document.getElementById('studentModal').classList.remove('hidden'); 
+        }
+
+        function editStudent(id, name, roll, phone, className) {
+            editingStudentId = id; // Set edit mode
+            document.getElementById('studRollInput').value = roll; 
+            document.getElementById('studNameInput').value = name; 
+            document.getElementById('studPhoneInput').value = phone; 
+            document.getElementById('studClassInput').value = className; 
+            document.getElementById('studentModalTitle').innerText = 'Edit Student Details';
+            document.getElementById('studentModalActionBtn').innerText = 'Update Record';
             document.getElementById('studentModal').classList.remove('hidden'); 
         }
 
@@ -1303,8 +1318,24 @@
             const phone = document.getElementById('studPhoneInput').value.trim(); 
             const className = document.getElementById('studClassInput').value.trim(); 
             if(!name) return showToast('Name field required'); 
-            const res = await fetch(`${API_BASE}/students`, { method:'POST', headers:getHeaders(), body: JSON.stringify({name, roll_no:roll, whatsapp_no:phone, class_name:className})}); 
-            if(res.ok) { showToast('Student Enrolled', 'success'); closeStudentModal(); fetchClasses(); toggleStudentClassView(className); } 
+            
+            const payload = {name, roll_no:roll, whatsapp_no:phone, class_name:className};
+            const method = editingStudentId ? 'PUT' : 'POST';
+            const endpoint = editingStudentId ? `${API_BASE}/students/${editingStudentId}` : `${API_BASE}/students`;
+
+            try {
+                const res = await fetch(endpoint, { method: method, headers:getHeaders(), body: JSON.stringify(payload)}); 
+                if(res.ok) { 
+                    showToast(editingStudentId ? 'Record Updated' : 'Student Enrolled', 'success'); 
+                    closeStudentModal(); 
+                    fetchClasses(); 
+                    toggleStudentClassView(className); 
+                } else {
+                    showToast('Failed to save student data', 'error');
+                }
+            } catch(e) {
+                showToast('Network error while saving.', 'error');
+            }
         }
         
         async function toggleStudentClassView(cls) {
@@ -1328,9 +1359,10 @@
                             <span class="bg-blue-50 text-blue-700 text-[10px] font-black tracking-widest uppercase px-2.5 py-1 rounded-md border border-blue-100">Scholar</span>
                         </div>
                         ${s.whatsapp_no ? `<p class="text-[11px] text-slate-500 font-bold"><i data-lucide="phone" class="w-3 h-3 inline"></i> ${s.whatsapp_no}</p>` : ''}
-                        <div class="flex gap-3 pt-3 border-t border-slate-100">
-                            <button onclick="downloadQR('${s.id}')" class="flex-1 py-2.5 text-xs font-black tracking-wide bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex justify-center items-center gap-1"><i data-lucide="qr-code" class="w-4 h-4"></i> Access Card</button>
-                            <button onclick="deleteStudent('${s.id}', '${cls}')" class="px-4 py-2.5 text-xs font-black bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        <div class="flex gap-2 pt-3 border-t border-slate-100">
+                            <button onclick="downloadQR('${s.id}')" class="flex-1 py-2 text-xs font-black tracking-wide bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex justify-center items-center gap-1"><i data-lucide="qr-code" class="w-4 h-4"></i> Access Card</button>
+                            <button onclick="editStudent('${s.id}', '${(s.name || '').replace(/'/g, "\\'")}', '${(s.roll_no || '').replace(/'/g, "\\'")}', '${s.whatsapp_no || ''}', '${cls}')" class="px-3 py-2 text-xs font-black bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                            <button onclick="deleteStudent('${s.id}', '${cls}')" class="px-3 py-2 text-xs font-black bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>`).join('');
                 lucide.createIcons(); document.getElementById('studentsLoader').classList.add('hidden');
@@ -1345,7 +1377,9 @@
         }
 
         function downloadQR(id) { 
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(id)}`; 
+            // Naya Smart QR Code: jisme direct homework website ka link hai!
+            const fullUrl = `https://abhiidevelopments.github.io/school_attendance_frontend/student_view.html?id=${id}`;
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(fullUrl)}`; 
             const link = document.createElement('a'); 
             link.href = qrUrl; 
             link.download = `Access_Card_${id}.png`; 
