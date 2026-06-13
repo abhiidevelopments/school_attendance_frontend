@@ -127,6 +127,10 @@
                             <div id="badgeMessages" class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors">
                                 <i data-lucide="message-square" class="w-3.5 h-3.5"></i> SMS Limit: <span id="headerMessages">-- Msgs</span>
                             </div>
+
+                            <div id="badgeDeviceStatus" class="flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider">
+                                <i data-lucide="wifi" class="w-3.5 h-3.5"></i> Device: <span id="headerDeviceStatus">Checking...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -775,6 +779,8 @@
                 const res = await fetch(`${API_BASE}/school/stats`, { headers: getHeaders() });
                 if (res.ok) {
                     const data = await res.json();
+                    
+                    // Validity and Msgs Update
                     const days = parseInt(data.validity_days) || 0;
                     const msgs = parseInt(data.message_limit) || 0;
                     
@@ -788,6 +794,28 @@
                     const badgeMsg = document.getElementById('badgeMessages');
                     if (msgs < 1000) badgeMsg.className = "flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-[11px] sm:text-xs font-black shadow-sm transition-colors uppercase tracking-widest";
                     else badgeMsg.className = "flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider";
+                    
+                    // NEW: Online / Offline Logic
+                    const statusBadge = document.getElementById('badgeDeviceStatus');
+                    const statusText = document.getElementById('headerDeviceStatus');
+                    
+                    if (data.last_seen) {
+                        const lastSeenDate = new Date(data.last_seen);
+                        const now = new Date();
+                        // 65000 ms = 65 seconds buffer for heartbeat
+                        const diff = now - lastSeenDate;
+                        
+                        if (diff < 65000) {
+                            statusBadge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider";
+                            statusText.innerHTML = '<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ONLINE</span>';
+                        } else {
+                            statusBadge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-[11px] sm:text-xs font-black shadow-sm transition-colors uppercase tracking-widest";
+                            statusText.innerHTML = '<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500"></span> OFFLINE</span>';
+                        }
+                    } else {
+                        statusBadge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider";
+                        statusText.innerText = "NO SIGNAL";
+                    }
                 }
             } catch(e) {}
         }
