@@ -1287,7 +1287,7 @@
         }
 
         function openStudentModal() { 
-            editingStudentId = null; // Clear edit mode
+            editingStudentId = null; 
             document.getElementById('studRollInput').value = ''; 
             document.getElementById('studNameInput').value = ''; 
             document.getElementById('studPhoneInput').value = ''; 
@@ -1298,7 +1298,7 @@
         }
 
         function editStudent(id, name, roll, phone, className) {
-            editingStudentId = id; // Set edit mode
+            editingStudentId = id; 
             document.getElementById('studRollInput').value = roll; 
             document.getElementById('studNameInput').value = name; 
             document.getElementById('studPhoneInput').value = phone; 
@@ -1360,7 +1360,7 @@
                         </div>
                         ${s.whatsapp_no ? `<p class="text-[11px] text-slate-500 font-bold"><i data-lucide="phone" class="w-3 h-3 inline"></i> ${s.whatsapp_no}</p>` : ''}
                         <div class="flex gap-2 pt-3 border-t border-slate-100">
-                            <button onclick="downloadQR('${s.id}')" class="flex-1 py-2 text-xs font-black tracking-wide bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex justify-center items-center gap-1"><i data-lucide="qr-code" class="w-4 h-4"></i> Access Card</button>
+                            <button onclick="downloadStudentQR('${s.id}')" class="flex-1 py-2 text-xs font-black tracking-wide bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex justify-center items-center gap-1"><i data-lucide="qr-code" class="w-4 h-4"></i> Access Card</button>
                             <button onclick="editStudent('${s.id}', '${(s.name || '').replace(/'/g, "\\'")}', '${(s.roll_no || '').replace(/'/g, "\\'")}', '${s.whatsapp_no || ''}', '${cls}')" class="px-3 py-2 text-xs font-black bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                             <button onclick="deleteStudent('${s.id}', '${cls}')" class="px-3 py-2 text-xs font-black bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
@@ -1376,13 +1376,23 @@
             } 
         }
 
-        function downloadQR(id) { 
-            // Naya Smart QR Code: jisme direct homework website ka link hai!
+        // --- SMART QR DOWNLOAD LOGIC ---
+        function downloadStudentQR(id) { 
+            // Creates a QR code with the FULL student_view link for Parents
             const fullUrl = `https://abhiidevelopments.github.io/school_attendance_frontend/student_view.html?id=${id}`;
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(fullUrl)}`; 
             const link = document.createElement('a'); 
             link.href = qrUrl; 
-            link.download = `Access_Card_${id}.png`; 
+            link.download = `Student_Access_Card_${id}.png`; 
+            document.body.appendChild(link); link.click(); document.body.removeChild(link); 
+        }
+
+        function downloadTeacherQR(id) { 
+            // Teachers just need normal ID encoding as they don't have a diary view
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(id)}`; 
+            const link = document.createElement('a'); 
+            link.href = qrUrl; 
+            link.download = `Teacher_Access_Card_${id}.png`; 
             document.body.appendChild(link); link.click(); document.body.removeChild(link); 
         }
 
@@ -1423,7 +1433,7 @@
                         ${t.class_teacher_of ? `<span class="bg-purple-50 text-purple-700 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md border border-purple-100">Class ${t.class_teacher_of}</span>` : `<span class="text-[10px] text-slate-400 font-bold italic">Standard</span>`}
                     </div>
                     <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
-                        <button onclick="downloadQR('${loginID}')" class="flex-1 py-2 text-xs font-black tracking-wide bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition-colors"><i data-lucide="qr-code" class="w-3.5 h-3.5 inline mr-1"></i> Pass</button>
+                        <button onclick="downloadTeacherQR('${loginID}')" class="flex-1 py-2 text-xs font-black tracking-wide bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition-colors"><i data-lucide="qr-code" class="w-3.5 h-3.5 inline mr-1"></i> Pass</button>
                         <button onclick="openTeacherModal('${t.id}')" class="px-3 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 transition-colors"><i data-lucide="pencil" class="w-4 h-4"></i></button>
                         <button onclick="deleteTeacher('${t.id}')" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                     </div>
