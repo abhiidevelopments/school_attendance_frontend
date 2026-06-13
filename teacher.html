@@ -89,7 +89,6 @@
                         <h3 id="activeClassHeader" class="font-bold text-slate-800">No Class Selected</h3>
                         <span id="attCount" class="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded font-semibold">0 Present</span>
                     </div>
-                    <!-- CARD GRID: replaces old divide-y table rows -->
                     <div id="studentList" class="p-4">
                         <div class="p-8 text-center text-slate-500 font-semibold text-sm">
                             Please select a class from your Schedule first to take attendance.
@@ -123,15 +122,11 @@
 
     <script>
         lucide.createIcons();
-
-        // ABSOLUTE PRODUCTION ENDPOINT
         const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
 
-        // Welcome and Initials setup
         const userRole = localStorage.getItem('user_role');
         const userName = localStorage.getItem('user_name') || 'Teacher';
 
-        // Redirect if not teacher
         if (userRole !== 'TEACHER') {
             window.location.href = 'login.html';
         }
@@ -206,7 +201,6 @@
 
             if(tabId === 'attendance') fetchRoster();
 
-            // Close mobile sidebar if open
             const sb = document.getElementById('sidebar');
             const bd = document.getElementById('sidebarBackdrop');
             if (sb && bd && !sb.classList.contains('-translate-x-full')) {
@@ -215,7 +209,6 @@
             }
         }
 
-        // Attendance Logic
         let students = [];
         let teacherSchedule = [];
         let curManagingClass = localStorage.getItem('class_teacher_of') || '';
@@ -228,8 +221,6 @@
         function startClassAttendance(className, subject) {
             curManagingClass = className;
             curManagingSubj = subject;
-
-            // Find attendance tab button and switch
             const attendanceBtn = document.querySelector('button[onclick*="attendance"]');
             if (attendanceBtn) {
                 nav('attendance', attendanceBtn);
@@ -262,34 +253,19 @@
                     const data = await res.json();
                     const targetName = (userName ? String(userName) : '').trim().toLowerCase();
                     teacherSchedule = data.filter(item => item.teacher_name && String(item.teacher_name).trim().toLowerCase() === targetName);
-
-                    // Sort by period index
                     teacherSchedule.sort((a, b) => a.period_idx - b.period_idx);
                     renderSchedule();
                 } else {
-                    let errMsg = `Failed to fetch schedule from server (Status: ${res.status}).`;
-                    try {
-                        const errBody = await res.json();
-                        if (errBody && errBody.message) errMsg = errBody.message;
-                    } catch(_) {}
+                    let errMsg = `Failed to fetch schedule from server.`;
                     container.innerHTML = `
                         <div class="flex justify-between items-end mb-2 px-1">
                             <h2 class="text-lg font-bold text-slate-800">Today's Schedule</h2>
                         </div>
-                        <div class="bg-white rounded-xl shadow-sm p-6 text-center text-slate-500">
-                            ${errMsg}
-                        </div>
+                        <div class="bg-white rounded-xl shadow-sm p-6 text-center text-slate-500">${errMsg}</div>
                     `;
                 }
             } catch(e) {
-                container.innerHTML = `
-                    <div class="flex justify-between items-end mb-2 px-1">
-                        <h2 class="text-lg font-bold text-slate-800">Today's Schedule</h2>
-                    </div>
-                    <div class="bg-white rounded-xl shadow-sm p-6 text-center text-slate-500">
-                        Network error loading schedule: ${e.message || e}
-                    </div>
-                `;
+                container.innerHTML = `<div class="bg-white rounded-xl shadow-sm p-6 text-center text-slate-500">Network error.</div>`;
             }
         }
 
@@ -316,7 +292,6 @@
 
             teacherSchedule.forEach((item) => {
                 const mappedPeriodStr = item.period_idx >= 4 ? `P${item.period_idx}` : `P${item.period_idx + 1}`;
-
                 html += `
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden flex border-0 transition hover:shadow-md cursor-pointer mb-3" onclick="toggleDashboardClass('${item.class_name}', '${item.subject}')">
                     <div class="flex flex-col items-center justify-center w-16 text-white font-bold p-3 bg-slate-700">
@@ -355,9 +330,7 @@
                     schoolClasses = await res.json();
                     populateClassSelects();
                 }
-            } catch(e) {
-                console.error("Failed to load school classes", e);
-            }
+            } catch(e) {}
         }
 
         function populateClassSelects() {
@@ -367,7 +340,6 @@
             const quickBox = document.getElementById('quickClassSelectorBox');
             if (quickBox) quickBox.classList.remove('hidden');
 
-            // ATTENDANCE: static display locked to class_teacher_of
             const myClassDisplay = document.getElementById('myClassDisplay');
             if (myClassDisplay) {
                 if (isClassTeacher) {
@@ -379,88 +351,53 @@
                 } else {
                     myClassDisplay.innerHTML = 'Not a Class Teacher';
                     myClassDisplay.className = 'px-4 py-2 bg-slate-100 text-slate-500 font-semibold rounded-lg border border-slate-200';
-                    document.getElementById('studentList').innerHTML = `
-                        <div class="p-8 text-center text-slate-500 font-semibold text-sm">
-                            You are not assigned as a Class Teacher. Contact your school admin.
-                        </div>
-                    `;
+                    document.getElementById('studentList').innerHTML = `<div class="p-8 text-center text-slate-500 font-semibold text-sm">You are not assigned as a Class Teacher.</div>`;
                 }
             }
 
-            // HOMEWORK: only show unique classes from today's teacherSchedule
             const hwSelect = document.getElementById('hwClassSelect');
             if (hwSelect) {
                 const seen = new Set();
                 let hwHtml = '<option value="">Select Target Class</option>';
                 teacherSchedule.forEach(item => {
-                    if (item.class_name && !seen.has(item.class_name)) {
-                        seen.add(item.class_name);
-                        hwHtml += `<option value="${item.class_name}">Class ${item.class_name} — ${item.subject}</option>`;
+                    const uniqueKey = item.class_name + '-' + item.subject;
+                    if (item.class_name && !seen.has(uniqueKey)) {
+                        seen.add(uniqueKey);
+                        hwHtml += `<option value="${item.class_name}" data-subject="${item.subject}">Class ${item.class_name} — ${item.subject}</option>`;
                     }
                 });
-                if (seen.size === 0) {
-                    hwHtml = '<option value="">No classes in today\'s schedule</option>';
-                }
+                if (seen.size === 0) hwHtml = '<option value="">No classes in today\'s schedule</option>';
                 hwSelect.innerHTML = hwHtml;
             }
         }
 
         function changeAttendanceClass(val) {
             if(!val) {
-                curManagingClass = '';
-                curManagingSubj = '';
-                fetchRoster();
-                return;
+                curManagingClass = ''; curManagingSubj = '';
+                fetchRoster(); return;
             }
             curManagingClass = val;
             curManagingSubj = 'General';
             const sched = teacherSchedule.find(s => s.class_name === val);
-            if(sched) {
-                curManagingSubj = sched.subject;
-            } else {
-                const classTeacherOf = localStorage.getItem('class_teacher_of');
-                if (val === classTeacherOf) {
-                    curManagingSubj = 'Class Teacher';
-                }
-            }
+            if(sched) curManagingSubj = sched.subject;
             fetchRoster();
         }
 
         async function fetchRoster() {
-            if(!curManagingClass) {
-                document.getElementById('studentList').innerHTML = `
-                    <div class="p-8 text-center text-slate-500 font-semibold text-sm">
-                        Please select a class from your Schedule or Quick Selector to take attendance.
-                    </div>
-                `;
-                return;
-            }
-
+            if(!curManagingClass) return;
             document.getElementById('activeClassHeader').innerText = `Class ${curManagingClass} • ${curManagingSubj}`;
-
-            document.getElementById('studentList').innerHTML = `
-                <div class="p-8 flex justify-center">
-                    <i data-lucide="loader-2" class="w-6 h-6 animate-spin text-blue-600"></i>
-                </div>
-            `;
+            document.getElementById('studentList').innerHTML = `<div class="p-8 flex justify-center"><i data-lucide="loader-2" class="w-6 h-6 animate-spin text-blue-600"></i></div>`;
             lucide.createIcons();
 
             try {
                 const token = localStorage.getItem('auth_token');
                 const schoolId = localStorage.getItem('school_id');
-                if(!token) return;
-
-                const res = await fetch(`${API_BASE}/attendance/status?class=${encodeURIComponent(curManagingClass)}`, {
-                    headers: {
-                        'Authorization': 'Bearer ' + token,
-                        'School-Id': schoolId
-                    }
-                });
+                const res = await fetch(`${API_BASE}/attendance/status?class=${encodeURIComponent(curManagingClass)}`, { headers: { 'Authorization': 'Bearer ' + token, 'School-Id': schoolId } });
                 if(res.ok) {
                     students = await res.json();
                     renderStudents();
                 } else {
-                    document.getElementById('studentList').innerHTML = `<div class="p-8 text-center text-red-500 font-medium">Failed to load student roster (HTTP ${res.status}). Ensure students are added to this class in the admin panel.</div>`;
+                    document.getElementById('studentList').innerHTML = `<div class="p-8 text-center text-red-500 font-medium">Failed to load student roster.</div>`;
                 }
             } catch(e) {
                 document.getElementById('studentList').innerHTML = `<div class="p-8 text-center text-red-500 font-medium">Network error fetching roster.</div>`;
@@ -470,45 +407,26 @@
         function renderStudents() {
             let html = '';
             let pCount = 0;
-
             if (students.length === 0) {
-                document.getElementById('studentList').innerHTML = `
-                    <div class="p-8 text-center text-slate-500 font-medium text-sm">
-                        No students registered in this class yet.
-                    </div>
-                `;
+                document.getElementById('studentList').innerHTML = `<div class="p-8 text-center text-slate-500 font-medium text-sm">No students registered in this class yet.</div>`;
                 document.getElementById('attCount').innerText = `0 Present`;
                 return;
             }
 
-            // Sort by roll_no or name
             students.sort((a, b) => {
-                const rollA = String(a.roll_no || '').trim();
-                const rollB = String(b.roll_no || '').trim();
-                if (rollA && rollB) {
-                    return rollA.localeCompare(rollB, undefined, {numeric: true});
-                }
-                if (rollA) return -1;
-                if (rollB) return 1;
                 const nameA = String(a.name || '').trim();
                 const nameB = String(b.name || '').trim();
                 return nameA.localeCompare(nameB);
             });
 
-            // ── CARD GRID (replaces <tr>/<td> rows) ──────────────────────────
             html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">`;
             students.forEach(s => {
                 if(s.p) pCount++;
-                const rollLabel = s.roll_no
-                    ? `<span class="font-mono text-xs font-bold text-slate-500">Roll ${s.roll_no}</span>`
-                    : `<span class="font-mono text-xs text-slate-400">No Roll</span>`;
-                const statusDot = s.p
-                    ? `<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">● Present</span>`
-                    : `<span class="inline-flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-full px-2 py-0.5">○ Absent</span>`;
+                const rollLabel = s.roll_no ? `<span class="font-mono text-xs font-bold text-slate-500">Roll ${s.roll_no}</span>` : `<span class="font-mono text-xs text-slate-400">No Roll</span>`;
+                const statusDot = s.p ? `<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">● Present</span>` : `<span class="inline-flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-full px-2 py-0.5">○ Absent</span>`;
 
                 html += `
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col gap-3 hover:shadow-md transition-shadow">
-                    <!-- Top: Name + Roll -->
                     <div class="flex items-start justify-between gap-2">
                         <div>
                             <p class="font-bold text-slate-900 text-sm leading-tight">${s.name}</p>
@@ -516,24 +434,19 @@
                         </div>
                         ${statusDot}
                     </div>
-                    <!-- Middle: ID + Phone -->
                     <div class="text-xs text-slate-400 font-mono space-y-0.5">
                         <p>ID: ${s.id}</p>
                         ${s.whatsapp_no ? `<p>📱 ${s.whatsapp_no}</p>` : ''}
                     </div>
-                    <!-- Bottom: Toggle Button -->
                     <button onclick="toggleAtt('${s.id}')"
                         class="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all active:scale-[0.97]
-                        ${s.p
-                            ? 'bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100'
-                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'}">
+                        ${s.p ? 'bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'}">
                         <i data-lucide="${s.p ? 'x-circle' : 'check-circle'}" class="w-4 h-4"></i>
                         ${s.p ? 'Mark Absent' : 'Mark Present'}
                     </button>
                 </div>`;
             });
             html += `</div>`;
-            // ─────────────────────────────────────────────────────────────────
 
             document.getElementById('studentList').innerHTML = html;
             document.getElementById('attCount').innerText = `${pCount} / ${students.length} Present`;
@@ -550,41 +463,35 @@
             try {
                 const token = localStorage.getItem('auth_token');
                 const schoolId = localStorage.getItem('school_id');
-
                 const res = await fetch(`${API_BASE}/attendance/manual`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token,
-                        'School-Id': schoolId
-                    },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'School-Id': schoolId },
                     body: JSON.stringify({ student_id: id, status: s.p ? 'present' : 'absent' })
                 });
-
-                if (res.ok) {
-                    showToast('Attendance status saved', 'success');
-                } else {
-                    showToast('Server failed to update attendance. Reverting.', 'error');
-                    s.p = originalState;
-                    renderStudents();
-                }
-            } catch(e) {
-                showToast('Failed to sync. Reverting.', 'error');
-                s.p = originalState;
-                renderStudents();
-            }
+                if (res.ok) showToast('Attendance status saved', 'success');
+                else { s.p = originalState; renderStudents(); showToast('Update failed', 'error'); }
+            } catch(e) { s.p = originalState; renderStudents(); showToast('Sync failed', 'error'); }
         }
 
-        // Homework Logic
+        // --- NEW AUTO-SUBJECT LOGIC ---
         async function publishHomework() {
-            const cls = document.getElementById('hwClassSelect').value;
-            const details = document.querySelector('textarea').value.trim();
+            const selectEl = document.getElementById('hwClassSelect');
+            const cls = selectEl.value;
+            let details = document.querySelector('textarea').value.trim();
             const btn = document.getElementById('publishHwBtn');
             const linkDiv = document.getElementById('hwLinkResult');
 
             if(!cls || !details) {
                 showToast('Please enter homework details');
                 return;
+            }
+
+            // AUTO-APPEND THE SUBJECT FROM DROPDOWN!
+            const selectedOption = selectEl.options[selectEl.selectedIndex];
+            const subject = selectedOption.getAttribute('data-subject') || '';
+            
+            if (subject) {
+                details = subject + ":\n" + details;
             }
 
             btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>';
@@ -608,12 +515,8 @@
                 if (res.ok) {
                     const data = await res.json();
                     const hwId = data.id;
-                    if (!hwId) {
-                        throw new Error('No homework ID returned from server');
-                    }
-
                     showToast('Homework Published Successfully', 'success');
-                    const viewerUrl = window.location.origin + `/student_view.html?hw_id=${hwId}`;
+                    const viewerUrl = window.location.origin + `/school_attendance_frontend/student_view.html?hw_id=${hwId}`;
                     linkDiv.innerHTML = `Public Link:<br><a href="${viewerUrl}" class="underline tracking-wide break-all text-blue-700 font-bold" target="_blank">${viewerUrl}</a>`;
                     linkDiv.classList.remove('hidden');
 
@@ -621,18 +524,17 @@
                     btn.disabled = false;
                     document.querySelector('textarea').value = '';
                 } else {
-                    showToast('Failed to publish homework to server', 'error');
+                    showToast('Failed to publish', 'error');
                     btn.innerHTML = 'Publish to Student Portal';
                     btn.disabled = false;
                 }
             } catch(e) {
-                showToast(e.message || 'Failed to publish homework', 'error');
+                showToast(e.message, 'error');
                 btn.innerHTML = 'Publish to Student Portal';
                 btn.disabled = false;
             }
         }
 
-        // Run first-time local load
         fetchSchedule();
         fetchSchoolClasses();
     </script>
