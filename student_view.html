@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Springfield - Digital Diary</title>
+    <title>Digital Student Diary</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -15,25 +15,23 @@
     
     <div class="max-w-xl w-full bg-white sm:rounded-2xl shadow-xl border-slate-200 sm:border overflow-hidden min-h-screen sm:min-h-[80vh]">
         
-        <!-- Header -->
         <div class="bg-slate-900 text-center py-6 px-4 relative overflow-hidden">
             <div class="absolute top-0 right-0 p-8 opacity-5"><i data-lucide="book-open" class="w-32 h-32"></i></div>
-            <h1 class="text-2xl font-black text-white relative z-10 tracking-tight">Springfield High</h1>
-            <p class="text-slate-400 text-sm font-medium relative z-10 mt-1 uppercase tracking-widest">Digital Student Diary</p>
+            <h1 class="text-2xl font-black text-white relative z-10 tracking-tight" id="schoolNameHeader">Digital School Diary</h1>
+            <p class="text-slate-400 text-sm font-medium relative z-10 mt-1 uppercase tracking-widest">Student Homework Portal</p>
         </div>
 
-        <!-- Profile Ribbon -->
         <div class="bg-blue-600 px-6 py-4 flex items-center justify-between shadow-inner">
             <div class="flex items-center gap-3">
                 <div class="bg-white/20 p-2 rounded-full backdrop-blur-sm"><i data-lucide="user" class="w-5 h-5 text-white"></i></div>
                 <div>
                     <p class="text-blue-100 text-[10px] font-bold uppercase tracking-wider">Student Profile</p>
-                    <p class="text-white font-bold text-lg leading-tight" id="studentName">Student</p>
+                    <p class="text-white font-bold text-lg leading-tight" id="studentName">Loading...</p>
                 </div>
             </div>
             <div class="text-right">
                 <p class="text-blue-200 text-[10px] font-bold uppercase tracking-wider">Class</p>
-                <p class="text-white font-bold" id="classLabel">N/A</p>
+                <p class="text-white font-bold" id="classLabel">...</p>
             </div>
         </div>
 
@@ -43,19 +41,6 @@
                 <h2 class="text-lg font-bold text-slate-800" id="currentDate"></h2>
             </div>
 
-            <!-- Announcements -->
-            <div class="bg-amber-50 rounded-xl p-4 border border-amber-100">
-                <div class="flex items-center gap-2 mb-2">
-                    <i data-lucide="megaphone" class="w-4 h-4 text-amber-600"></i>
-                    <h3 class="font-bold text-amber-900 text-sm">School Announcements</h3>
-                </div>
-                <ul class="text-sm text-amber-800 font-medium space-y-1 pl-6 list-disc marker:text-amber-400">
-                    <li class="pl-1">Tomorrow is a half-day due to training.</li>
-                    <li class="pl-1">Submit permission slips by Friday.</li>
-                </ul>
-            </div>
-
-            <!-- Homework -->
             <div>
                 <div class="flex items-center gap-2 mb-4">
                     <i data-lucide="book-open" class="w-5 h-5 text-blue-600"></i>
@@ -66,9 +51,8 @@
                 </div>
             </div>
             
-            <!-- Login link for parents to switch back easily -->
-             <div class="text-center pt-2">
-                <a href="login.html" class="text-sm font-semibold text-blue-600 hover:underline">SaaS Login Portal</a>
+            <div class="text-center pt-2">
+                <a href="login.html" class="text-sm font-semibold text-blue-600 hover:underline">School Login Portal</a>
              </div>
         </div>
         
@@ -108,7 +92,8 @@
 
         async function fetchStudentDiary() {
             const params = new URLSearchParams(window.location.search);
-            const studentId = params.get('student_id');
+            // Fix: Check for both 'id' and 'student_id' so it works perfectly with the WhatsApp Link
+            const studentId = params.get('id') || params.get('student_id');
             const hwId = params.get('hw_id');
 
             try {
@@ -183,4 +168,3 @@
     </script>
 </body>
 </html>
-
