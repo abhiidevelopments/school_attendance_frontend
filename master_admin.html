@@ -9,6 +9,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        /* Scrollbar styling for devices list */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex flex-col font-sans">
@@ -35,13 +39,12 @@
     </header>
 
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
                 <h2 class="text-2xl font-bold text-slate-900">Client Schools</h2>
-                <p class="text-sm text-slate-500 mt-1">Manage subscriptions, devices, and limits for all registered schools.</p>
+                <p class="text-sm text-slate-500 mt-1">Manage subscriptions, hardware devices, and daily limits.</p>
             </div>
-            <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm hover:shadow active:scale-95">
+            <button onclick="openSchoolModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm active:scale-95">
                 <i data-lucide="plus-circle" class="w-5 h-5"></i> Onboard New School
             </button>
         </div>
@@ -52,114 +55,99 @@
                     <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
                         <tr>
                             <th class="p-4 whitespace-nowrap">School Details</th>
-                            <th class="p-4 whitespace-nowrap">Device Link (ESP32)</th>
+                            <th class="p-4 whitespace-nowrap">Linked Hardware (Live)</th>
                             <th class="p-4 whitespace-nowrap">Validity & Limits</th>
-                            <th class="p-4 whitespace-nowrap">Students</th>
                             <th class="p-4 text-right whitespace-nowrap">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="schoolsList" class="divide-y divide-slate-100">
-                        <tr>
-                            <td colspan="5" class="p-8 text-center text-slate-500 font-medium">Loading client data...</td>
-                        </tr>
+                        <tr><td colspan="4" class="p-8 text-center text-slate-500 font-medium">Loading clients...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
-    <div id="globalSettingsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+    <div id="globalSettingsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
             <div class="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 flex justify-between items-center">
                 <h3 class="font-bold text-xl text-slate-900 flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-emerald-600"></i> Platform Pricing</h3>
-                <button onclick="closeGlobalSettingsModal()" class="text-slate-400 hover:text-slate-700 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeGlobalSettingsModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-4 sm:p-6 space-y-4">
-                <p class="text-xs font-bold text-slate-500 mb-2">These rates apply to dynamic QR recharges.</p>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Monthly Subscription Rate (₹)</label>
-                    <input type="number" id="global_monthly_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. 500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Per Message Rate (₹)</label>
-                    <input type="number" step="0.01" id="global_message_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. 0.20">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Master Admin UPI ID</label>
-                    <input type="text" id="global_admin_upi" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="e.g. educore@upi">
-                </div>
+                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Monthly Subscription Rate (₹)</label><input type="number" id="global_monthly_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"></div>
+                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Per Message Rate (₹)</label><input type="number" step="0.01" id="global_message_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"></div>
+                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Master Admin UPI ID</label><input type="text" id="global_admin_upi" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"></div>
             </div>
             <div class="border-t border-slate-100 p-4 sm:p-6 bg-slate-50 flex justify-end gap-3">
-                <button onclick="closeGlobalSettingsModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-200 rounded-xl text-sm font-bold transition">Cancel</button>
-                <button onclick="saveGlobalSettings()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold transition shadow-sm">Save Global Settings</button>
+                <button onclick="closeGlobalSettingsModal()" class="px-5 py-2.5 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-xl text-sm font-bold">Cancel</button>
+                <button onclick="saveGlobalSettings()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold">Save Settings</button>
             </div>
         </div>
     </div>
 
-    <div id="schoolModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+    <div id="schoolModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
             <div class="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 flex justify-between items-center">
                 <h3 id="modalTitle" class="font-bold text-xl text-slate-900">Onboard New School</h3>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-700 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeSchoolModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-4 sm:p-6 space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">School Full Name</label>
-                    <input type="text" id="schoolName" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. Springfield High">
+                <div><label class="block text-sm font-semibold mb-1">School Full Name</label><input type="text" id="schoolName" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-sm font-semibold mb-1">Admin ID</label><input type="text" id="adminUsername" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-sm font-semibold mb-1">Password</label><input type="text" id="adminPassword" placeholder="Blank to keep current" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500"></div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Admin Login ID</label>
-                        <input type="text" id="adminUsername" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. admin_springfield">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">Admin Password</label>
-                        <input type="text" id="adminPassword" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Leave blank to keep current">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1">Student Capacity Limit</label>
-                    <input type="number" id="studentLimit" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 500" value="250">
-                </div>
-                
-                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                    <label class="block text-sm font-bold text-blue-900 mb-1">Hardware Device Code (ESP32 MAC)</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="deviceCode" class="flex-1 border border-blue-200 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white font-mono uppercase tracking-widest" placeholder="e.g. 24:6F:28:AB:CD:EF">
-                        <button type="button" onclick="pasteMacAddress()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-lg text-sm font-bold transition flex items-center gap-1 shadow-sm active:scale-95">
-                            <i data-lucide="clipboard-paste" class="w-4 h-4"></i> Paste
-                        </button>
-                    </div>
-                    <p class="text-[10px] text-blue-600 mt-1 font-semibold">Links the physical scanner to this school's database.</p>
-                </div>
+                <div><label class="block text-sm font-semibold mb-1">Student Capacity</label><input type="number" id="studentLimit" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500" value="250"></div>
             </div>
             <div class="border-t border-slate-100 p-4 sm:p-6 bg-slate-50 flex justify-end gap-3">
-                <button onclick="closeModal()" class="px-5 py-2.5 text-slate-600 hover:bg-slate-200 rounded-xl text-sm font-bold transition">Cancel</button>
-                <button onclick="saveSchool()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition shadow-sm">Save Client</button>
+                <button onclick="closeSchoolModal()" class="px-5 py-2.5 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-xl text-sm font-bold">Cancel</button>
+                <button onclick="saveSchool()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold">Save Client</button>
             </div>
         </div>
     </div>
 
-    <div id="rechargeModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 transition-opacity">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
+    <div id="deviceModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 flex justify-between items-center shrink-0">
+                <h3 class="font-bold text-xl text-slate-900 flex items-center gap-2"><i data-lucide="cpu" class="w-5 h-5 text-blue-600"></i> Hardware Manager</h3>
+                <button onclick="closeDeviceModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="p-4 sm:p-6 flex-1 overflow-y-auto space-y-4 bg-slate-50/50">
+                <div id="deviceListContainer" class="space-y-3"></div>
+            </div>
+
+            <div class="border-t border-slate-200 bg-white p-4 sm:p-6 shrink-0">
+                <p class="text-xs font-bold text-slate-500 uppercase mb-3">Manually Add Hardware (Via MAC)</p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="newDevName" placeholder="Device Name (e.g. Gate 1)" class="w-full sm:w-1/3 border border-slate-300 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500">
+                    <div class="flex-1 flex gap-2">
+                        <input type="text" id="newDevMac" placeholder="Paste MAC Address..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm outline-none font-mono uppercase focus:border-blue-500">
+                        <button onclick="pasteMacToInput()" class="bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 px-3 rounded-lg text-xs font-bold flex items-center gap-1 transition" title="Paste from clipboard">
+                            <i data-lucide="clipboard-paste" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <button onclick="addDevice()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg text-sm font-bold transition shadow-sm">Link</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rechargeModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
             <div class="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center">
                 <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-amber-500"></i> Manual Recharge</h3>
-                <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-slate-700 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 space-y-4">
                 <p id="rechargeSchoolName" class="text-sm font-bold text-slate-600 mb-4">School Name</p>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Set Validity Days</label>
-                    <input type="number" id="rech_val_days" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Set Message Limit</label>
-                    <input type="number" id="rech_msg_limit" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
+                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Set Validity Days</label><input type="number" id="rech_val_days" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-amber-500"></div>
+                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Set Message Limit</label><input type="number" id="rech_msg_limit" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-amber-500"></div>
             </div>
             <div class="border-t border-slate-100 p-4 bg-slate-50 flex justify-end gap-2">
-                <button onclick="closeRechargeModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-200 rounded-xl text-sm font-bold transition">Cancel</button>
-                <button onclick="processManualRecharge()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-bold transition shadow-sm">Update Account</button>
+                <button onclick="closeRechargeModal()" class="px-4 py-2 bg-slate-200 text-slate-600 hover:bg-slate-300 rounded-xl text-sm font-bold">Cancel</button>
+                <button onclick="processManualRecharge()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-bold shadow-sm">Update Account</button>
             </div>
         </div>
     </div>
@@ -171,8 +159,9 @@
         const API_BASE = 'https://school-attendance-vdbg.onrender.com/api';
         let currentEditId = null;
         let currentRechargeId = null;
-        let adminPollInterval;
+        let currentManageSchoolId = null;
 
+        // Toast System
         function showToast(message, type = 'error') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -180,32 +169,14 @@
             const borderColor = type === 'success' ? 'border-emerald-200' : 'border-red-200';
             const textColor = type === 'success' ? 'text-emerald-800' : 'text-red-800';
             const icon = type === 'success' ? 'check-circle' : 'alert-circle';
-
             toast.className = `flex items-center gap-2 p-4 rounded-xl border ${borderColor} ${bgColor} ${textColor} shadow-lg transform transition-all duration-300 translate-x-full pointer-events-auto`;
             toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i><span class="font-medium text-sm">${message}</span>`;
-            container.appendChild(toast);
-            lucide.createIcons();
-
+            container.appendChild(toast); lucide.createIcons();
             requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
-            setTimeout(() => {
-                toast.classList.add('translate-x-full');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            setTimeout(() => { toast.classList.add('translate-x-full'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // --- NEW PASTE FUNCTION ---
-        async function pasteMacAddress() {
-            try {
-                const text = await navigator.clipboard.readText();
-                if (text) {
-                    document.getElementById('deviceCode').value = text.trim();
-                    showToast('MAC Address Pasted Successfully!', 'success');
-                }
-            } catch (err) {
-                showToast('Failed to paste. Please allow clipboard permissions.');
-            }
-        }
-
+        // Global Settings
         async function fetchMasterSettings() {
             try {
                 const res = await fetch(`${API_BASE}/admin/master_settings`);
@@ -217,232 +188,218 @@
                 }
             } catch(e) {}
         }
-
-        function openGlobalSettingsModal() {
-            fetchMasterSettings();
-            document.getElementById('globalSettingsModal').classList.remove('hidden');
-        }
+        function openGlobalSettingsModal() { fetchMasterSettings(); document.getElementById('globalSettingsModal').classList.remove('hidden'); }
         function closeGlobalSettingsModal() { document.getElementById('globalSettingsModal').classList.add('hidden'); }
-        
         async function saveGlobalSettings() {
-            const payload = {
-                monthly_rate: parseFloat(document.getElementById('global_monthly_rate').value) || 500,
-                message_rate: parseFloat(document.getElementById('global_message_rate').value) || 0.20,
-                admin_upi_id: document.getElementById('global_admin_upi').value.trim()
-            };
-            try {
-                const res = await fetch(`${API_BASE}/admin/master_settings`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if(res.ok) { showToast('Global settings updated!', 'success'); closeGlobalSettingsModal(); }
-            } catch(e) { showToast('Failed to update global settings.'); }
+            const payload = { monthly_rate: parseFloat(document.getElementById('global_monthly_rate').value) || 500, message_rate: parseFloat(document.getElementById('global_message_rate').value) || 0.20, admin_upi_id: document.getElementById('global_admin_upi').value.trim() };
+            const res = await fetch(`${API_BASE}/admin/master_settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if(res.ok) { showToast('Global settings updated!', 'success'); closeGlobalSettingsModal(); }
         }
 
+        // Fetch Schools & Devices
         async function fetchSchools() {
             try {
                 const response = await fetch(`${API_BASE}/admin/schools`);
-                if (!response.ok) throw new Error('Failed to fetch');
                 const schools = await response.json();
-                
                 const container = document.getElementById('schoolsList');
-                if (schools.length === 0) {
-                    container.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium">No schools found. Add one to get started.</td></tr>`;
-                    return;
-                }
+                if (schools.length === 0) { container.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500 font-medium">No schools found. Add one to get started.</td></tr>`; return; }
 
                 let html = '';
                 schools.forEach(school => {
-                    const isExpiring = (school.validity_days || 0) < 5;
-                    const lowMsg = (school.message_limit || 0) < 100;
+                    const isExpiring = (school.validity_days || 0) <= 0;
                     
-                    const isOnline = school.last_seen && (new Date() - new Date(school.last_seen) < 65000);
-                    const statusBadge = isOnline ? 
-                        `<span class="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>ONLINE</span>` : 
-                        `<span class="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-50 text-slate-500 border border-slate-200 shadow-sm"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>OFFLINE</span>`;
-                    
+                    // Generate Device Badges HTML
+                    let devicesHtml = '';
+                    if (school.devices && school.devices.length > 0) {
+                        devicesHtml = school.devices.map(d => {
+                            let statusDot = (d.is_online && d.is_active) ? '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>' : '<span class="w-2 h-2 rounded-full bg-slate-400 shrink-0"></span>';
+                            let opacity = d.is_active ? 'opacity-100' : 'opacity-50 line-through';
+                            return `<div class="flex items-center gap-1.5 text-[11px] font-bold bg-slate-100 text-slate-700 px-2 py-1 rounded-md border border-slate-200 ${opacity}">${statusDot} ${d.name}</div>`;
+                        }).join('');
+                    } else {
+                        devicesHtml = `<span class="text-xs text-slate-400 italic">No devices linked</span>`;
+                    }
+
                     html += `
-                        <tr class="hover:bg-slate-50 transition-colors group">
-                            <td class="p-4">
-                                <p class="font-bold text-slate-900">${school.name}</p>
-                                <div class="flex items-center gap-1 text-xs text-slate-500 mt-1 font-mono">
-                                    <i data-lucide="key" class="w-3 h-3"></i> ${school.admin_username}
-                                </div>
-                            </td>
-                            <td class="p-4">
-                                ${school.device_code ? 
-                                    `<div class="flex items-center"><span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-700 font-mono border border-slate-200"><i data-lucide="cpu" class="w-3.5 h-3.5 text-blue-500"></i> ${school.device_code}</span>${statusBadge}</div>` 
-                                    : `<span class="text-xs font-medium text-slate-400 italic">No device linked</span>`}
-                            </td>
-                            <td class="p-4 space-y-2">
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isExpiring ? 'bg-red-100 text-red-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
-                                        ${school.validity_days || 0} Days
-                                    </span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${lowMsg ? 'bg-amber-100 text-amber-700' : 'bg-blue-50 text-blue-700 border border-blue-200'}">
-                                        ${school.message_limit || 0} Msgs
-                                    </span>
-                                </div>
-                            </td>
-                            <td class="p-4">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 group">
+                            <td class="p-4 align-top">
+                                <p class="font-bold text-slate-900 text-lg">${school.name}</p>
+                                <p class="text-xs font-mono text-slate-500 mt-1"><i data-lucide="key" class="w-3 h-3 inline"></i> ${school.admin_username}</p>
+                                <div class="flex items-center gap-2 mt-3">
+                                    <div class="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                                         <div class="h-full bg-blue-500" style="width: ${(school.student_count / school.max_student_limit) * 100}%"></div>
                                     </div>
-                                    <span class="text-xs font-bold text-slate-600">${school.student_count} / ${school.max_student_limit}</span>
+                                    <span class="text-[10px] font-bold text-slate-500">${school.student_count}/${school.max_student_limit} Std.</span>
                                 </div>
                             </td>
-                            <td class="p-4 text-right">
-                                <div class="flex items-center justify-end gap-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onclick="openRechargeModal(${school.id}, '${school.name.replace(/'/g, "\\'")}', ${school.validity_days || 0}, ${school.message_limit || 0})" class="p-2 text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-lg transition tooltip" title="Manual Recharge">
-                                        <i data-lucide="zap" class="w-4 h-4"></i>
-                                    </button>
-                                    <button onclick="editSchool(${school.id})" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition" title="Edit School">
-                                        <i data-lucide="pencil" class="w-4 h-4"></i>
-                                    </button>
-                                    <button onclick="deleteSchool(${school.id})" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition" title="Delete">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
+                            <td class="p-4 align-top">
+                                <div class="flex flex-wrap gap-2 mb-3">
+                                    ${devicesHtml}
+                                </div>
+                                <button onclick="openDeviceModal(${school.id})" class="flex items-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-bold transition border border-slate-300 shadow-sm">
+                                    <i data-lucide="settings-2" class="w-3.5 h-3.5"></i> Manage Hardware
+                                </button>
+                            </td>
+                            <td class="p-4 align-top">
+                                <div class="flex flex-col gap-2 items-start">
+                                    <span class="px-2.5 py-1 rounded-md text-xs font-bold ${isExpiring ? 'bg-red-100 text-red-700 border border-red-200 animate-pulse' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                                        <i data-lucide="calendar" class="w-3 h-3 inline mr-1"></i>${school.validity_days} Days
+                                    </span>
+                                    <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                        <i data-lucide="message-square" class="w-3 h-3 inline mr-1"></i>${school.message_limit} Msgs
+                                    </span>
                                 </div>
                             </td>
-                        </tr>
-                    `;
+                            <td class="p-4 text-right align-top">
+                                <div class="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button onclick="openRechargeModal(${school.id}, '${school.name.replace(/'/g, "\\'")}', ${school.validity_days}, ${school.message_limit})" class="p-2 text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition tooltip" title="Recharge"><i data-lucide="zap" class="w-4 h-4"></i></button>
+                                    <button onclick="editSchool(${school.id})" class="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition" title="Edit"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                                    <button onclick="deleteSchool(${school.id})" class="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
+                            </td>
+                        </tr>`;
                 });
-                container.innerHTML = html;
+                container.innerHTML = html; lucide.createIcons();
+            } catch (e) {}
+        }
+
+        // --- HARDWARE MANAGER LOGIC ---
+        async function openDeviceModal(school_id) {
+            currentManageSchoolId = school_id;
+            document.getElementById('deviceModal').classList.remove('hidden');
+            await loadDevices();
+        }
+        function closeDeviceModal() { document.getElementById('deviceModal').classList.add('hidden'); }
+        
+        async function pasteMacToInput() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if(text) { document.getElementById('newDevMac').value = text.trim(); showToast('MAC Pasted!', 'success'); }
+            } catch(e) { showToast('Please allow clipboard access in browser.'); }
+        }
+
+        async function loadDevices() {
+            const container = document.getElementById('deviceListContainer');
+            container.innerHTML = `<div class="flex justify-center p-8"><div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>`;
+            try {
+                const res = await fetch(`${API_BASE}/admin/schools/${currentManageSchoolId}/devices`);
+                const devices = await res.json();
+                if(devices.length === 0) {
+                    container.innerHTML = `<div class="text-center py-10"><i data-lucide="cpu" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i><p class="text-slate-500 font-medium">No hardware linked yet.</p><p class="text-xs text-slate-400 mt-1">Paste a MAC address below to add one.</p></div>`;
+                    lucide.createIcons(); return;
+                }
+                container.innerHTML = devices.map(d => `
+                    <div class="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-4 shadow-sm transition-all ${!d.is_active ? 'opacity-60 grayscale-[50%]' : 'hover:border-blue-300'}">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <p class="font-bold text-slate-900">${d.name}</p>
+                                ${d.is_online && d.is_active ? '<span class="text-emerald-500 flex items-center gap-1 text-[10px] font-black bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100"><div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>LIVE</span>' : '<span class="text-slate-400 flex items-center gap-1 text-[10px] font-black bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200"><div class="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>OFFLINE</span>'}
+                            </div>
+                            <p class="text-xs font-mono text-slate-500 mt-1 uppercase tracking-widest">${d.mac}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="toggleDevice(${d.id}, ${!d.is_active})" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition ${d.is_active ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 shadow-sm'}">
+                                ${d.is_active ? '<i data-lucide="pause" class="w-3 h-3 inline mr-1"></i>Pause' : '<i data-lucide="play" class="w-3 h-3 inline mr-1"></i>Resume'}
+                            </button>
+                            <button onclick="deleteDevice(${d.id})" class="px-2 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition" title="Delete Device"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                `).join('');
                 lucide.createIcons();
-            } catch (error) {
-                showToast('Failed to load schools');
+            } catch(e) {}
+        }
+
+        async function addDevice() {
+            const name = document.getElementById('newDevName').value;
+            const mac = document.getElementById('newDevMac').value;
+            if(!name || !mac) return showToast('Device Name and MAC are required.');
+            
+            const res = await fetch(`${API_BASE}/admin/schools/${currentManageSchoolId}/devices`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ device_name: name, mac_address: mac })
+            });
+            if(res.ok) {
+                document.getElementById('newDevName').value = '';
+                document.getElementById('newDevMac').value = '';
+                showToast('Hardware linked successfully!', 'success');
+                loadDevices();
+                fetchSchools(); // Update main table badges
+            } else { showToast('Failed to add device (MAC must be unique)'); }
+        }
+
+        async function toggleDevice(id, makeActive) {
+            await fetch(`${API_BASE}/admin/devices/${id}`, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ is_active: makeActive }) });
+            loadDevices(); fetchSchools();
+        }
+
+        async function deleteDevice(id) {
+            if(confirm("Remove this hardware link permanently?")) {
+                await fetch(`${API_BASE}/admin/devices/${id}`, { method: 'DELETE' });
+                loadDevices(); fetchSchools();
             }
         }
 
-        function openModal() {
+        // --- SCHOOL CRUD ---
+        function openSchoolModal() {
             currentEditId = null;
             document.getElementById('modalTitle').innerText = 'Onboard New School';
             document.getElementById('schoolName').value = '';
             document.getElementById('adminUsername').value = '';
             document.getElementById('adminPassword').value = '';
             document.getElementById('studentLimit').value = '250';
-            document.getElementById('deviceCode').value = '';
             document.getElementById('schoolModal').classList.remove('hidden');
         }
-
-        function closeModal() { document.getElementById('schoolModal').classList.add('hidden'); }
+        function closeSchoolModal() { document.getElementById('schoolModal').classList.add('hidden'); }
 
         async function editSchool(id) {
             currentEditId = id;
-            try {
-                const response = await fetch(`${API_BASE}/admin/schools`);
-                const schools = await response.json();
-                const school = schools.find(s => s.id === id);
-                
-                if (school) {
-                    document.getElementById('modalTitle').innerText = 'Edit School details';
-                    document.getElementById('schoolName').value = school.name;
-                    document.getElementById('adminUsername').value = school.admin_username;
-                    document.getElementById('adminPassword').value = ''; // Don't show current password
-                    document.getElementById('studentLimit').value = school.max_student_limit;
-                    document.getElementById('deviceCode').value = school.device_code || '';
-                    document.getElementById('schoolModal').classList.remove('hidden');
-                }
-            } catch(e) {
-                showToast('Error loading school details');
+            const response = await fetch(`${API_BASE}/admin/schools`);
+            const school = (await response.json()).find(s => s.id === id);
+            if (school) {
+                document.getElementById('modalTitle').innerText = 'Edit School details';
+                document.getElementById('schoolName').value = school.name;
+                document.getElementById('adminUsername').value = school.admin_username;
+                document.getElementById('adminPassword').value = ''; 
+                document.getElementById('studentLimit').value = school.max_student_limit;
+                document.getElementById('schoolModal').classList.remove('hidden');
             }
         }
 
         async function saveSchool() {
-            const data = {
-                name: document.getElementById('schoolName').value,
-                admin_username: document.getElementById('adminUsername').value,
-                max_student_limit: parseInt(document.getElementById('studentLimit').value),
-                device_code: document.getElementById('deviceCode').value.trim()
-            };
-
+            const data = { name: document.getElementById('schoolName').value, admin_username: document.getElementById('adminUsername').value, max_student_limit: parseInt(document.getElementById('studentLimit').value) };
             const pwd = document.getElementById('adminPassword').value;
             if (pwd) data.admin_password = pwd;
+            if (!data.name || !data.admin_username) return showToast('Name and Admin ID are required');
 
-            if (!data.name || !data.admin_username) {
-                showToast('Name and Admin ID are required');
-                return;
-            }
-
-            const url = currentEditId ? `${API_BASE}/admin/schools/${currentEditId}` : `${API_BASE}/admin/schools`;
-            const method = currentEditId ? 'PUT' : 'POST';
-
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    showToast(currentEditId ? 'School updated successfully' : 'School created successfully', 'success');
-                    closeModal();
-                    fetchSchools();
-                } else {
-                    const error = await response.json();
-                    showToast(error.message || 'Failed to save school');
-                }
-            } catch(e) { showToast('Network error while saving'); }
+            const res = await fetch(currentEditId ? `${API_BASE}/admin/schools/${currentEditId}` : `${API_BASE}/admin/schools`, { method: currentEditId ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            if (res.ok) { showToast('Saved!', 'success'); closeSchoolModal(); fetchSchools(); }
         }
 
+        // --- RECHARGE LOGIC ---
         function openRechargeModal(id, name, currentDays, currentMsgs) {
-            currentRechargeId = id;
-            document.getElementById('rechargeSchoolName').innerText = name;
-            document.getElementById('rech_val_days').value = currentDays;
-            document.getElementById('rech_msg_limit').value = currentMsgs;
-            document.getElementById('rechargeModal').classList.remove('hidden');
+            currentRechargeId = id; document.getElementById('rechargeSchoolName').innerText = name; document.getElementById('rech_val_days').value = currentDays; document.getElementById('rech_msg_limit').value = currentMsgs; document.getElementById('rechargeModal').classList.remove('hidden');
         }
-
         function closeRechargeModal() { document.getElementById('rechargeModal').classList.add('hidden'); }
 
         async function processManualRecharge() {
-            if(!currentRechargeId) return;
-            const data = {
-                validity_days: parseInt(document.getElementById('rech_val_days').value) || 0,
-                message_limit: parseInt(document.getElementById('rech_msg_limit').value) || 0
-            };
-            try {
-                const response = await fetch(`${API_BASE}/admin/schools/${currentRechargeId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                if (response.ok) {
-                    showToast('Account Recharged Successfully!', 'success');
-                    closeRechargeModal();
-                    fetchSchools();
-                } else showToast('Failed to update recharge.');
-            } catch(e) { showToast('Network Error'); }
+            const res = await fetch(`${API_BASE}/admin/schools/${currentRechargeId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ validity_days: parseInt(document.getElementById('rech_val_days').value) || 0, message_limit: parseInt(document.getElementById('rech_msg_limit').value) || 0 }) });
+            if (res.ok) { showToast('Account Recharged!', 'success'); closeRechargeModal(); fetchSchools(); }
         }
 
         async function deleteSchool(id) {
-            if(!confirm("Are you sure you want to delete this school? This action is irreversible and deletes all associated students and attendance data.")) return;
-
-            try {
-                const response = await fetch(`${API_BASE}/admin/schools/${id}`, { method: 'DELETE' });
-                if (response.ok) {
-                    showToast('School deleted successfully', 'success');
-                    fetchSchools();
-                } else {
-                    const error = await response.json();
-                    showToast(error.message || 'Failed to delete school');
-                }
-            } catch(e) { showToast('Network error while deleting'); }
+            if(!confirm("Delete school and ALL associated data (Students/Devices)? This cannot be undone.")) return;
+            await fetch(`${API_BASE}/admin/schools/${id}`, { method: 'DELETE' }); fetchSchools();
         }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = 'login.html';
-        }
+        function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 
-        // Initialize & Auto Refresh Live Status (Every 10 Seconds)
+        // Polling logic
         document.addEventListener('DOMContentLoaded', () => {
             fetchSchools();
-            adminPollInterval = setInterval(fetchSchools, 10000);
+            setInterval(() => {
+                fetchSchools();
+                if(!document.getElementById('deviceModal').classList.contains('hidden')) loadDevices();
+            }, 10000);
         });
     </script>
 </body>
