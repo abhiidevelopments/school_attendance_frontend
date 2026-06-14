@@ -8,123 +8,113 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        ::-webkit-scrollbar { width: 6px; height: 6px;}
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col font-sans">
+<body class="min-h-screen flex flex-col font-sans pb-10">
 
     <header class="bg-slate-900 border-b border-slate-800 text-white shadow-sm sticky top-0 z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <i data-lucide="building-2" class="w-6 h-6 text-blue-400"></i>
-                <h1 class="text-xl font-bold tracking-tight">EduCore SaaS Central</h1>
+                <h1 class="text-lg sm:text-xl font-bold tracking-tight">SaaS Central</h1>
             </div>
-            <div class="flex items-center gap-4 text-sm font-medium shrink-0">
-                <button onclick="openGlobalSettingsModal()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition border border-slate-700 text-emerald-400">
-                    <i data-lucide="settings" class="w-4 h-4"></i> Global Rates
+            <div class="flex items-center gap-2 sm:gap-4 text-sm font-medium shrink-0">
+                <button onclick="openGlobalSettingsModal()" class="hidden sm:flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition border border-slate-700 text-emerald-400">
+                    <i data-lucide="settings" class="w-4 h-4"></i> Rates
                 </button>
                 <div class="flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">
                     <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <span class="text-slate-300">Super Admin</span>
+                    <span class="text-slate-300 hidden sm:inline">Super Admin</span>
                 </div>
-                <button onclick="logout()" class="text-slate-400 hover:text-red-400 transition ml-2" title="Logout">
+                <button onclick="logout()" class="text-slate-400 hover:text-red-400 transition ml-1" title="Logout">
                     <i data-lucide="log-out" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
                 <h2 class="text-2xl font-bold text-slate-900">Client Schools</h2>
-                <p class="text-sm text-slate-500 mt-1">Manage subscriptions, hardware devices, and daily limits.</p>
+                <p class="text-sm text-slate-500 mt-1">Manage subscriptions and devices.</p>
             </div>
-            <button onclick="openSchoolModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition shadow-sm active:scale-95">
-                <i data-lucide="plus-circle" class="w-5 h-5"></i> Onboard New School
-            </button>
+            <div class="flex gap-2 w-full sm:w-auto">
+                <button onclick="openGlobalSettingsModal()" class="sm:hidden flex-1 flex justify-center items-center gap-2 bg-white border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm">
+                    <i data-lucide="settings" class="w-4 h-4"></i> Rates
+                </button>
+                <button onclick="openSchoolModal()" class="flex-1 sm:flex-none flex justify-center items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition shadow-sm active:scale-95">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Add School
+                </button>
+            </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                        <tr>
-                            <th class="p-4 whitespace-nowrap">School Details</th>
-                            <th class="p-4 whitespace-nowrap">Linked Hardware (Live)</th>
-                            <th class="p-4 whitespace-nowrap">Validity & Limits</th>
-                            <th class="p-4 text-right whitespace-nowrap">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="schoolsList" class="divide-y divide-slate-100">
-                        <tr><td colspan="4" class="p-8 text-center text-slate-500 font-medium">Loading clients...</td></tr>
-                    </tbody>
-                </table>
-            </div>
+        <div id="schoolsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="col-span-full p-8 text-center text-slate-500 font-medium">Loading clients...</div>
         </div>
     </main>
 
     <div id="globalSettingsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 flex justify-between items-center">
-                <h3 class="font-bold text-xl text-slate-900 flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-emerald-600"></i> Platform Pricing</h3>
+            <div class="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-emerald-600"></i> Platform Pricing</h3>
                 <button onclick="closeGlobalSettingsModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="p-4 sm:p-6 space-y-4">
-                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Monthly Subscription Rate (₹)</label><input type="number" id="global_monthly_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"></div>
+            <div class="p-5 space-y-4">
+                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Monthly Subscription (₹)</label><input type="number" id="global_monthly_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"></div>
                 <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Per Message Rate (₹)</label><input type="number" step="0.01" id="global_message_rate" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"></div>
-                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Master Admin UPI ID</label><input type="text" id="global_admin_upi" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"></div>
+                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Admin UPI ID</label><input type="text" id="global_admin_upi" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-emerald-500"></div>
             </div>
-            <div class="border-t border-slate-100 p-4 sm:p-6 bg-slate-50 flex justify-end gap-3">
-                <button onclick="closeGlobalSettingsModal()" class="px-5 py-2.5 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-xl text-sm font-bold">Cancel</button>
-                <button onclick="saveGlobalSettings()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold">Save Settings</button>
+            <div class="border-t border-slate-100 p-4 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeGlobalSettingsModal()" class="px-5 py-2.5 text-slate-600 bg-slate-200 rounded-xl text-sm font-bold">Cancel</button>
+                <button onclick="saveGlobalSettings()" class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-bold">Save</button>
             </div>
         </div>
     </div>
 
     <div id="schoolModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
-            <div class="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 flex justify-between items-center">
-                <h3 id="modalTitle" class="font-bold text-xl text-slate-900">Onboard New School</h3>
+            <div class="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center">
+                <h3 id="modalTitle" class="font-bold text-lg text-slate-900">Onboard New School</h3>
                 <button onclick="closeSchoolModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="p-4 sm:p-6 space-y-4">
-                <div><label class="block text-sm font-semibold mb-1">School Full Name</label><input type="text" id="schoolName" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500"></div>
+            <div class="p-5 space-y-4">
+                <div><label class="block text-sm font-semibold mb-1">School Full Name</label><input type="text" id="schoolName" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-semibold mb-1">Admin ID</label><input type="text" id="adminUsername" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500"></div>
-                    <div><label class="block text-sm font-semibold mb-1">Password</label><input type="text" id="adminPassword" placeholder="Blank to keep current" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-sm font-semibold mb-1">Admin ID</label><input type="text" id="adminUsername" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-sm font-semibold mb-1">Password</label><input type="text" id="adminPassword" placeholder="Blank to keep" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500"></div>
                 </div>
-                <div><label class="block text-sm font-semibold mb-1">Student Capacity</label><input type="number" id="studentLimit" class="w-full border border-slate-300 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500" value="250"></div>
+                <div><label class="block text-sm font-semibold mb-1">Student Capacity</label><input type="number" id="studentLimit" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-blue-500" value="250"></div>
             </div>
-            <div class="border-t border-slate-100 p-4 sm:p-6 bg-slate-50 flex justify-end gap-3">
-                <button onclick="closeSchoolModal()" class="px-5 py-2.5 text-slate-600 bg-slate-200 hover:bg-slate-300 rounded-xl text-sm font-bold">Cancel</button>
-                <button onclick="saveSchool()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold">Save Client</button>
+            <div class="border-t border-slate-100 p-4 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeSchoolModal()" class="px-5 py-2.5 text-slate-600 bg-slate-200 rounded-xl text-sm font-bold">Cancel</button>
+                <button onclick="saveSchool()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold">Save</button>
             </div>
         </div>
     </div>
 
     <div id="deviceModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="border-b border-slate-100 bg-slate-50 p-4 sm:p-6 flex justify-between items-center shrink-0">
-                <h3 class="font-bold text-xl text-slate-900 flex items-center gap-2"><i data-lucide="cpu" class="w-5 h-5 text-blue-600"></i> Hardware Manager</h3>
+            <div class="border-b border-slate-100 bg-slate-50 p-4 flex justify-between items-center shrink-0">
+                <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2"><i data-lucide="cpu" class="w-5 h-5 text-blue-600"></i> Hardware Manager</h3>
                 <button onclick="closeDeviceModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <div class="p-4 sm:p-6 flex-1 overflow-y-auto space-y-4 bg-slate-50/50">
+            <div class="p-4 flex-1 overflow-y-auto space-y-3 bg-slate-50/50">
                 <div id="deviceListContainer" class="space-y-3"></div>
             </div>
 
-            <div class="border-t border-slate-200 bg-white p-4 sm:p-6 shrink-0">
-                <p class="text-xs font-bold text-slate-500 uppercase mb-3">Add Hardware (Security Code)</p>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="newDevName" placeholder="Device Name (e.g. Gate 1)" class="w-full sm:w-1/3 border border-slate-300 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500">
-                    <div class="flex-1">
-                        <input type="text" id="newDevMac" placeholder="Enter Device ID (e.g. 9252001)" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm outline-none font-mono focus:border-blue-500">
-                    </div>
-                    <button onclick="addDevice()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg text-sm font-bold transition shadow-sm">Link</button>
+            <div class="border-t border-slate-200 bg-white p-4 shrink-0">
+                <p class="text-[10px] font-bold text-slate-500 uppercase mb-2">Add New Hardware</p>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="newDevName" placeholder="Name (e.g. Gate 1)" class="w-full sm:w-1/3 border border-slate-300 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500">
+                    <input type="text" id="newDevMac" placeholder="Security Code (e.g. 9252001)" class="w-full flex-1 border border-slate-300 rounded-lg p-2.5 text-sm outline-none font-mono focus:border-blue-500">
+                    <button onclick="addDevice()" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-sm w-full sm:w-auto">Link</button>
                 </div>
             </div>
         </div>
@@ -136,14 +126,14 @@
                 <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2"><i data-lucide="zap" class="w-5 h-5 text-amber-500"></i> Manual Recharge</h3>
                 <button onclick="closeRechargeModal()" class="text-slate-400 hover:text-slate-700"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="p-6 space-y-4">
-                <p id="rechargeSchoolName" class="text-sm font-bold text-slate-600 mb-4">School Name</p>
+            <div class="p-5 space-y-4">
+                <p id="rechargeSchoolName" class="text-sm font-bold text-slate-600 mb-2">School Name</p>
                 <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Set Validity Days</label><input type="number" id="rech_val_days" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-amber-500"></div>
                 <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Set Message Limit</label><input type="number" id="rech_msg_limit" class="w-full border border-slate-300 rounded-xl p-3 text-sm outline-none focus:border-amber-500"></div>
             </div>
             <div class="border-t border-slate-100 p-4 bg-slate-50 flex justify-end gap-2">
-                <button onclick="closeRechargeModal()" class="px-4 py-2 bg-slate-200 text-slate-600 hover:bg-slate-300 rounded-xl text-sm font-bold">Cancel</button>
-                <button onclick="processManualRecharge()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-bold shadow-sm">Update Account</button>
+                <button onclick="closeRechargeModal()" class="px-4 py-2 bg-slate-200 text-slate-600 rounded-xl text-sm font-bold">Cancel</button>
+                <button onclick="processManualRecharge()" class="px-4 py-2 bg-amber-500 text-white rounded-xl text-sm font-bold shadow-sm">Update</button>
             </div>
         </div>
     </div>
@@ -190,71 +180,82 @@
             if(res.ok) { showToast('Global settings updated!', 'success'); closeGlobalSettingsModal(); }
         }
 
+        // FULL MOBILE CARD RENDER LOGIC
         async function fetchSchools() {
             try {
                 const response = await fetch(`${API_BASE}/admin/schools`);
                 const schools = await response.json();
-                const container = document.getElementById('schoolsList');
-                if (schools.length === 0) { container.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-slate-500 font-medium">No schools found. Add one to get started.</td></tr>`; return; }
+                const container = document.getElementById('schoolsGrid');
+                
+                if (schools.length === 0) { 
+                    container.innerHTML = `<div class="col-span-full p-8 text-center text-slate-500 font-medium bg-white rounded-xl border border-dashed border-slate-300">No schools found. Add one to get started.</div>`; 
+                    return; 
+                }
 
                 let html = '';
                 schools.forEach(school => {
-                    const isExpiring = (school.validity_days || 0) <= 0;
+                    const isExpiring = (school.validity_days || 0) <= 5;
                     
                     let devicesHtml = '';
                     if (school.devices && school.devices.length > 0) {
                         devicesHtml = school.devices.map(d => {
-                            let statusDot = (d.is_online && d.is_active) ? '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>' : '<span class="w-2 h-2 rounded-full bg-slate-400 shrink-0"></span>';
+                            let statusDot = (d.is_online && d.is_active) ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>' : '<span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>';
                             let opacity = d.is_active ? 'opacity-100' : 'opacity-50 line-through';
-                            return `<div class="flex items-center gap-1.5 text-[11px] font-bold bg-slate-100 text-slate-700 px-2 py-1 rounded-md border border-slate-200 ${opacity}">${statusDot} ${d.name}</div>`;
+                            return `<div class="flex items-center gap-1 text-[10px] font-bold bg-white text-slate-700 px-2 py-1 rounded shadow-sm border border-slate-200 ${opacity}">${statusDot} ${d.name}</div>`;
                         }).join('');
                     } else {
-                        devicesHtml = `<span class="text-xs text-slate-400 italic">No devices linked</span>`;
+                        devicesHtml = `<span class="text-xs text-slate-400 italic">No hardware linked</span>`;
                     }
 
                     html += `
-                        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 group">
-                            <td class="p-4 align-top">
-                                <p class="font-bold text-slate-900 text-lg">${school.name}</p>
-                                <p class="text-xs font-mono text-slate-500 mt-1"><i data-lucide="key" class="w-3 h-3 inline"></i> ${school.admin_username}</p>
-                                <div class="flex items-center gap-2 mt-3">
-                                    <div class="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                        <div class="h-full bg-blue-500" style="width: ${(school.student_count / school.max_student_limit) * 100}%"></div>
-                                    </div>
-                                    <span class="text-[10px] font-bold text-slate-500">${school.student_count}/${school.max_student_limit} Std.</span>
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col gap-4 hover:shadow-md transition-shadow">
+                            
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-bold text-slate-900 text-lg leading-tight">${school.name}</h3>
+                                    <p class="text-xs font-mono text-slate-500 mt-1 flex items-center gap-1"><i data-lucide="key" class="w-3 h-3"></i> ${school.admin_username}</p>
                                 </div>
-                            </td>
-                            <td class="p-4 align-top">
-                                <div class="flex flex-wrap gap-2 mb-3">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 text-xs">
+                                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                    <p class="text-slate-400 font-semibold mb-1 uppercase text-[9px] tracking-wider">Students</p>
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                            <div class="h-full bg-blue-500" style="width: ${(school.student_count / school.max_student_limit) * 100}%"></div>
+                                        </div>
+                                    </div>
+                                    <p class="font-bold text-slate-700 mt-1">${school.student_count} / ${school.max_student_limit}</p>
+                                </div>
+                                <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                    <p class="text-slate-400 font-semibold mb-1 uppercase text-[9px] tracking-wider">Plan Limits</p>
+                                    <p class="font-bold ${isExpiring ? 'text-red-600 animate-pulse' : 'text-emerald-600'}">${school.validity_days} Days</p>
+                                    <p class="font-bold text-blue-600">${school.message_limit} Msgs</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase">Hardware</p>
+                                    <button onclick="openDeviceModal(${school.id})" class="text-[10px] bg-white border border-slate-200 text-blue-600 font-bold px-2 py-1 rounded-md hover:bg-blue-50 transition shadow-sm">Manage</button>
+                                </div>
+                                <div class="flex flex-wrap gap-1.5">
                                     ${devicesHtml}
                                 </div>
-                                <button onclick="openDeviceModal(${school.id})" class="flex items-center gap-1.5 bg-white hover:bg-slate-100 text-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-bold transition border border-slate-300 shadow-sm">
-                                    <i data-lucide="settings-2" class="w-3.5 h-3.5"></i> Manage Hardware
-                                </button>
-                            </td>
-                            <td class="p-4 align-top">
-                                <div class="flex flex-col gap-2 items-start">
-                                    <span class="px-2.5 py-1 rounded-md text-xs font-bold ${isExpiring ? 'bg-red-100 text-red-700 border border-red-200 animate-pulse' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
-                                        <i data-lucide="calendar" class="w-3 h-3 inline mr-1"></i>${school.validity_days} Days
-                                    </span>
-                                    <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                                        <i data-lucide="message-square" class="w-3 h-3 inline mr-1"></i>${school.message_limit} Msgs
-                                    </span>
-                                </div>
-                            </td>
-                            <td class="p-4 text-right align-top">
-                                <div class="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button onclick="openRechargeModal(${school.id}, '${school.name.replace(/'/g, "\\'")}', ${school.validity_days}, ${school.message_limit})" class="p-2 text-amber-600 bg-amber-50 rounded-lg hover:bg-amber-100 transition tooltip" title="Recharge"><i data-lucide="zap" class="w-4 h-4"></i></button>
-                                    <button onclick="editSchool(${school.id})" class="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition" title="Edit"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                                    <button onclick="deleteSchool(${school.id})" class="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                </div>
-                            </td>
-                        </tr>`;
+                            </div>
+
+                            <div class="pt-2 flex justify-between gap-2">
+                                <button onclick="openRechargeModal(${school.id}, '${school.name.replace(/'/g, "\\'")}', ${school.validity_days}, ${school.message_limit})" class="flex-1 bg-amber-50 text-amber-700 py-2 rounded-xl text-xs font-bold hover:bg-amber-100 transition flex justify-center items-center gap-1 border border-amber-100"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Recharge</button>
+                                <button onclick="editSchool(${school.id})" class="flex-1 bg-blue-50 text-blue-700 py-2 rounded-xl text-xs font-bold hover:bg-blue-100 transition flex justify-center items-center gap-1 border border-blue-100"><i data-lucide="pencil" class="w-3.5 h-3.5"></i> Edit</button>
+                                <button onclick="deleteSchool(${school.id})" class="bg-red-50 text-red-600 px-3 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition flex justify-center items-center border border-red-100"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                        </div>`;
                 });
                 container.innerHTML = html; lucide.createIcons();
             } catch (e) {}
         }
 
+        // --- HARDWARE MANAGER LOGIC ---
         async function openDeviceModal(school_id) {
             currentManageSchoolId = school_id;
             document.getElementById('deviceModal').classList.remove('hidden');
@@ -269,23 +270,23 @@
                 const res = await fetch(`${API_BASE}/admin/schools/${currentManageSchoolId}/devices`);
                 const devices = await res.json();
                 if(devices.length === 0) {
-                    container.innerHTML = `<div class="text-center py-10"><i data-lucide="cpu" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i><p class="text-slate-500 font-medium">No hardware linked yet.</p></div>`;
+                    container.innerHTML = `<div class="text-center py-6"><i data-lucide="cpu" class="w-10 h-10 text-slate-300 mx-auto mb-2"></i><p class="text-slate-500 text-sm font-medium">No hardware linked yet.</p></div>`;
                     lucide.createIcons(); return;
                 }
                 container.innerHTML = devices.map(d => `
-                    <div class="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-4 shadow-sm transition-all ${!d.is_active ? 'opacity-60 grayscale-[50%]' : 'hover:border-blue-300'}">
+                    <div class="flex items-center justify-between bg-white border border-slate-200 rounded-xl p-3 sm:p-4 shadow-sm transition-all ${!d.is_active ? 'opacity-60 grayscale-[50%]' : ''}">
                         <div>
                             <div class="flex items-center gap-2">
-                                <p class="font-bold text-slate-900">${d.name}</p>
-                                ${d.is_online && d.is_active ? '<span class="text-emerald-500 flex items-center gap-1 text-[10px] font-black bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100"><div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>LIVE</span>' : '<span class="text-slate-400 flex items-center gap-1 text-[10px] font-black bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200"><div class="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>OFFLINE</span>'}
+                                <p class="font-bold text-slate-900 text-sm sm:text-base">${d.name}</p>
+                                ${d.is_online && d.is_active ? '<span class="text-emerald-500 flex items-center gap-1 text-[9px] sm:text-[10px] font-black bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100"><div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>LIVE</span>' : '<span class="text-slate-400 flex items-center gap-1 text-[9px] sm:text-[10px] font-black bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200"><div class="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>OFFLINE</span>'}
                             </div>
-                            <p class="text-xs font-mono text-slate-500 mt-1 uppercase tracking-widest">ID: ${d.device_code}</p>
+                            <p class="text-[10px] sm:text-xs font-mono text-slate-500 mt-1 uppercase tracking-widest">ID: ${d.device_code}</p>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="toggleDevice(${d.id}, ${!d.is_active})" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition ${d.is_active ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 shadow-sm'}">
-                                ${d.is_active ? '<i data-lucide="pause" class="w-3 h-3 inline mr-1"></i>Pause' : '<i data-lucide="play" class="w-3 h-3 inline mr-1"></i>Resume'}
+                        <div class="flex items-center gap-1 sm:gap-2">
+                            <button onclick="toggleDevice(${d.id}, ${!d.is_active})" class="px-2 sm:px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold border transition ${d.is_active ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'}">
+                                ${d.is_active ? 'Pause' : 'Resume'}
                             </button>
-                            <button onclick="deleteDevice(${d.id})" class="px-2 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition" title="Delete Device"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <button onclick="deleteDevice(${d.id})" class="p-1.5 sm:px-2 sm:py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition"><i data-lucide="trash-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></button>
                         </div>
                     </div>
                 `).join('');
@@ -296,7 +297,7 @@
         async function addDevice() {
             const name = document.getElementById('newDevName').value;
             const code = document.getElementById('newDevMac').value;
-            if(!name || !code) return showToast('Device Name and Security Code are required.');
+            if(!name || !code) return showToast('Name and Security Code are required.');
             
             const res = await fetch(`${API_BASE}/admin/schools/${currentManageSchoolId}/devices`, {
                 method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -306,9 +307,8 @@
                 document.getElementById('newDevName').value = '';
                 document.getElementById('newDevMac').value = '';
                 showToast('Hardware linked successfully!', 'success');
-                loadDevices();
-                fetchSchools(); 
-            } else { showToast('Failed to add device (Code must be unique)'); }
+                loadDevices(); fetchSchools(); 
+            } else { showToast('Failed (Security Code must be unique)'); }
         }
 
         async function toggleDevice(id, makeActive) {
@@ -323,6 +323,7 @@
             }
         }
 
+        // --- SCHOOL CRUD ---
         function openSchoolModal() {
             currentEditId = null;
             document.getElementById('modalTitle').innerText = 'Onboard New School';
@@ -375,6 +376,7 @@
 
         function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 
+        // Polling
         document.addEventListener('DOMContentLoaded', () => {
             fetchSchools();
             setInterval(() => {
