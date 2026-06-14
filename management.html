@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduCore - School Management System</title>
+    <title>EduCore - Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
@@ -12,31 +12,13 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { 
-            font-family: 'Inter', sans-serif; 
-        }
-        .module { 
-            display: none; 
-        }
-        .module.active { 
-            display: block; 
-        }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { 
-            width: 6px; 
-            height: 6px; 
-        }
-        ::-webkit-scrollbar-track { 
-            background: transparent; 
-        }
-        ::-webkit-scrollbar-thumb { 
-            background: #cbd5e1; 
-            border-radius: 10px; 
-        }
-        ::-webkit-scrollbar-thumb:hover { 
-            background: #94a3b8; 
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .module { display: none; }
+        .module.active { display: block; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex font-sans overflow-hidden">
@@ -56,35 +38,27 @@
             <button onclick="switchTab('attendance')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm" data-target="attendance">
                 <i data-lucide="user-check" class="w-4 h-4"></i> Live Attendance
             </button>
-            
             <button onclick="switchTab('students')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="students">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i> Student Directory
             </button>
-            
             <button onclick="switchTab('fees')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="fees">
                 <i data-lucide="indian-rupee" class="w-4 h-4"></i> Fee Management
             </button>
-            
             <button onclick="switchTab('timetable')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="timetable">
                 <i data-lucide="grid-3x3" class="w-4 h-4"></i> Timetable Master
             </button>
-            
             <button onclick="switchTab('comms')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="comms">
                 <i data-lucide="message-square" class="w-4 h-4"></i> Communication
             </button>
-            
             <button onclick="switchTab('staff')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="staff">
                 <i data-lucide="users" class="w-4 h-4"></i> Staff Details
             </button>
-            
             <button onclick="switchTab('reports')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="reports">
                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> PDF Registers
             </button>
-
             <button onclick="switchTab('billing')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="billing">
                 <i data-lucide="credit-card" class="w-4 h-4"></i> Account Recharge
             </button>
-            
             <button onclick="switchTab('holidays')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="holidays">
                 <i data-lucide="calendar" class="w-4 h-4"></i> Holiday Calendar
             </button>
@@ -95,7 +69,7 @@
                 <i data-lucide="settings" class="w-4 h-4"></i> School Settings
             </button>
             
-            <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white border border-red-500/20 mt-4">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white border border-red-500/20 mt-2">
                 <i data-lucide="log-out" class="w-4 h-4"></i> Secure Logout
             </button>
         </div>
@@ -797,6 +771,7 @@
             } catch(e) {}
         }
         
+        // --- BILLING / RECHARGE LOGIC ---
         async function fetchMasterRatesForRecharge() {
             try {
                 const res = await fetch(`${API_BASE}/admin/master_settings`);
@@ -828,6 +803,7 @@
             }
         }
 
+        // --- SETTINGS LOGIC ---
         async function loadSchoolSettings() {
             try {
                 const res = await fetch(`${API_BASE}/school/settings`, { headers: getHeaders() });
@@ -859,6 +835,7 @@
             } catch(e) { showToast('Network Error'); }
         }
 
+        // --- SMART PDF ATTENDANCE REGISTER ENGINE ---
         function populateReportDropdowns() {
             const groupSelect = document.getElementById('reportGroupSelect');
             if(groupSelect) {
@@ -990,6 +967,7 @@
             }
         }
 
+        // --- ATTENDANCE (LIVE PANEL SYNC) ---
         let viewedClass = null;
         
         function toggleClassView(cls) {
@@ -1177,6 +1155,7 @@
             }, 3000);
         }
 
+        // --- STUDENTS, CLASSES & STAFF CRUD LOGIC ---
         let schoolClasses = []; 
         let schoolTeachers = []; 
         let editingClassId = null; 
@@ -1376,6 +1355,7 @@
             } 
         }
 
+        // --- SMART QR DOWNLOAD LOGIC ---
         function downloadStudentQR(id) { 
             const fullUrl = `https://abhiidevelopments.github.io/school_attendance_frontend/student_view.html?id=${id}`;
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(fullUrl)}`; 
@@ -1473,6 +1453,7 @@
             } 
         }
 
+        // --- TIMETABLE MATRIX ---
         let ttData = {}; 
         let actTTRow = null; 
         let actTTCol = null;
@@ -1546,6 +1527,7 @@
             } catch(e) {} 
         }
 
+        // --- FEE MODULE LOGIC ---
         function renderFeeStructure() {
             const grid = document.getElementById('feeClassStructureGrid'); 
             if(!grid) return;
@@ -1608,53 +1590,5 @@
                             </div>
                             <div class="grid grid-cols-3 gap-3 text-center text-xs">
                                 <div class="bg-slate-50 p-3 rounded-xl border border-slate-100"><p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">TOTAL</p><p class="font-black text-slate-800">₹${tFee}</p></div>
-                                <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100"><p class="text-[9px] font-bold text-emerald-600/70 uppercase tracking-widest mb-1">PAID</p><p class="font-black text-emerald-700">₹${pFee}</p></div>
-                                <div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100"><p class="text-[9px] font-bold text-rose-600/70 uppercase tracking-widest mb-1">DUE</p><p class="font-black text-rose-700">₹${dFee}</p></div>
-                            </div>
-                            <button onclick="collectFeePrompt('${s.id || s.student_id}', '${s.name.replace(/'/g,"\\'")}', ${tFee}, ${pFee})" class="w-full mt-5 py-3.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-emerald-600 transition-colors shadow-md active:scale-95 flex justify-center items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> Add Transaction</button>
-                        </div>`; 
-                    }).join('');
-                }
-                lucide.createIcons();
-            } catch(e) {}
-        }
+                                <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100"><p class="text-[9px]
 
-        function collectFeePrompt(id, name, tFee, pFee) { 
-            const amt = parseFloat(prompt(`Transaction Portal\nClient: ${name}\nCurrent Outstanding: ₹${tFee-pFee}\n\nEnter Deposit Amount:`)); 
-            if(amt>0) { 
-                localStorage.setItem(`fee_paid_${id}`, pFee+amt); 
-                loadFeeStudents(); 
-                showToast('Transaction logged into ledger.', 'success');
-            } 
-        }
-
-        function toggleNotifications() { 
-            document.getElementById('notifDropdown').classList.toggle('hidden'); 
-            fetchNotifications(); 
-        }
-
-        async function fetchNotifications() { 
-            try { 
-                const res = await fetch(`${API_BASE}/notifications`, { headers: getHeaders() }); 
-                const notifs = res.ok ? await res.json() : []; 
-                const container = document.getElementById('notifListContainer'); 
-                
-                if(notifs.length === 0) {
-                    container.innerHTML = `<div class="p-5 text-center text-xs text-slate-400 font-bold tracking-wide">No active pings.</div>`;
-                } else {
-                    container.innerHTML = notifs.map(n => `
-                        <div class="p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                            <p class="font-black text-sm text-slate-800">${n.title}</p>
-                            <p class="text-xs font-medium text-slate-500 mt-1">${n.message}</p>
-                        </div>`).join(''); 
-                }
-            } catch(e){} 
-        }
-
-        // --- INIT ---
-        fetchSchoolStats(); 
-        fetchClasses();
-
-    </script>
-</body>
-</html>
