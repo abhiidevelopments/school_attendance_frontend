@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduCore - Management System</title>
+    <title>EduCore - School Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
@@ -12,13 +12,31 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .module { display: none; }
-        .module.active { display: block; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+        }
+        .module { 
+            display: none; 
+        }
+        .module.active { 
+            display: block; 
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { 
+            width: 6px; 
+            height: 6px; 
+        }
+        ::-webkit-scrollbar-track { 
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb { 
+            background: #cbd5e1; 
+            border-radius: 10px; 
+        }
+        ::-webkit-scrollbar-thumb:hover { 
+            background: #94a3b8; 
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex font-sans overflow-hidden">
@@ -38,43 +56,48 @@
             <button onclick="switchTab('attendance')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-sm" data-target="attendance">
                 <i data-lucide="user-check" class="w-4 h-4"></i> Live Attendance
             </button>
+            
             <button onclick="switchTab('students')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="students">
                 <i data-lucide="graduation-cap" class="w-4 h-4"></i> Student Directory
             </button>
+            
             <button onclick="switchTab('fees')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="fees">
                 <i data-lucide="indian-rupee" class="w-4 h-4"></i> Fee Management
             </button>
+            
             <button onclick="switchTab('timetable')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="timetable">
                 <i data-lucide="grid-3x3" class="w-4 h-4"></i> Timetable Master
             </button>
+            
             <button onclick="switchTab('comms')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="comms">
                 <i data-lucide="message-square" class="w-4 h-4"></i> Communication
             </button>
+            
             <button onclick="switchTab('staff')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="staff">
                 <i data-lucide="users" class="w-4 h-4"></i> Staff Details
             </button>
+            
             <button onclick="switchTab('reports')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="reports">
                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> PDF Registers
             </button>
+
             <button onclick="switchTab('billing')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="billing">
                 <i data-lucide="credit-card" class="w-4 h-4"></i> Account Recharge
             </button>
+            
             <button onclick="switchTab('holidays')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="holidays">
                 <i data-lucide="calendar" class="w-4 h-4"></i> Holiday Calendar
             </button>
         </div>
         
-        <div class="p-4 border-t border-slate-800">
-            <button onclick="switchTab('settings')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 border-b border-slate-800 pb-4 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400 mb-4" data-target="settings">
+        <div class="p-4 border-t border-slate-800 space-y-2">
+            <button onclick="switchTab('settings')" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:bg-slate-800 hover:text-white text-slate-400" data-target="settings">
                 <i data-lucide="settings" class="w-4 h-4"></i> School Settings
             </button>
-            <div class="flex items-center gap-3 px-2">
-                <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">A</div>
-                <div class="text-sm">
-                    <p class="text-white font-medium">School Admin</p>
-                    <button onclick="logout()" class="text-slate-500 text-xs hover:text-white transition">Sign out</button>
-                </div>
-            </div>
+            
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all bg-red-500/10 text-red-500 hover:bg-red-600 hover:text-white border border-red-500/20 mt-4">
+                <i data-lucide="log-out" class="w-4 h-4"></i> Secure Logout
+            </button>
         </div>
     </aside>
 
@@ -89,15 +112,15 @@
                     </button>
                     
                     <div class="flex flex-col min-w-0 w-full">
-                        <h2 id="headerSchoolName" class="text-lg md:text-2xl font-black text-slate-900 leading-tight tracking-tight truncate">Loading School...</h2>
+                        <h2 id="headerSchoolName" class="text-base sm:text-lg md:text-2xl font-black text-slate-900 leading-tight">Loading School...</h2>
                         
                         <div class="flex flex-row flex-wrap items-center gap-1.5 sm:gap-2 mt-1.5">
                             <div id="badgeValidity" class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-500 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
-                                <i data-lucide="calendar" class="w-3 h-3"></i> <span id="headerValidity">-- Days</span>
+                                <i data-lucide="calendar" class="w-2.5 h-2.5"></i> <span id="headerValidity">-- Days</span>
                             </div>
                             
                             <div id="badgeMessages" class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-500 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
-                                <i data-lucide="message-square" class="w-3 h-3"></i> <span id="headerMessages">-- SMS</span>
+                                <i data-lucide="message-square" class="w-2.5 h-2.5"></i> <span id="headerMessages">-- SMS</span>
                             </div>
 
                             <div id="badgeDeviceStatus" class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-500 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
@@ -122,10 +145,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <button onclick="logout()" class="p-2 text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-full transition focus:outline-none" title="Log out">
-                        <i data-lucide="log-out" class="w-5 h-5"></i>
-                    </button>
                 </div>
                 
             </div>
@@ -743,7 +762,7 @@
             if (tabId === 'reports') populateReportDropdowns();
         }
 
-        // --- STATS & BADGES (FIXED DEVICE LOGIC) ---
+        // --- STATS & BADGES ---
         async function fetchSchoolStats() {
             try {
                 const res = await fetch(`${API_BASE}/school/stats`, { headers: getHeaders() });
@@ -1632,6 +1651,7 @@
             } catch(e){} 
         }
 
+        // --- INIT ---
         fetchSchoolStats(); 
         fetchClasses();
 
