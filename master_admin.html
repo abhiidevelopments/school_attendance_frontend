@@ -9,7 +9,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        /* Scrollbar styling for devices list */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -119,9 +118,13 @@
             </div>
 
             <div class="border-t border-slate-200 bg-white p-4 sm:p-6 shrink-0">
-                <div class="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4">
-                    <i data-lucide="info" class="w-5 h-5 text-blue-600 shrink-0 mt-0.5"></i>
-                    <p class="text-sm text-blue-800 font-medium leading-relaxed">Machines register automatically when connected to Wi-Fi with School Admin ID and Device Name.</p>
+                <p class="text-xs font-bold text-slate-500 uppercase mb-3">Add Hardware (Security Code)</p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" id="newDevName" placeholder="Device Name (e.g. Gate 1)" class="w-full sm:w-1/3 border border-slate-300 rounded-lg p-2.5 text-sm outline-none focus:border-blue-500">
+                    <div class="flex-1">
+                        <input type="text" id="newDevMac" placeholder="Enter Device ID (e.g. 9252001)" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm outline-none font-mono focus:border-blue-500">
+                    </div>
+                    <button onclick="addDevice()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg text-sm font-bold transition shadow-sm">Link</button>
                 </div>
             </div>
         </div>
@@ -154,7 +157,6 @@
         let currentRechargeId = null;
         let currentManageSchoolId = null;
 
-        // Toast System
         function showToast(message, type = 'error') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
@@ -169,7 +171,6 @@
             setTimeout(() => { toast.classList.add('translate-x-full'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-        // Global Settings
         async function fetchMasterSettings() {
             try {
                 const res = await fetch(`${API_BASE}/admin/master_settings`);
@@ -189,7 +190,6 @@
             if(res.ok) { showToast('Global settings updated!', 'success'); closeGlobalSettingsModal(); }
         }
 
-        // Fetch Schools & Devices
         async function fetchSchools() {
             try {
                 const response = await fetch(`${API_BASE}/admin/schools`);
@@ -201,7 +201,6 @@
                 schools.forEach(school => {
                     const isExpiring = (school.validity_days || 0) <= 0;
                     
-                    // Generate Device Badges HTML
                     let devicesHtml = '';
                     if (school.devices && school.devices.length > 0) {
                         devicesHtml = school.devices.map(d => {
@@ -256,14 +255,13 @@
             } catch (e) {}
         }
 
-        // --- HARDWARE MANAGER LOGIC ---
         async function openDeviceModal(school_id) {
             currentManageSchoolId = school_id;
             document.getElementById('deviceModal').classList.remove('hidden');
             await loadDevices();
         }
         function closeDeviceModal() { document.getElementById('deviceModal').classList.add('hidden'); }
-        
+
         async function loadDevices() {
             const container = document.getElementById('deviceListContainer');
             container.innerHTML = `<div class="flex justify-center p-8"><div class="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div></div>`;
@@ -271,7 +269,7 @@
                 const res = await fetch(`${API_BASE}/admin/schools/${currentManageSchoolId}/devices`);
                 const devices = await res.json();
                 if(devices.length === 0) {
-                    container.innerHTML = `<div class="text-center py-10"><i data-lucide="cpu" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i><p class="text-slate-500 font-medium">No hardware linked yet.</p><p class="text-xs text-slate-400 mt-1">Connect a device to Wi-Fi with this school's Admin ID to register it automatically.</p></div>`;
+                    container.innerHTML = `<div class="text-center py-10"><i data-lucide="cpu" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i><p class="text-slate-500 font-medium">No hardware linked yet.</p></div>`;
                     lucide.createIcons(); return;
                 }
                 container.innerHTML = devices.map(d => `
@@ -281,7 +279,7 @@
                                 <p class="font-bold text-slate-900">${d.name}</p>
                                 ${d.is_online && d.is_active ? '<span class="text-emerald-500 flex items-center gap-1 text-[10px] font-black bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100"><div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>LIVE</span>' : '<span class="text-slate-400 flex items-center gap-1 text-[10px] font-black bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200"><div class="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>OFFLINE</span>'}
                             </div>
-                            <p class="text-xs text-slate-500 mt-1">Last seen: ${d.last_seen}</p>
+                            <p class="text-xs font-mono text-slate-500 mt-1 uppercase tracking-widest">ID: ${d.device_code}</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <button onclick="toggleDevice(${d.id}, ${!d.is_active})" class="px-3 py-1.5 rounded-lg text-xs font-bold border transition ${d.is_active ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 shadow-sm'}">
@@ -293,6 +291,24 @@
                 `).join('');
                 lucide.createIcons();
             } catch(e) {}
+        }
+
+        async function addDevice() {
+            const name = document.getElementById('newDevName').value;
+            const code = document.getElementById('newDevMac').value;
+            if(!name || !code) return showToast('Device Name and Security Code are required.');
+            
+            const res = await fetch(`${API_BASE}/admin/schools/${currentManageSchoolId}/devices`, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ device_name: name, device_code: code })
+            });
+            if(res.ok) {
+                document.getElementById('newDevName').value = '';
+                document.getElementById('newDevMac').value = '';
+                showToast('Hardware linked successfully!', 'success');
+                loadDevices();
+                fetchSchools(); 
+            } else { showToast('Failed to add device (Code must be unique)'); }
         }
 
         async function toggleDevice(id, makeActive) {
@@ -307,7 +323,6 @@
             }
         }
 
-        // --- SCHOOL CRUD ---
         function openSchoolModal() {
             currentEditId = null;
             document.getElementById('modalTitle').innerText = 'Onboard New School';
@@ -343,7 +358,6 @@
             if (res.ok) { showToast('Saved!', 'success'); closeSchoolModal(); fetchSchools(); }
         }
 
-        // --- RECHARGE LOGIC ---
         function openRechargeModal(id, name, currentDays, currentMsgs) {
             currentRechargeId = id; document.getElementById('rechargeSchoolName').innerText = name; document.getElementById('rech_val_days').value = currentDays; document.getElementById('rech_msg_limit').value = currentMsgs; document.getElementById('rechargeModal').classList.remove('hidden');
         }
@@ -361,7 +375,6 @@
 
         function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 
-        // Polling logic
         document.addEventListener('DOMContentLoaded', () => {
             fetchSchools();
             setInterval(() => {
