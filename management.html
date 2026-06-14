@@ -106,36 +106,36 @@
 
     <main class="flex-1 flex flex-col h-screen overflow-hidden min-w-0">
         
-        <header class="bg-white border-b border-slate-200 shadow-sm px-4 md:px-8 py-4 shrink-0 relative z-20">
-            <div class="flex items-start md:items-center justify-between w-full">
+        <header class="bg-white border-b border-slate-200 shadow-sm px-4 md:px-8 py-3 shrink-0 relative z-20">
+            <div class="flex items-center justify-between w-full">
                 
-                <div class="flex items-start md:items-center gap-3 w-full pr-4">
-                    <button id="mobileMenuBtn" class="md:hidden text-slate-500 hover:text-slate-900 transition focus:outline-none shrink-0 mt-1 md:mt-0" onclick="toggleSidebar()">
+                <div class="flex items-center gap-3 w-full pr-2">
+                    <button id="mobileMenuBtn" class="md:hidden text-slate-500 hover:text-slate-900 transition focus:outline-none shrink-0" onclick="toggleSidebar()">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                     
-                    <div class="flex flex-col gap-2.5">
-                        <h2 id="headerSchoolName" class="text-xl md:text-3xl font-black text-slate-900 leading-none tracking-tight">Loading School...</h2>
+                    <div class="flex flex-col w-full overflow-hidden">
+                        <h2 id="headerSchoolName" class="text-lg md:text-2xl font-black text-slate-900 leading-tight tracking-tight truncate">Loading School...</h2>
                         
-                        <div class="flex flex-wrap items-center gap-2 mt-0.5">
-                            <span id="headerTitle" class="text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:inline-block mr-2 border-r border-slate-200 pr-2">Attendance</span>
+                        <div class="flex flex-row flex-wrap items-center gap-1.5 sm:gap-2 mt-1">
                             
-                            <div id="badgeValidity" class="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors">
-                                <i data-lucide="clock" class="w-3.5 h-3.5"></i> Validity: <span id="headerValidity">-- Days</span>
+                            <div id="badgeValidity" class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-500 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
+                                <i data-lucide="calendar" class="w-2.5 h-2.5"></i> <span id="headerValidity">-- Days</span>
                             </div>
                             
-                            <div id="badgeMessages" class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors">
-                                <i data-lucide="message-square" class="w-3.5 h-3.5"></i> SMS Limit: <span id="headerMessages">-- Msgs</span>
+                            <div id="badgeMessages" class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-500 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
+                                <i data-lucide="message-square" class="w-2.5 h-2.5"></i> <span id="headerMessages">-- SMS</span>
                             </div>
 
-                            <div id="badgeDeviceStatus" class="flex items-center gap-1.5 px-3 py-1 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider">
-                                <i data-lucide="wifi" class="w-3.5 h-3.5"></i> Device: <span id="headerDeviceStatus">Checking...</span>
+                            <div id="badgeDeviceStatus" class="flex items-center gap-1 px-2 py-0.5 bg-slate-50 border border-slate-200 text-slate-500 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap">
+                                <span id="headerDeviceStatus">CHK...</span>
                             </div>
+                            
                         </div>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3 shrink-0 self-start md:self-center">
+                <div class="flex items-center gap-2 shrink-0">
                     <div class="relative">
                         <button id="notifBtn" class="relative p-2 text-slate-500 hover:bg-slate-100 hover:text-blue-600 rounded-full transition focus:outline-none" onclick="toggleNotifications()">
                             <i data-lucide="bell" class="w-5 h-5"></i>
@@ -150,10 +150,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <button onclick="logout()" class="p-2 text-slate-500 hover:bg-red-50 hover:text-red-600 rounded-full transition focus:outline-none flex items-center gap-1.5" title="Log out">
-                        <i data-lucide="log-out" class="w-5 h-5"></i>
-                    </button>
                 </div>
                 
             </div>
@@ -690,7 +686,6 @@
         let pollInterval;
         let globalMasterRates = { monthly_rate: 500, message_rate: 0.20, admin_upi_id: 'educore@upi' };
 
-        // UI Name Initialization
         const storedSchoolName = localStorage.getItem('user_name');
         const defaultSchoolName = (storedSchoolName && storedSchoolName.trim() !== '') ? storedSchoolName : 'My School';
         const headerSchoolNameEl = document.getElementById('headerSchoolName');
@@ -755,8 +750,6 @@
                     btn.classList.add('hover:bg-slate-800', 'hover:text-white', 'text-slate-400'); 
                 }
             });
-            
-            document.getElementById('headerTitle').innerText = tabId;
 
             if (tabId === 'attendance') { 
                 goBackToAttendanceHub(); 
@@ -773,54 +766,41 @@
             if (tabId === 'reports') populateReportDropdowns();
         }
 
-        // --- STATS & BADGES ---
+        // --- STATS & BADGES (FIXED LOGIC) ---
         async function fetchSchoolStats() {
             try {
                 const res = await fetch(`${API_BASE}/school/stats`, { headers: getHeaders() });
                 if (res.ok) {
                     const data = await res.json();
                     
-                    // Validity and Msgs Update
                     const days = parseInt(data.validity_days) || 0;
                     const msgs = parseInt(data.message_limit) || 0;
                     
                     document.getElementById('headerValidity').innerText = `${days} Days`;
-                    document.getElementById('headerMessages').innerText = `${msgs} Msgs`;
+                    document.getElementById('headerMessages').innerText = `${msgs} SMS`;
                     
                     const badgeVal = document.getElementById('badgeValidity');
-                    if (days < 10) badgeVal.className = "flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-[11px] sm:text-xs font-black shadow-sm transition-colors uppercase tracking-widest";
-                    else badgeVal.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider";
+                    if (days <= 5) badgeVal.className = "flex items-center gap-1 px-2 py-0.5 bg-red-50 border border-red-200 text-red-700 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap animate-pulse";
+                    else badgeVal.className = "flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap";
                     
                     const badgeMsg = document.getElementById('badgeMessages');
-                    if (msgs < 1000) badgeMsg.className = "flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-[11px] sm:text-xs font-black shadow-sm transition-colors uppercase tracking-widest";
-                    else badgeMsg.className = "flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider";
+                    if (msgs < 500) badgeMsg.className = "flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-200 text-amber-700 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap";
+                    else badgeMsg.className = "flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 text-blue-700 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap";
                     
-                    // NEW: Online / Offline Logic
                     const statusBadge = document.getElementById('badgeDeviceStatus');
                     const statusText = document.getElementById('headerDeviceStatus');
                     
-                    if (data.last_seen) {
-                        const lastSeenDate = new Date(data.last_seen);
-                        const now = new Date();
-                        // 65000 ms = 65 seconds buffer for heartbeat
-                        const diff = now - lastSeenDate;
-                        
-                        if (diff < 65000) {
-                            statusBadge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider";
-                            statusText.innerHTML = '<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ONLINE</span>';
-                        } else {
-                            statusBadge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-[11px] sm:text-xs font-black shadow-sm transition-colors uppercase tracking-widest";
-                            statusText.innerHTML = '<span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500"></span> OFFLINE</span>';
-                        }
+                    if (data.is_online) {
+                        statusBadge.className = "flex items-center gap-1 px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap shadow-sm";
+                        statusText.innerHTML = '<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ONLINE</span>';
                     } else {
-                        statusBadge.className = "flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-[11px] sm:text-xs font-bold shadow-sm transition-colors uppercase tracking-wider";
-                        statusText.innerText = "NO SIGNAL";
+                        statusBadge.className = "flex items-center gap-1 px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-500 rounded text-[9px] sm:text-[10px] font-black uppercase tracking-wider whitespace-nowrap shadow-sm";
+                        statusText.innerHTML = '<span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> OFFLINE</span>';
                     }
                 }
             } catch(e) {}
         }
         
-        // --- BILLING / RECHARGE LOGIC ---
         async function fetchMasterRatesForRecharge() {
             try {
                 const res = await fetch(`${API_BASE}/admin/master_settings`);
@@ -852,7 +832,6 @@
             }
         }
 
-        // --- SETTINGS LOGIC ---
         async function loadSchoolSettings() {
             try {
                 const res = await fetch(`${API_BASE}/school/settings`, { headers: getHeaders() });
@@ -884,7 +863,6 @@
             } catch(e) { showToast('Network Error'); }
         }
 
-        // --- SMART PDF ATTENDANCE REGISTER ENGINE ---
         function populateReportDropdowns() {
             const groupSelect = document.getElementById('reportGroupSelect');
             if(groupSelect) {
@@ -1016,7 +994,6 @@
             }
         }
 
-        // --- ATTENDANCE (LIVE PANEL SYNC) ---
         let viewedClass = null;
         
         function toggleClassView(cls) {
@@ -1204,12 +1181,11 @@
             }, 3000);
         }
 
-        // --- STUDENTS, CLASSES & STAFF CRUD LOGIC ---
         let schoolClasses = []; 
         let schoolTeachers = []; 
         let editingClassId = null; 
         let editingTeacherId = null; 
-        let editingStudentId = null; // New tracking variable
+        let editingStudentId = null;
         let activeClsName = "";
 
         async function fetchClasses() {
@@ -1404,9 +1380,7 @@
             } 
         }
 
-        // --- SMART QR DOWNLOAD LOGIC ---
         function downloadStudentQR(id) { 
-            // Creates a QR code with the FULL student_view link for Parents
             const fullUrl = `https://abhiidevelopments.github.io/school_attendance_frontend/student_view.html?id=${id}`;
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(fullUrl)}`; 
             const link = document.createElement('a'); 
@@ -1416,7 +1390,6 @@
         }
 
         function downloadTeacherQR(id) { 
-            // Teachers just need normal ID encoding as they don't have a diary view
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=${encodeURIComponent(id)}`; 
             const link = document.createElement('a'); 
             link.href = qrUrl; 
@@ -1504,7 +1477,6 @@
             } 
         }
 
-        // --- TIMETABLE MATRIX ---
         let ttData = {}; 
         let actTTRow = null; 
         let actTTCol = null;
@@ -1578,7 +1550,6 @@
             } catch(e) {} 
         }
 
-        // --- FEE MODULE LOGIC ---
         function renderFeeStructure() {
             const grid = document.getElementById('feeClassStructureGrid'); 
             if(!grid) return;
@@ -1661,7 +1632,6 @@
             } 
         }
 
-        // --- NOTIFICATIONS ---
         function toggleNotifications() { 
             document.getElementById('notifDropdown').classList.toggle('hidden'); 
             fetchNotifications(); 
@@ -1685,7 +1655,6 @@
             } catch(e){} 
         }
 
-        // --- BOOTSTRAP INIT ---
         fetchSchoolStats(); 
         fetchClasses();
 
